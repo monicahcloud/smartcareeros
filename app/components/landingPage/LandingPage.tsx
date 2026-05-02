@@ -3,6 +3,7 @@ import { FinalCtaSection } from "./FinalCtaSection";
 import { Hero } from "./Hero";
 import { HowItWorks } from "./HowItWorks";
 import { LandingFooter } from "./LandingFooter";
+import { PricingSection } from "./PricingSection";
 import { SecondaryToolsSection } from "./SecondaryToolsSection";
 
 export default function LandingPage() {
@@ -12,6 +13,7 @@ export default function LandingPage() {
       <HowItWorks />
       <FeatureSection />
       <SecondaryToolsSection />
+      <PricingSection />
       <FinalCtaSection />
       <LandingFooter />
     </main>
