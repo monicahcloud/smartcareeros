@@ -1,5 +1,5 @@
-import UnderConstruction from "./components/UnderConstruction";
+import PublicPage from "./(public)/page";
 
 export default function Home() {
-  return <UnderConstruction />;
+  return <PublicPage />;
 }
