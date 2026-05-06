@@ -39,27 +39,27 @@ export const linkGroups: LinkGroup[] = [
       },
       {
         label: "Resumes",
-        href: "/dashboard/resumes",
+        href: "/resumes",
         icon: <List className="h-5 w-5" />,
       },
       {
         label: "Cover Letter",
-        href: "/dashboard/cover-letters",
+        href: "/coverletter",
         icon: <FilePen className="h-5 w-5" />,
       },
       {
         label: "Job Search",
-        href: "/dashboard/job-search",
+        href: "/jobsearch",
         icon: <AppWindow className="h-5 w-5" />,
       },
       {
         label: "AI Mock Interview",
-        href: "/dashboard/interviews",
+        href: "/interviews",
         icon: <MessageSquare className="h-5 w-5" />,
       },
       {
         label: "Job Tracker",
-        href: "/dashboard/job-tracker",
+        href: "/jobtracker",
         icon: <Layers className="h-5 w-5" />,
       },
     ],
@@ -69,27 +69,27 @@ export const linkGroups: LinkGroup[] = [
     items: [
       {
         label: "Articles & Insights",
-        href: "/dashboard/articles",
+        href: "/articles",
         icon: <BookOpen className="h-5 w-5" />,
       },
       {
         label: "Expert Tips",
-        href: "/dashboard/resources",
+        href: "/resources",
         icon: <UserCheck2 className="h-5 w-5" />,
       },
       {
         label: "Support",
-        href: "/dashboard/support",
+        href: "/support",
         icon: <CircleHelp className="h-5 w-5" />,
       },
       {
         label: "Pricing",
-        href: "/dashboard/billing",
+        href: "/billing",
         icon: <CreditCard className="h-5 w-5" />,
       },
       {
         label: "FAQs",
-        href: "/dashboard/faq",
+        href: "/faq",
         icon: <MessageCircleQuestion className="h-5 w-5" />,
       },
     ],

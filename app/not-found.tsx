@@ -11,7 +11,7 @@ export default function NotFoundPage() {
   // Prevent flicker while Clerk loads
   if (!isLoaded) return null;
 
-  const redirectHref = isSignedIn ? "/" : "/";
+  const redirectHref = isSignedIn ? "/dashboard" : "/";
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-muted px-6 text-center">
