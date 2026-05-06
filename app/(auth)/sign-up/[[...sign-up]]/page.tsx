@@ -109,6 +109,10 @@ export default function SignUpPage() {
 
           <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_20px_60px_-25px_rgba(0,0,0,0.12)] sm:p-6">
             <SignUp
+              routing="path"
+              path="/sign-up"
+              signInUrl="/sign-in"
+              fallbackRedirectUrl="/dashboard"
               appearance={{
                 elements: {
                   rootBox: "w-full",
