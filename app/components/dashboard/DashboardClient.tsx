@@ -135,9 +135,7 @@ export default function DashboardLayoutClient({
             </div>
           </header>
 
-          <main className="flex flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8">
-            {children}
-          </main>
+          <main className="flex flex-1 flex-col gap-6 md:p-2 ">{children}</main>
         </div>
       </main>
 
