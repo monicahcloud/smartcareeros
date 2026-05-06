@@ -12,6 +12,20 @@ import {
   CoverLetterLayout,
 } from "./templates/templateRegistry";
 import { ClassicLeftLayout } from "./templates/ClassicLeftLayout";
+import { CenteredHeaderLayout } from "./templates/CenterHeaderLayout";
+import { SplitHeaderLayout } from "./templates/SplitHeaderLayout";
+import { MinimalLayout } from "./templates/MinimalLayout";
+import { ExecutiveLayout } from "./templates/ExecutiveLayout";
+import { RightHeaderLayout } from "./templates/RightHeaderLayout";
+import { BoxedHeaderLayout } from "./templates/BoxedHeaderLayout";
+import { TwoColumnMinimalLayout } from "./templates/TwoColumnMinimalLayout";
+import { CorporatePanelLayout } from "./templates/CorporatePanelLayout";
+import { ModernSidebarLayout } from "./templates/ModernSidebarLayout";
+import { FederalCleanLayout } from "./templates/FederalCleanLayout";
+import { BoldToplineLayout } from "./templates/BoldTopLineLayout";
+import { LetterheadLayout } from "./templates/LetterHeadLayout";
+import { SimpleProfessionalLayout } from "./templates/SimpleProfessionalLayout";
+import { AccentBarLayout } from "./templates/AccentBarLayout";
 
 type CoverLetterPreviewProps = {
   coverLetterData: CoverLetterData;
@@ -38,6 +52,34 @@ const fontPairs = {
 
 function RenderCoverLetterLayout({ layout }: { layout: CoverLetterLayout }) {
   switch (layout) {
+    case "centered-header":
+      return <CenteredHeaderLayout />;
+    case "split-header":
+      return <SplitHeaderLayout />;
+    case "minimal":
+      return <MinimalLayout />;
+    case "executive":
+      return <ExecutiveLayout />;
+    case "right-header":
+      return <RightHeaderLayout />;
+    case "boxed-header":
+      return <BoxedHeaderLayout />;
+    case "accent-bar":
+      return <AccentBarLayout />;
+    case "two-column-minimal":
+      return <TwoColumnMinimalLayout />;
+    case "corporate-panel":
+      return <CorporatePanelLayout />;
+    case "modern-sidebar":
+      return <ModernSidebarLayout />;
+    case "federal-clean":
+      return <FederalCleanLayout />;
+    case "bold-topline":
+      return <BoldToplineLayout />;
+    case "letterhead":
+      return <LetterheadLayout />;
+    case "simple-professional":
+      return <SimpleProfessionalLayout />;
     case "classic-left":
     default:
       return <ClassicLeftLayout />;
