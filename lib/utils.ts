@@ -14,25 +14,34 @@ export function mapToCoverLetterValues(
   return {
     id: data.id,
     template: data.template ?? "",
-    userPhoto: data.userPhotoUrl ?? "",
+    userPhoto: data.userPhotoUrl ?? undefined,
+    userPhotoUrl: data.userPhotoUrl ?? undefined,
     shareToken: data.shareToken ?? "",
-    showPhoto: data.showPhoto ?? false,
+    showPhoto: data.showPhoto ?? true,
+
     firstName: data.firstName ?? "",
     lastName: data.lastName ?? "",
     jobTitle: data.jobTitle ?? "",
     userAddress: data.userAddress ?? "",
     website: data.website ?? "",
-    body: data.body ?? "",
     userPhone: data.userPhone ?? "",
     userEmail: data.userEmail ?? "",
+    linkedin: data.linkedin ?? "",
+    gitHub: data.gitHub ?? "",
+
     companyAddress: data.companyAddress ?? "",
     companyName: data.companyName ?? "",
     recipientName: data.recipientName ?? "",
-    linkedin: data.linkedin ?? "",
-    gitHub: data.gitHub ?? "",
-    signatureUrl: data.signatureUrl ?? "",
-    borderStyle: data.borderStyle ?? "",
-    themeColor: data.themeColor ?? "",
+    companyEmail: data.companyEmail ?? "",
+    companyPhone: data.companyPhone ?? "",
+
+    body: data.body ?? "",
+    signatureUrl: data.signatureUrl ?? undefined,
+    signatureColor: data.signatureColor ?? "#000000",
+
+    borderStyle: data.borderStyle ?? "rounded",
+    themeColor: data.themeColor ?? "#dc2626",
+    themeId: data.themeId ?? "classic-left",
   };
 }
 export function mapToUserInfoValues(data: any): UserInfoValues {

@@ -57,13 +57,13 @@ export default function CoverLetterCard({ coverLetter }: { coverLetter: any }) {
       {/* Actions */}
       <div className="mt-5 flex gap-2">
         <Link
-          href={`/coverletter/${coverLetter.id}/edit`}
+          href={`/coverletterbuilder/editor?coverLetterId=${coverLetter.id}`}
           className="flex-1 bg-black px-4 py-3 text-center text-xs font-black uppercase tracking-[0.16em] text-white transition hover:bg-red-600">
           Edit
         </Link>
 
         <Link
-          href={`/coverletter/${coverLetter.id}`}
+          href={`/coverletter/preview/${coverLetter.id}`}
           className="border border-slate-200 px-4 py-3 text-center text-xs font-black uppercase tracking-[0.16em] text-slate-500 transition hover:border-red-600 hover:text-red-600">
           View
         </Link>
