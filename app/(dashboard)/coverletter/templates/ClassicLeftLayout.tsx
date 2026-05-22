@@ -17,11 +17,11 @@ export function ClassicLeftLayout() {
         className="flex items-start justify-between gap-8 border-b-2 pb-5"
         style={{ borderColor: primaryColor }}>
         <div className="flex items-center gap-6">
-          <Photo />
           <NameTitle />
         </div>
 
         <Contact align="right" />
+        <Photo />
       </header>
 
       <Recipient />

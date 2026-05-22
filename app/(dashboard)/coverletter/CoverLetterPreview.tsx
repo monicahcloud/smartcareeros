@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { CoverLetterData } from "./type";
 
@@ -99,24 +99,14 @@ export default function CoverLetterPreview({
     );
   }, [coverLetterData.themeId]);
 
-  const [photoSrc, setPhotoSrc] = useState<string | null>(null);
-
-  useEffect(() => {
+  const photoSrc = useMemo(() => {
     const photo = coverLetterData.userPhoto || coverLetterData.userPhotoUrl;
 
-    if (!photo) {
-      setPhotoSrc(null);
-      return;
-    }
+    if (!photo) return null;
 
-    if (photo instanceof File) {
-      const objectUrl = URL.createObjectURL(photo);
-      setPhotoSrc(objectUrl);
+    if (typeof photo === "string") return photo;
 
-      return () => URL.revokeObjectURL(objectUrl);
-    }
-
-    setPhotoSrc(photo);
+    return URL.createObjectURL(photo);
   }, [coverLetterData.userPhoto, coverLetterData.userPhotoUrl]);
 
   const primaryColor = coverLetterData.themeColor || theme.defaultColor;

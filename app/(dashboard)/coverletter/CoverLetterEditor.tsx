@@ -1,8 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Sparkles } from "lucide-react";
 import { CoverLetter, Resume } from "@prisma/client";
 import { CoverLetterValues } from "@/lib/validation";
 import CoverLetterPreview from "@/app/(dashboard)/coverletter/CoverLetterPreview";
@@ -18,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import useAutoSaveCoverLetter from "./useAutoSaveCoverLetter";
 
 interface CoverLetterEditorProps {
   userId: string;
@@ -71,15 +71,19 @@ export default function CoverLetterEditor({
 
     signatureColor: coverLetterToEdit?.signatureColor || "#000000",
 
+    userPhotoUrl: coverLetterToEdit?.userPhotoUrl || undefined,
+
+    userPhoto: undefined,
     themeId: coverLetterToEdit?.themeId || initialThemeId,
 
     themeColor: coverLetterToEdit?.themeColor || "#dc2626",
 
     borderStyle: coverLetterToEdit?.borderStyle || "rounded",
 
-    showPhoto: coverLetterToEdit?.showPhoto ?? false,
+    showPhoto: coverLetterToEdit?.showPhoto ?? true,
   });
-
+  const { isSaving, hasUnsavedChanges, isError } =
+    useAutoSaveCoverLetter(coverLetterData);
   const currentStep = searchParams.get("step") || allSteps[0].key;
 
   const currentStepData = allSteps.find((step) => step.key === currentStep);
@@ -189,7 +193,7 @@ export default function CoverLetterEditor({
             !showMobilePreview && "hidden md:block",
           )}>
           <div className="flex min-h-full items-start justify-center overflow-auto p-4 lg:p-8">
-            <div className="origin-top scale-[0.48] sm:scale-[0.55] lg:scale-[0.62] xl:scale-[0.7]">
+            <div className="origin-top scale-[0.5] lg:scale-[0.58] xl:scale-[0.65] 2xl:scale-[0.72]">
               <CoverLetterPreview coverLetterData={coverLetterData} />
             </div>
           </div>
@@ -202,6 +206,9 @@ export default function CoverLetterEditor({
         setCurrentStep={handleStepChange}
         showMobilePreview={showMobilePreview}
         setShowMobilePreview={setShowMobilePreview}
+        isSaving={isSaving}
+        hasUnsavedChanges={hasUnsavedChanges}
+        isError={isError}
       />
     </div>
   );

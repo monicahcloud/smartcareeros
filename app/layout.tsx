@@ -3,12 +3,59 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
+import {
+  Caveat,
+  Dancing_Script,
+  Great_Vibes,
+  Pacifico,
+  Allura,
+  Sacramento,
+  Alex_Brush,
+} from "next/font/google";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 });
+const caveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-caveat",
+});
 
+const dancingScript = Dancing_Script({
+  subsets: ["latin"],
+  variable: "--font-dancing-script",
+});
+
+const greatVibes = Great_Vibes({
+  subsets: ["latin"],
+  variable: "--font-great-vibes",
+  weight: "400",
+});
+
+const pacifico = Pacifico({
+  subsets: ["latin"],
+  variable: "--font-pacifico",
+  weight: "400",
+});
+
+const allura = Allura({
+  subsets: ["latin"],
+  variable: "--font-allura",
+  weight: "400",
+});
+
+const sacramento = Sacramento({
+  subsets: ["latin"],
+  variable: "--font-sacramento",
+  weight: "400",
+});
+
+const alexBrush = Alex_Brush({
+  subsets: ["latin"],
+  variable: "--font-alex-brush",
+  weight: "400",
+});
 export const metadata: Metadata = {
   title: {
     default: "Smart CareerOS | AI Resume Builder & Job Search Platform",
@@ -83,10 +130,18 @@ export default function RootLayout({
       <html
         lang="en"
         suppressHydrationWarning
-        className={`${inter.variable} ${inter.variable} h-full antialiased`}>
+        className={`${inter.variable} ${inter.variable}  ${inter.variable}
+    ${caveat.variable}
+    ${dancingScript.variable}
+    ${greatVibes.variable}
+    ${pacifico.variable}
+    ${allura.variable}
+    ${sacramento.variable}
+    ${alexBrush.variable}
+    h-full antialiased`}>
         <body className="min-h-full flex flex-col bg-white text-black">
           {children}
-          <Toaster />
+          <Toaster richColors closeButton />
         </body>
       </html>
     </ClerkProvider>

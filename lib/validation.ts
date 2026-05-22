@@ -217,16 +217,20 @@ export const feedbackSchema = z.object({
 
 export const userInfoSchema = z.object({
   userPhoto: z
-    .custom<File | undefined>()
+    .custom<File | string | null | undefined>()
     .refine(
       (file) =>
-        !file || (file instanceof File && file.type.startsWith("image/")),
+        !file ||
+        typeof file === "string" ||
+        (file instanceof File && file.type.startsWith("image/")),
       "Must be an image file",
     )
     .refine(
-      (file) => !file || file.size <= 1024 * 1024 * 4,
+      (file) =>
+        !file || typeof file === "string" || file.size <= 1024 * 1024 * 4,
       "File must be less than 4MB",
-    ),
+    )
+    .optional(),
   firstName: optionalString,
   lastName: optionalString,
   userName: optionalString,
@@ -255,7 +259,7 @@ export const letterBodySchema = z.object({
 export type LetterBodyValues = z.infer<typeof letterBodySchema>;
 
 export const signatureSchema = z.object({
-  signatureUrl: z.string().optional(),
+  signatureUrl: z.string().nullable().optional(),
   signatureColor: z.string().optional(),
 });
 export type SignatureValues = z.infer<typeof signatureSchema>;
@@ -270,7 +274,7 @@ export const coverLetterSchema = z.object({
   showPhoto: z.boolean().default(true),
   template: optionalString,
   themeId: optionalString,
-  userPhotoUrl: z.string().url().optional(),
+  userPhotoUrl: z.string().url().nullable().optional(),
 });
 
 export type CoverLetterValues = Omit<

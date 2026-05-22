@@ -5,8 +5,10 @@ import { auth } from "@clerk/nextjs/server";
 // import { canUseAITools } from "@/lib/permissions";
 // import { getUserSubscriptionLevel } from "@/lib/subscription";
 import prisma from "@/lib/prisma";
-// import { del } from "@vercel/blob";
-// import { revalidatePath } from "next/cache";
+import { del } from "@vercel/blob";
+import { revalidatePath } from "next/cache";
+import { coverLetterSchema, CoverLetterValues } from "@/lib/validation";
+import { put } from "@vercel/blob";
 
 export async function generateCoverLetter({
   jobTitle,
@@ -60,35 +62,35 @@ Return exactly three well-structured paragraphs, separated by two line breaks (\
   return aiResponse.trim();
 }
 
-// export async function deleteCoverLetter(id: string) {
-//   const { userId } = await auth();
-//   if (!userId) {
-//     throw new Error("User not authenticated");
-//   }
+export async function deleteCoverLetter(id: string) {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
 
-//   const coverLetter = await prisma.coverLetter.findUnique({
-//     where: {
-//       id,
-//       userId,
-//     },
-//   });
+  const coverLetter = await prisma.coverLetter.findUnique({
+    where: {
+      id,
+      userId,
+    },
+  });
 
-//   if (!coverLetter) {
-//     throw new Error("CoverLetter not found");
-//   }
+  if (!coverLetter) {
+    throw new Error("CoverLetter not found");
+  }
 
-//   if (coverLetter.userPhotoUrl) {
-//     await del(coverLetter.userPhotoUrl);
-//   }
+  if (coverLetter.userPhotoUrl) {
+    await del(coverLetter.userPhotoUrl);
+  }
 
-//   await prisma.coverLetter.delete({
-//     where: {
-//       id,
-//     },
-//   });
+  await prisma.coverLetter.delete({
+    where: {
+      id,
+    },
+  });
 
-//   revalidatePath("/coverletter");
-// }
+  revalidatePath("/coverletter");
+}
 
 export async function getcoverLetterById(id: string) {
   try {
@@ -101,4 +103,92 @@ export async function getcoverLetterById(id: string) {
     console.error("Error fetching coverLetter:", error);
     return null;
   }
+}
+
+export async function saveCoverLetter(values: CoverLetterValues) {
+  const { id } = values;
+
+  const cleanValues = {
+    ...values,
+    userPhotoUrl: values.userPhotoUrl || undefined,
+    signatureUrl: values.signatureUrl || undefined,
+  };
+
+  const { userPhoto, ...coverLetterValues } =
+    coverLetterSchema.parse(cleanValues);
+
+  const { userId: clerkId } = await auth();
+
+  if (!clerkId) {
+    throw new Error("User not authenticated");
+  }
+
+  const dbUser = await prisma.user.findUnique({
+    where: { clerkId },
+    select: { id: true, clerkId: true },
+  });
+
+  if (!dbUser) {
+    throw new Error("User not found");
+  }
+
+  const existingCoverLetter = id
+    ? await prisma.coverLetter.findFirst({
+        where: {
+          id,
+          userId: dbUser.id,
+          clerkId,
+        },
+      })
+    : null;
+
+  if (id && !existingCoverLetter) {
+    throw new Error("Cover letter not found");
+  }
+
+  let userPhotoUrl: string | null | undefined =
+    values.userPhotoUrl ?? undefined;
+
+  if (userPhoto instanceof File && process.env.BLOB_READ_WRITE_TOKEN) {
+    if (existingCoverLetter?.userPhotoUrl) {
+      await del(existingCoverLetter.userPhotoUrl);
+    }
+
+    const blob = await put(
+      `cover-letter-photos/${crypto.randomUUID()}-${userPhoto.name}`,
+      userPhoto,
+      {
+        access: "private",
+      },
+    );
+
+    userPhotoUrl = blob.url;
+  }
+
+  if (id) {
+    const updated = await prisma.coverLetter.update({
+      where: { id },
+      data: {
+        ...coverLetterValues,
+        clerkId,
+        userPhotoUrl,
+        updatedAt: new Date(),
+      },
+    });
+
+    revalidatePath("/coverletter");
+    return updated;
+  }
+
+  const created = await prisma.coverLetter.create({
+    data: {
+      ...coverLetterValues,
+      userId: dbUser.id,
+      clerkId,
+      userPhotoUrl,
+    },
+  });
+
+  revalidatePath("/coverletter");
+  return created;
 }

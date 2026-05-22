@@ -1,5 +1,3 @@
-// components/cover-letter/preview-blocks/SignatureBlock.tsx
-
 import Image from "next/image";
 import { useCoverLetterPreview } from "../CoverLetterPreviewContext";
 
@@ -14,15 +12,18 @@ export function Signature() {
         <Image
           src={data.signatureUrl}
           alt="Signature"
-          width={160}
-          height={64}
+          width={180}
+          height={72}
           className="h-16 w-auto object-contain"
           unoptimized
         />
       ) : (
         <p
-          className="font-serif text-2xl italic"
-          style={{ color: data.signatureColor || primaryColor }}>
+          className="text-3xl"
+          style={{
+            fontFamily: `"Dancing Script", cursive`,
+            color: data.signatureColor || primaryColor,
+          }}>
           {fullName}
         </p>
       )}
