@@ -2,7 +2,7 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Sparkles, FileText, BriefcaseBusiness, PenSquare } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { COVER_LETTER_THEME_REGISTRY } from "../templates/templateRegistry";
 import CoverLetterTemplateCard from "../CoverLetterTemplateCard";
 
