@@ -39,7 +39,7 @@ export default function NotFoundPage() {
       <p className="mb-6 text-sm text-muted-foreground">
         Try refreshing the page or{" "}
         <a
-          href="mailto:support@careeros.app"
+          href="mailto:monicahcloud@vitanovadesigns.cloud"
           className="font-bold text-red-600 underline hover:text-black">
           contact support
         </a>{" "}

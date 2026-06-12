@@ -130,7 +130,7 @@ export default function RootLayout({
       <html
         lang="en"
         suppressHydrationWarning
-        className={`${inter.variable} ${inter.variable}  ${inter.variable}
+        className={`${inter.variable} 
     ${caveat.variable}
     ${dancingScript.variable}
     ${greatVibes.variable}

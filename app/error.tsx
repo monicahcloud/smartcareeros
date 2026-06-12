@@ -43,7 +43,7 @@ export default function ErrorPage({
         <Button onClick={() => window.location.reload()}>Refresh Page</Button>
 
         <Button variant="secondary" asChild>
-          <Link href="/home">Go Back</Link>
+          <Link href="/dashboard">Go Back</Link>
         </Button>
       </div>
     </div>
