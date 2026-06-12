@@ -1,8 +1,31 @@
+"use client";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
+
 import CoverLetterPreview from "./CoverLetterPreview";
+import { deleteCoverLetter } from "./preview/[id]/action";
 
 export default function CoverLetterCard({ coverLetter }: { coverLetter: any }) {
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    const confirmed = window.confirm("Delete this cover letter?");
+    if (!confirmed) return;
+
+    try {
+      await deleteCoverLetter(coverLetter.id);
+      toast.success("Cover letter deleted");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Could not delete cover letter");
+    }
+  };
+
   const previewData = {
     id: coverLetter.id,
     firstName: coverLetter.firstName,
@@ -30,9 +53,16 @@ export default function CoverLetterCard({ coverLetter }: { coverLetter: any }) {
 
   return (
     <article className="group relative border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-red-200 hover:shadow-xl">
-      {/* Preview */}
+      <button
+        type="button"
+        onClick={handleDelete}
+        aria-label="Delete cover letter"
+        className="absolute right-3 top-3 z-40 flex size-9 items-center justify-center rounded-full bg-white/95 text-slate-400 shadow-sm transition hover:bg-red-600 hover:text-white">
+        <Trash2 className="size-4" />
+      </button>
+
       <div className="relative mb-5 aspect-[210/297] overflow-hidden border border-slate-100 bg-slate-50">
-        <div className="absolute right-3 top-3 z-20 bg-white/90 px-3 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-red-600 shadow-sm backdrop-blur">
+        <div className="absolute left-3 top-3 z-20 bg-white/90 px-3 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-red-600 shadow-sm backdrop-blur">
           {coverLetter.themeId || "Standard"}
         </div>
 
@@ -43,7 +73,6 @@ export default function CoverLetterCard({ coverLetter }: { coverLetter: any }) {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/70" />
       </div>
 
-      {/* Info */}
       <div>
         <h3 className="truncate text-lg font-black uppercase tracking-tight text-black">
           {coverLetter.companyName || coverLetter.jobTitle || "Untitled Letter"}
@@ -54,7 +83,6 @@ export default function CoverLetterCard({ coverLetter }: { coverLetter: any }) {
         </p>
       </div>
 
-      {/* Actions */}
       <div className="mt-5 flex gap-2">
         <Link
           href={`/coverletterbuilder/editor?coverLetterId=${coverLetter.id}`}
@@ -70,7 +98,7 @@ export default function CoverLetterCard({ coverLetter }: { coverLetter: any }) {
 
         {coverLetter.shareToken && (
           <Link
-            href={`/share/coverletter/${coverLetter.shareToken}`}
+            href={`/coverletter/share/${coverLetter.shareToken}`}
             className="border border-slate-200 px-4 py-3 text-center text-xs font-black uppercase tracking-[0.16em] text-slate-500 transition hover:border-red-600 hover:text-red-600">
             Share
           </Link>

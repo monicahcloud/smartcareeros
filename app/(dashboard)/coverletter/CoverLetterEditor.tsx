@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CoverLetter, Resume } from "@prisma/client";
+import { CoverLetter, Resume, JobDescription } from "@prisma/client";
 import { CoverLetterValues } from "@/lib/validation";
 import CoverLetterPreview from "@/app/(dashboard)/coverletter/CoverLetterPreview";
 import { cn } from "@/lib/utils";
@@ -25,12 +25,14 @@ interface CoverLetterEditorProps {
   initialThemeId: string;
   coverLetterToEdit: CoverLetter | null;
   resumes: Partial<Resume>[];
+  jobDescription?: JobDescription | null;
 }
 
 export default function CoverLetterEditor({
   initialThemeId,
   coverLetterToEdit,
   resumes,
+  jobDescription,
 }: CoverLetterEditorProps) {
   const searchParams = useSearchParams();
 
@@ -39,7 +41,10 @@ export default function CoverLetterEditor({
   const [coverLetterData, setCoverLetterData] = useState<CoverLetterValues>({
     id: coverLetterToEdit?.id,
 
-    companyName: coverLetterToEdit?.companyName || "",
+    companyName:
+      coverLetterToEdit?.companyName || jobDescription?.company || "",
+
+    jobTitle: coverLetterToEdit?.jobTitle || jobDescription?.title || "",
 
     firstName: coverLetterToEdit?.firstName || "",
 
@@ -50,8 +55,6 @@ export default function CoverLetterEditor({
     userPhone: coverLetterToEdit?.userPhone || "",
 
     userAddress: coverLetterToEdit?.userAddress || "",
-
-    jobTitle: coverLetterToEdit?.jobTitle || "",
 
     recipientName: coverLetterToEdit?.recipientName || "",
 
@@ -89,7 +92,7 @@ export default function CoverLetterEditor({
   const currentStepData = allSteps.find((step) => step.key === currentStep);
 
   const CurrentStepComponent = currentStepData?.component;
-
+  console.log("JOB DESCRIPTION IN EDITOR:", jobDescription);
   // const activeTheme = useMemo(() => {
   //   return (
   //     COVER_LETTER_THEME_REGISTRY.find(
@@ -181,6 +184,7 @@ export default function CoverLetterEditor({
                 coverLetterData={coverLetterData}
                 setCoverLetterData={setCoverLetterData}
                 resumes={resumes}
+                jobDescription={jobDescription}
               />
             )}
           </div>

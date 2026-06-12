@@ -20,7 +20,12 @@ import CoverLetterPreview from "@/app/(dashboard)/coverletter/CoverLetterPreview
 import { mapToCoverLetterValues } from "@/lib/utils";
 import { COVER_LETTER_THEME_REGISTRY } from "@/app/(dashboard)/coverletter/templates/templateRegistry";
 import type { CoverLetter } from "@prisma/client";
-import { deleteCoverLetter, updateCoverLetterBranding } from "./[id]/action";
+import {
+  createCoverLetterShareLink,
+  deleteCoverLetter,
+  updateCoverLetterBranding,
+} from "./[id]/action";
+import { generateCoverLetterPdf } from "./[id]/pdf-actions";
 
 export default function CoverLetterPreviewView({
   coverLetter,
@@ -30,12 +35,44 @@ export default function CoverLetterPreviewView({
   const router = useRouter();
   const [data, setData] = useState(coverLetter);
 
-  const handlePrint = () => window.print();
+  const handleDownload = async () => {
+    try {
+      const base64 = await generateCoverLetterPdf(data.id);
 
+      const link = document.createElement("a");
+
+      link.href = `data:application/pdf;base64,${base64}`;
+
+      link.download = `${data.firstName || "cover-letter"}.pdf`;
+
+      link.click();
+
+      toast.success("PDF downloaded");
+    } catch (error) {
+      console.error(error);
+      toast.error("Could not generate PDF");
+    }
+  };
   const handleShareClick = async () => {
-    const shareUrl = `${window.location.origin}/coverletter/preview/${data.id}`;
-    await navigator.clipboard.writeText(shareUrl);
-    toast.success("Preview link copied");
+    try {
+      const shareToken = await createCoverLetterShareLink(data.id);
+
+      setData((prev) => ({
+        ...prev,
+        shareToken,
+      }));
+
+      const shareUrl = `${window.location.origin}/coverletter/share/${shareToken}`;
+
+      await navigator.clipboard.writeText(shareUrl);
+
+      toast.success("Share link copied", {
+        description: "Anyone with this link can view this cover letter.",
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Could not create share link");
+    }
   };
 
   const handleDelete = async () => {
@@ -90,14 +127,14 @@ export default function CoverLetterPreviewView({
               Share
             </Button>
 
-            <Button variant="outline" size="sm" onClick={handlePrint}>
+            <Button variant="outline" size="sm" onClick={handleDownload}>
               <Printer className="mr-2 size-4" />
               Print
             </Button>
 
             <Button
               size="sm"
-              onClick={handlePrint}
+              onClick={handleDownload}
               className="bg-red-600 hover:bg-black">
               <Download className="mr-2 size-4" />
               Download

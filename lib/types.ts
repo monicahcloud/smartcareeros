@@ -1,6 +1,6 @@
 import { Ref } from "react";
 import { CoverLetterValues, ResumeValues } from "./validation";
-import { Prisma } from "@prisma/client";
+import { JobDescription, Prisma, Resume } from "@prisma/client";
 import { UseFormReturn } from "react-hook-form";
 
 export interface EditorFormProps {
@@ -19,11 +19,13 @@ export type ResumeServerData = Prisma.ResumeGetPayload<{
 }>;
 
 export interface CoverLetterFormProps {
-  form: UseFormReturn<CoverLetterValues>;
+  form?: UseFormReturn<CoverLetterValues>;
   coverLetterData: CoverLetterValues;
   setCoverLetterData: React.Dispatch<React.SetStateAction<CoverLetterValues>>;
   contentRef?: Ref<HTMLDivElement>;
   className?: string;
+  resumes?: Partial<Resume>[];
+  jobDescription?: JobDescription | null;
 }
 
 export const coverLetterInclude = {} satisfies Prisma.CoverLetterInclude;

@@ -1,84 +1,127 @@
-import { useEffect, useState } from "react";
-import { CoverLetterValues } from "@/lib/validation";
-import { toast } from "sonner";
-import { fileReplacer } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+
+import { CoverLetterValues } from "@/lib/validation";
+import { fileReplacer } from "@/lib/utils";
 import useDebounce from "@/app/hooks/useDebounce";
 import { saveCoverLetter } from "../coverletterbuilder/editor/actions";
 
+function normalizeForSave(data: CoverLetterValues) {
+  return {
+    ...data,
+    body: data.body ?? "",
+    signatureUrl: data.signatureUrl || undefined,
+    userPhotoUrl: data.userPhotoUrl || undefined,
+    userPhoto:
+      data.userPhoto instanceof File
+        ? `${data.userPhoto.name}-${data.userPhoto.size}-${data.userPhoto.type}`
+        : data.userPhoto || undefined,
+  };
+}
+
+function snapshot(data: CoverLetterValues) {
+  return JSON.stringify(normalizeForSave(data), fileReplacer);
+}
+
 export default function useAutoSaveCoverLetter(
-  coverletterData: CoverLetterValues,
+  coverLetterData: CoverLetterValues,
 ) {
   const searchParams = useSearchParams();
-  const [coverletterId, setCoverletterId] = useState(coverletterData.id);
-  const debounced = useDebounce(coverletterData, 1500);
-  const [lastSaved, setLastSaved] = useState(structuredClone(coverletterData));
+  const debounced = useDebounce(coverLetterData, 1500);
 
-  const [isSaving, setIsSaving] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const coverLetterIdRef = useRef(coverLetterData.id);
+  const [lastSavedSnapshot, setLastSavedSnapshot] = useState(
+    snapshot(coverLetterData),
+  );
+  const isSavingRef = useRef(false);
+  const pendingSaveRef = useRef(false);
+
+  const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
 
   useEffect(() => {
-    setIsError(false);
-  }, [debounced]);
+    const currentSnapshot = snapshot(debounced);
+    console.log("CURRENT", currentSnapshot);
+    console.log("LAST", lastSavedSnapshot);
+    console.log("EQUAL?", currentSnapshot === lastSavedSnapshot);
 
-  useEffect(() => {
+    if (currentSnapshot === lastSavedSnapshot) return;
+
+    if (isSavingRef.current) {
+      pendingSaveRef.current = true;
+      return;
+    }
+
     async function save() {
+      isSavingRef.current = true;
+      pendingSaveRef.current = false;
+      setStatus("saving");
+
       try {
-        setIsSaving(true);
-        setIsError(false);
-        const newData = structuredClone(debounced);
+        const dataToSave = normalizeForSave(debounced);
 
-        const updateCoverLetter = await saveCoverLetter({
-          ...newData,
-          ...(JSON.stringify(lastSaved.userPhoto, fileReplacer) ===
-            JSON.stringify(newData.userPhoto, fileReplacer) && {
-            userPhoto: undefined,
-          }),
-          id: coverletterId,
+        const saved = await saveCoverLetter({
+          ...dataToSave,
+          id: coverLetterIdRef.current,
+          userPhoto:
+            dataToSave.userPhoto === normalizeForSave(coverLetterData).userPhoto
+              ? undefined
+              : dataToSave.userPhoto,
         });
-        setCoverletterId(updateCoverLetter.id);
-        setLastSaved(newData);
 
-        if (searchParams.get("coverLetterId") !== updateCoverLetter.id) {
-          const newSearchParams = new URLSearchParams(searchParams);
-          newSearchParams.set("coverLetterId", updateCoverLetter.id);
+        coverLetterIdRef.current = saved.id;
+
+        // const savedState = {
+        //   ...debounced,
+        //   id: saved.id,
+        //   userPhoto: undefined,
+        //   userPhotoUrl: saved.userPhotoUrl || debounced.userPhotoUrl,
+        //   signatureUrl: saved.signatureUrl || debounced.signatureUrl,
+        // };
+
+        // setLastSavedSnapshot(snapshot(savedState));
+        setLastSavedSnapshot(currentSnapshot);
+
+        if (searchParams.get("coverLetterId") !== saved.id) {
+          const newSearchParams = new URLSearchParams(searchParams.toString());
+          newSearchParams.set("coverLetterId", saved.id);
+
           window.history.replaceState(
             null,
             "",
             `?${newSearchParams.toString()}`,
           );
         }
-      } catch {
-        setIsError(true);
 
-        toast.error("Could not save changes", {
-          description: () => (
-            <div className="space-y-3">
-              <p>We couldn&apos;t save your changes. Please try again.</p>
-              <Button variant="secondary" onClick={() => save()}>
-                Retry
-              </Button>
-            </div>
-          ),
-        });
+        setStatus("idle");
+      } catch (error) {
+        console.error(error);
+        setStatus("error");
+
+        toast.error("Could not save changes");
       } finally {
-        setIsSaving(false);
+        isSavingRef.current = false;
+
+        if (pendingSaveRef.current) {
+          pendingSaveRef.current = false;
+        }
       }
     }
 
-    const hasUnsavedChanges =
-      JSON.stringify(debounced, fileReplacer) !==
-      JSON.stringify(lastSaved, fileReplacer);
+    save();
+    // }, [debounced, searchParams, coverLetterData, lastSavedSnapshot]);
+  }, [debounced, searchParams]);
 
-    if (hasUnsavedChanges && debounced && !isSaving && !isError) {
-      save();
-    }
-  }, [debounced, isSaving, lastSaved, isError, coverletterId, searchParams]);
+  const currentSnapshot = useMemo(
+    () => snapshot(coverLetterData),
+    [coverLetterData],
+  );
 
   return {
-    isSaving,
-    hasUnsavedChanges:
-      JSON.stringify(coverletterData) !== JSON.stringify(lastSaved),
+    isSaving: status === "saving",
+    isError: status === "error",
+    hasUnsavedChanges: currentSnapshot !== lastSavedSnapshot,
   };
 }

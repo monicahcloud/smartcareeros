@@ -1,6 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
-
 import prisma from "@/lib/prisma";
 import CoverLetterPreviewView from "../CoverLetterPreviewView";
 

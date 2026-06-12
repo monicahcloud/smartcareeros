@@ -21,6 +21,7 @@ type PageProps = {
   searchParams: Promise<{
     coverLetterId?: string;
     themeId?: string;
+    jobDescriptionId?: string;
   }>;
 };
 
@@ -34,9 +35,9 @@ export default async function CoverLetterEditorPage({
   }
 
   const params = await searchParams;
-  const { coverLetterId, themeId } = params;
+  const { coverLetterId, themeId, jobDescriptionId } = params;
 
-  const [coverLetterToEdit, resumes] = await Promise.all([
+  const [coverLetterToEdit, resumes, jobDescription] = await Promise.all([
     coverLetterId
       ? prisma.coverLetter.findFirst({
           where: {
@@ -61,7 +62,20 @@ export default async function CoverLetterEditorPage({
         updatedAt: "desc",
       },
     }),
+
+    jobDescriptionId
+      ? prisma.jobDescription.findFirst({
+          where: {
+            id: jobDescriptionId,
+            userId: dbUser.id,
+          },
+        })
+      : null,
   ]);
+
+  if (jobDescriptionId && !jobDescription) {
+    return notFound();
+  }
 
   if (coverLetterId && !coverLetterToEdit) {
     return notFound();
@@ -74,6 +88,7 @@ export default async function CoverLetterEditorPage({
       initialThemeId={themeId || "classic-left"}
       coverLetterToEdit={coverLetterToEdit}
       resumes={resumes}
+      jobDescription={jobDescription}
     />
   );
 }

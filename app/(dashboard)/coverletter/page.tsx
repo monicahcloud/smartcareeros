@@ -67,11 +67,11 @@ export default async function CoverLettersPage() {
               href="/coverletter/new"
               className="inline-flex h-12 items-center justify-center gap-2 bg-red-600 px-6 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-black">
               <Plus className="h-4 w-4" />
-              New Letter
+              New Cover Letter
             </Link>
 
             <Link
-              href="/jobdescriptions"
+              href="/jobdescriptions/new"
               className="inline-flex h-12 items-center justify-center border border-slate-200 bg-white px-6 text-sm font-black uppercase tracking-[0.16em] text-slate-700 transition hover:border-red-600 hover:text-red-600">
               Use Job Description
             </Link>

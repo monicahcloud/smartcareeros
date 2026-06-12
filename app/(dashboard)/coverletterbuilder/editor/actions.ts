@@ -12,14 +12,26 @@ import { put } from "@vercel/blob";
 
 export async function generateCoverLetter({
   jobTitle,
+  companyName,
+  applicantName,
+  professionalHeadline,
+  education,
   yearsExperience,
+  relevantExperience,
   achievements,
   tools,
+  jobDescription,
 }: {
   jobTitle: string;
+  companyName?: string;
+  applicantName?: string;
+  professionalHeadline?: string;
+  education?: string;
   yearsExperience?: string | number;
+  relevantExperience?: string;
   achievements?: string;
   tools?: string;
+  jobDescription?: string;
 }) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
@@ -29,22 +41,44 @@ export async function generateCoverLetter({
   //   throw new Error("Upgrade your subscription to use this feature");
   // }
 
-  const achievementsText =
-    achievements?.trim() && achievements.trim() !== "" ? `${achievements}` : "";
-  const toolsText = tools?.trim() && tools.trim() !== "" ? `${tools}` : "";
+  // const achievementsText =
+  //   achievements?.trim() && achievements.trim() !== "" ? `${achievements}` : "";
+  // const toolsText = tools?.trim() && tools.trim() !== "" ? `${tools}` : "";
 
-  const systemMessage = `You are a job cover letter AI assistant. Your task is to write a professional, natural-sounding cover letter body (not a template, no placeholders).`;
+  const systemMessage = `
+You are an expert cover letter writing assistant.
+You write only the body paragraphs of a professional cover letter.
+You do not write dates, recipient blocks, greetings, closings, signatures, or headings.
+`;
 
   const userMessage = `
-Write the body of a professional cover letter for the following job application details:
-- Job Title: ${jobTitle}
+Write the body only for a professional cover letter.
+
+Applicant Profile:
+- Applicant Name: ${applicantName || "Not specified"}
+- Professional Headline: ${professionalHeadline || "Not specified"}
+- Education: ${education || "Not specified"}
 - Years of Experience: ${yearsExperience || "Not specified"}
-${achievementsText ? `- Achievements: ${achievementsText}` : ""}
-${toolsText ? `- Tools/Technologies: ${toolsText}` : ""}
+- Relevant Experience: ${relevantExperience || "Not specified"}
+${achievements ? `- Achievements: ${achievements}` : ""}
+${tools ? `- Tools/Technologies: ${tools}` : ""}
 
-Do not use square brackets, placeholder text, or anything like [object Object]. Write as if you are the applicant describing your own genuine experience and skills. If information is missing, use general strengths and experience relevant to the role.
+Job Details:
+- Job Title: ${jobTitle || "Not specified"}
+${companyName ? `- Company: ${companyName}` : ""}
+${jobDescription ? `- Job Description: ${jobDescription}` : ""}
 
-Return exactly three well-structured paragraphs, separated by two line breaks (\\n\\n). Do not include any greeting, sign-off, or heading. Only return the letter body, ready to paste into a document.
+Rules:
+- Return only the body paragraphs.
+- Do not include a date.
+- Do not include "Hiring Manager".
+- Do not include "Dear Hiring Manager".
+- Do not include "Sincerely".
+- Do not include the applicant name at the end.
+- Do not include placeholders like [Date], [Company Address], [City, State, Zip Code].
+- Write 4 to 6 polished paragraphs.
+- Tailor the language to the job description when provided.
+- Use the applicant profile when provided.
 `;
 
   const completion = await openai.chat.completions.create({
@@ -176,7 +210,7 @@ export async function saveCoverLetter(values: CoverLetterValues) {
       },
     });
 
-    revalidatePath("/coverletter");
+    // revalidatePath("/coverletter");
     return updated;
   }
 
@@ -189,6 +223,6 @@ export async function saveCoverLetter(values: CoverLetterValues) {
     },
   });
 
-  revalidatePath("/coverletter");
+  // revalidatePath("/coverletter");
   return created;
 }
