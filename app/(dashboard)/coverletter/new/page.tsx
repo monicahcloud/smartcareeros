@@ -57,54 +57,6 @@ export default function NewCoverLetterPage() {
         </div>
       </section>
 
-      {/* FEATURE CARDS */}
-      <section className="grid gap-5 md:grid-cols-3">
-        <div className="border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="mb-4 inline-flex bg-red-50 p-3 text-red-600">
-            <FileText className="h-5 w-5" />
-          </div>
-
-          <h3 className="text-lg font-black uppercase tracking-tight text-black">
-            Professional Templates
-          </h3>
-
-          <p className="mt-3 text-sm leading-7 text-slate-500">
-            Choose from multiple modern, executive, minimalist, and federal
-            layout styles.
-          </p>
-        </div>
-
-        <div className="border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="mb-4 inline-flex bg-red-50 p-3 text-red-600">
-            <BriefcaseBusiness className="h-5 w-5" />
-          </div>
-
-          <h3 className="text-lg font-black uppercase tracking-tight text-black">
-            Job Description Matching
-          </h3>
-
-          <p className="mt-3 text-sm leading-7 text-slate-500">
-            Generate targeted cover letters later using uploaded job postings
-            and saved resume data.
-          </p>
-        </div>
-
-        <div className="border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="mb-4 inline-flex bg-red-50 p-3 text-red-600">
-            <PenSquare className="h-5 w-5" />
-          </div>
-
-          <h3 className="text-lg font-black uppercase tracking-tight text-black">
-            Fully Editable
-          </h3>
-
-          <p className="mt-3 text-sm leading-7 text-slate-500">
-            Change fonts, colors, spacing, sections, and content in real time
-            with live preview support.
-          </p>
-        </div>
-      </section>
-
       {/* TEMPLATE SECTION */}
       <section className="space-y-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Button } from "@/components/ui/button";
 import Underline from "@tiptap/extension-underline";
 import Heading from "@tiptap/extension-heading";
-import BulletList from "@tiptap/extension-bullet-list";
-import OrderedList from "@tiptap/extension-ordered-list";
+// import BulletList from "@tiptap/extension-bullet-list";
+// import OrderedList from "@tiptap/extension-ordered-list";
 import ListItem from "@tiptap/extension-list-item";
 import TextAlign from "@tiptap/extension-text-align";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -34,8 +34,8 @@ export default function RichTextEditor({
       }),
       Underline,
       Heading.configure({ levels: [1, 2, 3] }),
-      BulletList,
-      OrderedList,
+      // BulletList,
+      // OrderedList,
       ListItem,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       Placeholder.configure({ placeholder }),
@@ -101,7 +101,7 @@ export default function RichTextEditor({
             Underline
           </Button>
 
-          <Button
+          {/* <Button
             type="button"
             variant="outline"
             size="sm"
@@ -121,7 +121,7 @@ export default function RichTextEditor({
               editor.isActive("orderedList") ? "bg-black text-white" : ""
             }>
             Numbered
-          </Button>
+          </Button> */}
 
           <Button
             type="button"
