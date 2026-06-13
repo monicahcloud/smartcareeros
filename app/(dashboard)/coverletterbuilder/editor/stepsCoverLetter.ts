@@ -1,11 +1,11 @@
 // app/(dashboard)/coverletterbuilder/editor/stepsCoverLetter.ts
 
-import CoverLetterGeneralInfoForm from "./CoverLetterGeneralInfoForm";
-import CoverLetterPersonalInfoForm from "./CoverLetterPersonalInfoForm";
-import CoverLetterEmployerInfo from "./CoverLetterEmployerInfo";
-import CoverLetterBody from "./CoverLetterBody";
-import SignatureForm from "./SignatureForm";
+import CoverLetterGeneralInfoForm from "../../../components/coverletterbuilder/CoverLetterGeneralInfoForm";
+import CoverLetterPersonalInfoForm from "../../../components/coverletterbuilder/CoverLetterPersonalInfoForm";
+import CoverLetterEmployerInfo from "../../../components/coverletterbuilder/CoverLetterEmployerInfo";
+import CoverLetterBody from "../../../components/coverletterbuilder/CoverLetterBody";
 import { CoverLetterFormProps } from "@/lib/types";
+import SignatureForm from "@/app/components/coverletterbuilder/SignatureForm";
 
 export const allSteps: {
   key: string;

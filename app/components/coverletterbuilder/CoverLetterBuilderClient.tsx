@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import CoverLetterPreview from "../coverletter/CoverLetterPreview";
+import CoverLetterPreview from "../../components/coverletter/CoverLetterPreview";
 
 type CoverLetterBuilderClientProps = {
   userId: string;

@@ -1,7 +1,7 @@
 // components/cover-letter/preview-blocks/Contact.tsx
 
 import { cn } from "@/lib/utils";
-import { useCoverLetterPreview } from "../CoverLetterPreviewContext";
+import { useCoverLetterPreview } from "./CoverLetterPreviewContext";
 
 export function Contact({
   align = "left",

@@ -10,7 +10,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-import { allSteps } from "./stepsCoverLetter";
+import { allSteps } from "../../(dashboard)/coverletterbuilder/editor/stepsCoverLetter";
 
 interface BreadcrumbsProps {
   currentStep: string;

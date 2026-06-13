@@ -7,7 +7,7 @@ import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import CoverLetterPreview from "./CoverLetterPreview";
-import { deleteCoverLetter } from "./preview/[id]/action";
+import { deleteCoverLetter } from "../../(dashboard)/coverletter/preview/[id]/action";
 
 export default function CoverLetterCard({ coverLetter }: { coverLetter: any }) {
   const router = useRouter();

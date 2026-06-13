@@ -1,6 +1,6 @@
 // components/cover-letter/preview-blocks/RecipientBlock.tsx
 
-import { useCoverLetterPreview } from "../CoverLetterPreviewContext";
+import { useCoverLetterPreview } from "./CoverLetterPreviewContext";
 
 export function Recipient() {
   const { data, currentDate } = useCoverLetterPreview();

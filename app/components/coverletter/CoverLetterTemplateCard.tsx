@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import CoverLetterPreview from "./CoverLetterPreview";
-import { CoverLetterThemeToken } from "./templates/templateRegistry";
+import { CoverLetterThemeToken } from "../../(dashboard)/coverletter/templates/templateRegistry";
 import { Card, CardContent } from "@/components/ui/card";
 
 const MOCK_DATA = {

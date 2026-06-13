@@ -5,7 +5,7 @@ import { notFound, redirect } from "next/navigation";
 
 import prisma from "@/lib/prisma";
 import { getCurrentDbUser } from "@/lib/getCurrentUser";
-import CoverLetterEditor from "../../coverletter/CoverLetterEditor";
+import CoverLetterEditor from "../../../components/coverletter/CoverLetterEditor";
 
 export const metadata: Metadata = {
   title: "Cover Letter Editor | Smart CareerOS",

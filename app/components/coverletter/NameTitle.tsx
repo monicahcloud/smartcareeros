@@ -1,7 +1,7 @@
 // components/cover-letter/preview-blocks/NameTitle.tsx
 
 import { cn } from "@/lib/utils";
-import { useCoverLetterPreview } from "../CoverLetterPreviewContext";
+import { useCoverLetterPreview } from "./CoverLetterPreviewContext";
 
 export function NameTitle({
   align = "left",

@@ -1,5 +1,5 @@
-import CoverLetterTemplateCard from "./CoverLetterTemplateCard";
-import { COVER_LETTER_THEME_REGISTRY } from "./templates/templateRegistry";
+import { COVER_LETTER_THEME_REGISTRY } from "@/app/(dashboard)/coverletter/templates/templateRegistry";
+import CoverLetterTemplateCard from "../../components/coverletter/CoverLetterTemplateCard";
 
 export default function TemplateSelector() {
   return (

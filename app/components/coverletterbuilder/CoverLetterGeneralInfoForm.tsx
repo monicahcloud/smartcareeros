@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/form";
 
 import FormStepWrapper from "./FormStepWrapper";
-import { COVER_LETTER_THEME_REGISTRY } from "../../coverletter/templates/templateRegistry";
+import { COVER_LETTER_THEME_REGISTRY } from "../../(dashboard)/coverletter/templates/templateRegistry";
 
 export default function CoverLetterGeneralInfoForm({
   coverLetterData,

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { Footprints } from "lucide-react";
 
 export default async function DashboardJobStats() {
   const { userId: clerkId } = await auth();
@@ -56,9 +57,10 @@ export default async function DashboardJobStats() {
     <section className="border border-slate-200 bg-white p-6 shadow-sm">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-red-600">
-            Job Tracker Snapshot
-          </p>
+          <div className="mb-4 inline-flex items-center gap-2 border border-red-100 bg-red-50 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-red-600">
+            <Footprints className="h-4 w-4" />
+            Job Tracker
+          </div>
 
           <h2 className="mt-2 text-2xl font-black uppercase tracking-tight text-black">
             Your Application Pipeline

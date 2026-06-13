@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 
 import prisma from "@/lib/prisma";
 import { mapToCoverLetterValues } from "@/lib/utils";
-import CoverLetterPreview from "@/app/(dashboard)/coverletter/CoverLetterPreview";
+import CoverLetterPreview from "@/app/components/coverletter/CoverLetterPreview";
 import PrintButton from "@/app/components/PrintButton";
 
 interface PageProps {

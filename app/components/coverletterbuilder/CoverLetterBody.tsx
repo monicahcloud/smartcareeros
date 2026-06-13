@@ -19,9 +19,9 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import FormStepWrapper from "./FormStepWrapper";
-import RichTextEditor from "./RichTextEditor";
-import { generateCoverLetter } from "./actions";
+import FormStepWrapper from "../../(dashboard)/coverletterbuilder/editor/FormStepWrapper";
+import RichTextEditor from "../../(dashboard)/coverletterbuilder/editor/RichTextEditor";
+import { generateCoverLetter } from "../../(dashboard)/coverletterbuilder/editor/actions";
 
 function textToParagraphHtml(text: string) {
   return text

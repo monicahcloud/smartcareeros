@@ -1,12 +1,11 @@
 // components/cover-letter/layouts/ClassicLeftLayout.tsx
-
-import { useCoverLetterPreview } from "../CoverLetterPreviewContext";
-import { Body } from "../preview/Body";
-import { Contact } from "../preview/Contact";
-import { NameTitle } from "../preview/NameTitle";
-import { Photo } from "../preview/Photo";
-import { Recipient } from "../preview/Recipient";
-import { Signature } from "../preview/Signature";
+import { Body } from "@/app/components/coverletter/Body";
+import { Contact } from "@/app/components/coverletter/Contact";
+import { useCoverLetterPreview } from "@/app/components/coverletter/CoverLetterPreviewContext";
+import { NameTitle } from "@/app/components/coverletter/NameTitle";
+import { Photo } from "@/app/components/coverletter/Photo";
+import { Recipient } from "@/app/components/coverletter/Recipient";
+import { Signature } from "@/app/components/coverletter/Signature";
 
 export function ClassicLeftLayout() {
   const { primaryColor } = useCoverLetterPreview();

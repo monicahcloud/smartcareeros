@@ -13,8 +13,8 @@ import {
 
 import prisma from "@/lib/prisma";
 import { getCurrentDbUser } from "@/lib/getCurrentUser";
-import EmptyCoverLettersState from "./EmptyCoverLettersPage";
-import CoverLetterCard from "./CoverLetterCard";
+import EmptyCoverLettersState from "../../components/coverletter/EmptyCoverLettersPage";
+import CoverLetterCard from "../../components/coverletter/CoverLetterCard";
 
 export const metadata: Metadata = {
   title: "Cover Letters | Smart CareerOS",

@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import CoverLetterPreview from "@/app/(dashboard)/coverletter/CoverLetterPreview";
+import CoverLetterPreview from "@/app/components/coverletter/CoverLetterPreview";
 import { mapToCoverLetterValues } from "@/lib/utils";
 import { COVER_LETTER_THEME_REGISTRY } from "@/app/(dashboard)/coverletter/templates/templateRegistry";
 import type { CoverLetter } from "@prisma/client";

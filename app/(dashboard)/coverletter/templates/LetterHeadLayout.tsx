@@ -1,9 +1,9 @@
-import { Body } from "../preview/Body";
-import { Contact } from "../preview/Contact";
-import { NameTitle } from "../preview/NameTitle";
-import { Recipient } from "../preview/Recipient";
-import { Signature } from "../preview/Signature";
-import { useCoverLetterPreview } from "../CoverLetterPreviewContext";
+import { Body } from "@/app/components/coverletter/Body";
+import { Contact } from "@/app/components/coverletter/Contact";
+import { useCoverLetterPreview } from "@/app/components/coverletter/CoverLetterPreviewContext";
+import { NameTitle } from "@/app/components/coverletter/NameTitle";
+import { Recipient } from "@/app/components/coverletter/Recipient";
+import { Signature } from "@/app/components/coverletter/Signature";
 
 export function LetterheadLayout() {
   const { primaryColor } = useCoverLetterPreview();

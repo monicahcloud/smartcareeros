@@ -1,7 +1,8 @@
 // components/cover-letter/preview-blocks/PhotoBlock.tsx
 
 import Image from "next/image";
-import { useCoverLetterPreview } from "../CoverLetterPreviewContext";
+
+import { useCoverLetterPreview } from "./CoverLetterPreviewContext";
 
 export function Photo() {
   const { photoSrc, fullName, showPhoto } = useCoverLetterPreview();

@@ -3,7 +3,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import { CoverLetterPreviewContextValue } from "./type";
+import { CoverLetterPreviewContextValue } from "../../(dashboard)/coverletter/type";
 
 const CoverLetterPreviewContext =
   createContext<CoverLetterPreviewContextValue | null>(null);

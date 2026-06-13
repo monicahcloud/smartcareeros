@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
 import { COVER_LETTER_THEME_REGISTRY } from "../templates/templateRegistry";
-import CoverLetterTemplateCard from "../CoverLetterTemplateCard";
+import CoverLetterTemplateCard from "../../../components/coverletter/CoverLetterTemplateCard";
 
 export const metadata: Metadata = {
   title: "New Cover Letter | Smart CareerOS",

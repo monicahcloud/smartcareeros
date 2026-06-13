@@ -1,8 +1,8 @@
-import { Body } from "../preview/Body";;
-import { Recipient } from "../preview/Recipient";
-import { Signature } from "../preview/Signature";
-import { useCoverLetterPreview } from "../CoverLetterPreviewContext";
-import { Photo } from "../preview/Photo";
+import { Body } from "@/app/components/coverletter/Body";
+import { useCoverLetterPreview } from "@/app/components/coverletter/CoverLetterPreviewContext";
+import { Photo } from "@/app/components/coverletter/Photo";
+import { Recipient } from "@/app/components/coverletter/Recipient";
+import { Signature } from "@/app/components/coverletter/Signature";
 
 export function ModernSidebarLayout() {
   const { data, fullName, contactItems } = useCoverLetterPreview();
@@ -11,7 +11,7 @@ export function ModernSidebarLayout() {
     <div className="grid grid-cols-[230px_1fr] gap-8">
       <aside className="bg-slate-950 p-6 text-white">
         <div className="mb-6">
-          <Photo/>
+          <Photo />
         </div>
 
         <h1 className="text-3xl font-black uppercase leading-none">

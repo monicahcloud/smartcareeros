@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CoverLetterFormProps } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-import FormStepWrapper from "./FormStepWrapper";
+import FormStepWrapper from "../../../components/coverletterbuilder/FormStepWrapper";
 
 export default function SignatureForm({
   coverLetterData,

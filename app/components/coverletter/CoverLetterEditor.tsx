@@ -4,12 +4,12 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CoverLetter, Resume, JobDescription } from "@prisma/client";
 import { CoverLetterValues } from "@/lib/validation";
-import CoverLetterPreview from "@/app/(dashboard)/coverletter/CoverLetterPreview";
+import CoverLetterPreview from "@/app/components/coverletter/CoverLetterPreview";
 import { cn } from "@/lib/utils";
-import { allSteps } from "../coverletterbuilder/editor/stepsCoverLetter";
-import { COVER_LETTER_THEME_REGISTRY } from "./templates/templateRegistry";
-import BreadcrumbsCoverLetter from "../coverletterbuilder/editor/BreadCrumbsCoverLetter";
-import CoverLetterEditorFooter from "../coverletterbuilder/editor/CoverLetterEditorFooter";
+import { allSteps } from "../../(dashboard)/coverletterbuilder/editor/stepsCoverLetter";
+import { COVER_LETTER_THEME_REGISTRY } from "../../(dashboard)/coverletter/templates/templateRegistry";
+import BreadcrumbsCoverLetter from "../coverletterbuilder/BreadCrumbsCoverLetter";
+import CoverLetterEditorFooter from "../coverletterbuilder/CoverLetterEditorFooter";
 import {
   Select,
   SelectContent,
@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import useAutoSaveCoverLetter from "./useAutoSaveCoverLetter";
+import useAutoSaveCoverLetter from "../../(dashboard)/coverletter/useAutoSaveCoverLetter";
 
 interface CoverLetterEditorProps {
   userId: string;

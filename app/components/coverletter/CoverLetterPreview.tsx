@@ -4,28 +4,28 @@
 
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { CoverLetterData } from "./type";
+import { CoverLetterData } from "../../(dashboard)/coverletter/type";
 
 import { CoverLetterPreviewProvider } from "./CoverLetterPreviewContext";
 import {
   COVER_LETTER_THEME_REGISTRY,
   CoverLetterLayout,
-} from "./templates/templateRegistry";
-import { ClassicLeftLayout } from "./templates/ClassicLeftLayout";
-import { CenteredHeaderLayout } from "./templates/CenterHeaderLayout";
-import { SplitHeaderLayout } from "./templates/SplitHeaderLayout";
-import { MinimalLayout } from "./templates/MinimalLayout";
-import { ExecutiveLayout } from "./templates/ExecutiveLayout";
-import { RightHeaderLayout } from "./templates/RightHeaderLayout";
-import { BoxedHeaderLayout } from "./templates/BoxedHeaderLayout";
-import { TwoColumnMinimalLayout } from "./templates/TwoColumnMinimalLayout";
-import { CorporatePanelLayout } from "./templates/CorporatePanelLayout";
-import { ModernSidebarLayout } from "./templates/ModernSidebarLayout";
-import { FederalCleanLayout } from "./templates/FederalCleanLayout";
-import { BoldToplineLayout } from "./templates/BoldTopLineLayout";
-import { LetterheadLayout } from "./templates/LetterHeadLayout";
-import { SimpleProfessionalLayout } from "./templates/SimpleProfessionalLayout";
-import { AccentBarLayout } from "./templates/AccentBarLayout";
+} from "../../(dashboard)/coverletter/templates/templateRegistry";
+import { ClassicLeftLayout } from "../../(dashboard)/coverletter/templates/ClassicLeftLayout";
+import { CenteredHeaderLayout } from "../../(dashboard)/coverletter/templates/CenterHeaderLayout";
+import { SplitHeaderLayout } from "../../(dashboard)/coverletter/templates/SplitHeaderLayout";
+import { MinimalLayout } from "../../(dashboard)/coverletter/templates/MinimalLayout";
+import { ExecutiveLayout } from "../../(dashboard)/coverletter/templates/ExecutiveLayout";
+import { RightHeaderLayout } from "../../(dashboard)/coverletter/templates/RightHeaderLayout";
+import { BoxedHeaderLayout } from "../../(dashboard)/coverletter/templates/BoxedHeaderLayout";
+import { TwoColumnMinimalLayout } from "../../(dashboard)/coverletter/templates/TwoColumnMinimalLayout";
+import { CorporatePanelLayout } from "../../(dashboard)/coverletter/templates/CorporatePanelLayout";
+import { ModernSidebarLayout } from "../../(dashboard)/coverletter/templates/ModernSidebarLayout";
+import { FederalCleanLayout } from "../../(dashboard)/coverletter/templates/FederalCleanLayout";
+import { BoldToplineLayout } from "../../(dashboard)/coverletter/templates/BoldTopLineLayout";
+import { LetterheadLayout } from "../../(dashboard)/coverletter/templates/LetterHeadLayout";
+import { SimpleProfessionalLayout } from "../../(dashboard)/coverletter/templates/SimpleProfessionalLayout";
+import { AccentBarLayout } from "../../(dashboard)/coverletter/templates/AccentBarLayout";
 
 type CoverLetterPreviewProps = {
   coverLetterData: CoverLetterData;

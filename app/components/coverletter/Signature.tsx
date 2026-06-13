@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { useCoverLetterPreview } from "../CoverLetterPreviewContext";
+
+import { useCoverLetterPreview } from "./CoverLetterPreviewContext";
 
 export function Signature() {
   const { data, fullName, primaryColor } = useCoverLetterPreview();
