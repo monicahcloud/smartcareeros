@@ -2,7 +2,7 @@
 
 import { useUser } from "@clerk/nextjs";
 import CareerCommandCenter from "../../components/dashboard/CareerCommandCenter";
-import JobSearchWrapper from "@/app/components/jobsearch/JobSearchWrapper";
+import OpportunityFinderTeaser from "@/app/components/jobsearch/OpportunityFinderTeaser";
 
 const Home = () => {
   const { user } = useUser();
@@ -13,7 +13,7 @@ const Home = () => {
     <>
       {/* 1. Career Workspace Section */}
       <CareerCommandCenter />
-      <JobSearchWrapper />
+      <OpportunityFinderTeaser />
       <main className="p-4 md:p-8 max-w-400 mx-auto space-y-16">
         {/* 2. Job Search Section */}
         <section className="space-y-8">

@@ -116,3 +116,111 @@ export async function updateJobDetails(input: {
 
   revalidatePath("/jobtracker");
 }
+
+export async function saveAdzunaJobToTracker(input: {
+  position: string;
+  company: string;
+  location?: string;
+  salary?: string;
+  url?: string;
+}) {
+  const { userId: clerkId } = await auth();
+
+  if (!clerkId) {
+    throw new Error("Unauthorized");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { clerkId },
+    select: { id: true },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const existing = await prisma.job.findFirst({
+    where: {
+      userId: user.id,
+      position: input.position,
+      company: input.company,
+    },
+  });
+
+  if (existing) {
+    return existing;
+  }
+
+  return prisma.job.create({
+    data: {
+      userId: user.id,
+      clerkId,
+      position: input.position,
+      company: input.company,
+      location: input.location || null,
+      salary: input.salary || null,
+      url: input.url || null,
+      source: "Adzuna",
+      status: "SAVED",
+      requirements: [],
+      lastActivityAt: new Date(),
+    },
+  });
+}
+
+export async function startApplicationTracking(input: {
+  position: string;
+  company: string;
+  location?: string;
+  salary?: string;
+  url?: string;
+}) {
+  const { userId: clerkId } = await auth();
+
+  if (!clerkId) {
+    throw new Error("Unauthorized");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { clerkId },
+    select: { id: true },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const existing = await prisma.job.findFirst({
+    where: {
+      userId: user.id,
+      position: input.position,
+      company: input.company,
+    },
+  });
+
+  if (existing) {
+    return prisma.job.update({
+      where: { id: existing.id },
+      data: {
+        status: "APPLICATION_STARTED",
+        lastActivityAt: new Date(),
+      },
+    });
+  }
+
+  return prisma.job.create({
+    data: {
+      userId: user.id,
+      clerkId,
+      position: input.position,
+      company: input.company,
+      location: input.location || null,
+      salary: input.salary || null,
+      url: input.url || null,
+      source: "Adzuna",
+      status: "APPLICATION_STARTED",
+      requirements: [],
+      lastActivityAt: new Date(),
+    },
+  });
+}

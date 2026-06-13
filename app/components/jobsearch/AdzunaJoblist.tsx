@@ -1,7 +1,8 @@
 "use client";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, MapPin, Building2 } from "lucide-react";
+import { MapPin, Building2 } from "lucide-react";
+import SaveJobButton from "./SaveJobButton";
+import ApplyJobButton from "./ApplyJobButton";
 
 type Job = {
   title: string;
@@ -53,12 +54,21 @@ export default function AdzunaJobList({ jobs }: { jobs: Job[] }) {
               target="_blank"
               rel="noopener noreferrer"
               className="mt-6">
-              <Button
-                variant="outline"
-                className="w-full h-9 border-black text-black font-black text-[10px] uppercase tracking-widest hover:bg-black hover:text-white rounded-lg transition-all flex items-center gap-2">
-                View Opportunity
-                <ArrowRight className="w-3 h-3" />
-              </Button>
+              <div className="mt-6 flex gap-2">
+                <SaveJobButton
+                  position={job.title}
+                  company={job.company.display_name}
+                  location={job.location.display_name}
+                  url={job.redirect_url}
+                />
+
+                <ApplyJobButton
+                  position={job.title}
+                  company={job.company.display_name}
+                  location={job.location.display_name}
+                  url={job.redirect_url}
+                />
+              </div>
             </a>
           </Card>
         );
