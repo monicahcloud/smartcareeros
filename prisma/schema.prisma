@@ -392,10 +392,14 @@ model Job {
   company     String
   location    String?
   mode        Mode?
-  status      String
+  status JobStatus @default(SAVED)
   salary      String?
   postedAt    DateTime?
   dateApplied DateTime?
+  source String?
+followUpDate DateTime?
+notes String?
+lastActivityAt DateTime?
 
   description  String?
   requirements String[]
@@ -551,4 +555,16 @@ enum Mode {
   CONTRACT
   APPRENTICESHIP
   SEASONAL
+}
+enum JobStatus {
+  SAVED
+  APPLICATION_STARTED
+  APPLIED
+  INTERVIEW_SCHEDULED
+  INTERVIEW_COMPLETED
+  OFFER_RECEIVED
+  HIRED
+  REJECTED
+  WITHDRAWN
+  
 }
