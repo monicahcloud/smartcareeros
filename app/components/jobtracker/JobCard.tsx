@@ -1,10 +1,10 @@
 "use client";
 
-
 import { updateJobStatus } from "@/app/(dashboard)/jobtracker/actions";
 import { Job, JobStatus } from "@prisma/client";
 import { ExternalLink } from "lucide-react";
-
+import JobDetailsDialog from "./JobDetailsDialog";
+import { useDraggable } from "@dnd-kit/core";
 const statuses: { label: string; value: JobStatus }[] = [
   { label: "Saved", value: "SAVED" },
   { label: "Started", value: "APPLICATION_STARTED" },
@@ -16,22 +16,44 @@ const statuses: { label: string; value: JobStatus }[] = [
 ];
 
 export default function JobCard({ job }: { job: Job }) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: job.id,
+    });
+
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      }
+    : undefined;
   return (
-    <article className="border border-slate-200 bg-white p-4 shadow-sm">
-      <h3 className="text-sm font-black uppercase leading-5 text-black">
-        {job.position}
-      </h3>
+    <article
+      className="border border-slate-200 bg-white p-4 shadow-sm"
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}>
+      <JobDetailsDialog job={job}>
+        <button className="w-full text-left">
+          <h3 className="text-sm font-black uppercase leading-5 text-black">
+            {job.position}
+          </h3>
 
-      <p className="mt-2 text-sm font-semibold text-slate-600">{job.company}</p>
+          <p className="mt-2 text-sm font-semibold text-slate-600">
+            {job.company}
+          </p>
 
-      {job.location && (
-        <p className="mt-1 text-xs text-slate-400">{job.location}</p>
-      )}
+          {job.location && (
+            <p className="mt-1 text-xs text-slate-400">{job.location}</p>
+          )}
 
-      {job.salary && (
-        <p className="mt-3 text-xs font-bold text-slate-500">{job.salary}</p>
-      )}
-
+          {job.salary && (
+            <p className="mt-3 text-xs font-bold text-slate-500">
+              {job.salary}
+            </p>
+          )}
+        </button>
+      </JobDetailsDialog>
       <select
         value={job.status}
         onChange={(e) => updateJobStatus(job.id, e.target.value as JobStatus)}

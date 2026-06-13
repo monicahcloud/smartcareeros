@@ -1,6 +1,8 @@
 import JobTrackerBoard from "@/app/components/jobtracker/JobTrackerBoard";
 import { getTrackedJobs } from "./actions";
 import Link from "next/link";
+import JobTrackerSummary from "@/app/components/jobtracker/JobTrackerSummary";
+import JobTrackerAlerts from "@/app/components/jobtracker/JobTrackerAlerts";
 
 export default async function JobTrackerPage() {
   const jobs = await getTrackedJobs();
@@ -26,7 +28,8 @@ export default async function JobTrackerPage() {
           Add Job
         </Link>
       </section>
-
+      <JobTrackerSummary jobs={jobs} />
+      <JobTrackerAlerts jobs={jobs} />
       <JobTrackerBoard jobs={jobs} />
     </main>
   );

@@ -89,3 +89,30 @@ export async function createTrackedJob(input: {
 
   revalidatePath("/jobtracker");
 }
+
+export async function updateJobDetails(input: {
+  jobId: string;
+  notes?: string;
+  followUpDate?: string;
+  salary?: string;
+  url?: string;
+}) {
+  const { userId: clerkId } = await auth();
+
+  if (!clerkId) {
+    throw new Error("Unauthorized");
+  }
+
+  await prisma.job.update({
+    where: { id: input.jobId },
+    data: {
+      notes: input.notes || null,
+      salary: input.salary || null,
+      url: input.url || null,
+      followUpDate: input.followUpDate ? new Date(input.followUpDate) : null,
+      lastActivityAt: new Date(),
+    },
+  });
+
+  revalidatePath("/jobtracker");
+}
