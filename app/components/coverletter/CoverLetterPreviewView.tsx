@@ -21,7 +21,11 @@ import { mapToCoverLetterValues } from "@/lib/utils";
 import { COVER_LETTER_THEME_REGISTRY } from "@/app/(dashboard)/coverletter/templates/templateRegistry";
 import type { CoverLetter } from "@prisma/client";
 import { generateCoverLetterPdf } from "@/app/(dashboard)/coverletter/preview/[id]/pdf-actions";
-import { createCoverLetterShareLink } from "@/app/(dashboard)/coverletter/preview/[id]/action";
+import {
+  createCoverLetterShareLink,
+  deleteCoverLetter,
+  updateCoverLetterBranding,
+} from "@/app/(dashboard)/coverletter/preview/[id]/action";
 
 export default function CoverLetterPreviewView({
   coverLetter,

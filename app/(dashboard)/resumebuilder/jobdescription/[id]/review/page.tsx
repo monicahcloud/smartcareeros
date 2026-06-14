@@ -2,8 +2,9 @@ import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import GenerateTailoredResumeButton from "@/app/components/resumebuilder/GenerateTailoredResumeButton";
+import AnalyzeJobDescriptionButton from "@/app/components/resumebuilder/AnalyzeJobDescriptionButton";
 
 export default async function JobDescriptionReviewPage({
   params,
@@ -32,6 +33,10 @@ export default async function JobDescriptionReviewPage({
   if (!jobDescription) {
     notFound();
   }
+
+  const parsedData = jobDescription.parsedData as {
+    tailoredSummary?: string;
+  } | null;
 
   return (
     <main className="space-y-8">
@@ -87,11 +92,96 @@ export default async function JobDescriptionReviewPage({
               <p>✓ Match experience language</p>
               <p>✓ Prepare tailored resume direction</p>
             </div>
+            <AnalyzeJobDescriptionButton jobDescriptionId={jobDescription.id} />
 
             <GenerateTailoredResumeButton
               jobDescriptionId={jobDescription.id}
             />
           </div>
+          <div className="space-y-6">
+            <div className="border border-slate-200 bg-white p-6 shadow-sm">
+              ... AI Preparation Card ...
+            </div>
+
+            {parsedData?.tailoredSummary && (
+              <div className="border border-slate-200 bg-white p-6 shadow-sm">
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
+                  AI Resume Summary
+                </p>
+
+                <p className="mt-4 text-sm leading-7 text-slate-600">
+                  {parsedData.tailoredSummary}
+                </p>
+              </div>
+            )}
+          </div>
+          {jobDescription.keywords.length > 0 && (
+            <div className="border border-slate-200 bg-white p-6 shadow-sm">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
+                Keywords
+              </p>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {jobDescription.keywords.map((keyword) => (
+                  <span
+                    key={keyword}
+                    className="border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700">
+                    {keyword}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {jobDescription.requiredSkills.length > 0 && (
+            <div className="border border-slate-200 bg-white p-6 shadow-sm">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
+                Required Skills
+              </p>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {jobDescription.requiredSkills.map((skill) => (
+                  <span
+                    key={skill}
+                    className="border border-red-100 bg-red-50 px-3 py-2 text-xs font-bold text-red-700">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {jobDescription.preferredSkills.length > 0 && (
+            <div className="border border-slate-200 bg-white p-6 shadow-sm">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
+                Preferred Skills
+              </p>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {jobDescription.preferredSkills.map((skill) => (
+                  <span
+                    key={skill}
+                    className="border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {jobDescription.responsibilities.length > 0 && (
+            <div className="border border-slate-200 bg-white p-6 shadow-sm">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
+                Responsibilities
+              </p>
+
+              <ul className="mt-4 space-y-2 text-sm leading-6 text-slate-600">
+                {jobDescription.responsibilities.map((item) => (
+                  <li key={item}>• {item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         <div className="border border-slate-200 bg-white p-6 shadow-sm">

@@ -1,6 +1,9 @@
+export const dynamic = "force-dynamic";
+
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
+import ResumeEditor from "./ResumeEditor";
 
 export default async function ResumeEditorPage({
   params,
@@ -13,25 +16,28 @@ export default async function ResumeEditorPage({
 
   if (!clerkId) return null;
 
-  const resume = await prisma.resume.findUnique({
+  const user = await prisma.user.findUnique({
+    where: { clerkId },
+    select: { id: true },
+  });
+
+  if (!user) return null;
+
+  const resumeToEdit = await prisma.resume.findFirst({
     where: {
       id,
+      userId: user.id,
+    },
+    include: {
+      workExperience: true,
+      education: true,
+      techSkills: true,
     },
   });
 
-  if (!resume) {
+  if (!resumeToEdit) {
     notFound();
   }
 
-  return (
-    <main className="space-y-8">
-      <h1 className="text-4xl font-black">{resume.resumeTitle}</h1>
-
-      <div className="border p-6 rounded-xl">
-        <h2 className="font-bold mb-3">Professional Summary</h2>
-
-        <p>{resume.summary || "No summary yet"}</p>
-      </div>
-    </main>
-  );
+  return <ResumeEditor resumeToEdit={resumeToEdit} />;
 }
