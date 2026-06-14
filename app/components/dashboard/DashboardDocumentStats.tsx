@@ -15,40 +15,45 @@ export default async function DashboardDocumentStats() {
 
   if (!user) return null;
 
-  const [resumeCount, coverLetterCount] = await Promise.all([
+  const [resumeCount, coverLetterCount, careerProfile] = await Promise.all([
     prisma.resume.count({
-      where: {
-        userId: user.id,
-      },
+      where: { userId: user.id },
     }),
 
     prisma.coverLetter.count({
+      where: { userId: user.id },
+    }),
+
+    prisma.careerProfile.findUnique({
       where: {
         userId: user.id,
+      },
+      select: {
+        id: true,
       },
     }),
   ]);
 
   const stats = [
     {
+      title: "Career Profile",
+      value: careerProfile ? "✓" : "—",
+      description: careerProfile ? "Completed" : "Needs attention",
+    },
+    {
       title: "Resumes",
       value: resumeCount,
-      description: "Career profiles created",
+      description: "Resume documents created",
     },
     {
       title: "Cover Letters",
       value: coverLetterCount,
-      description: "Letters prepared",
+      description: "Cover letters created",
     },
     {
       title: "Interview Sessions",
       value: 0,
       description: "AI practice interviews",
-    },
-    {
-      title: "Career Readiness",
-      value: resumeCount + coverLetterCount,
-      description: "Assets in your workspace",
     },
   ];
 
@@ -72,6 +77,11 @@ export default async function DashboardDocumentStats() {
         </div>
 
         <div className="flex gap-3">
+          <Link
+            href="/careerprofile"
+            className="inline-flex h-10 items-center justify-center border border-slate-200 px-4 text-xs font-black uppercase tracking-[0.16em] text-black transition hover:border-red-600 hover:text-red-600">
+            Career Profile
+          </Link>
           <Link
             href="/resumes"
             className="inline-flex h-10 items-center justify-center border border-slate-200 px-4 text-xs font-black uppercase tracking-[0.16em] text-black transition hover:border-red-600 hover:text-red-600">

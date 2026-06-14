@@ -22,6 +22,9 @@ import CertificationSection from "./sections/CertificationSection";
 import AccomplishmentSection from "./sections/AccomplishmentsSection";
 import ProjectsSection from "./sections/ProjectsSection";
 import FederalDetailsSection from "./sections/FederalDetailsSection";
+import CareerProfileHeader from "@/app/components/careerprofile/CareerProfileHeader";
+import CareerProfileBreadcrumbs from "@/app/components/careerprofile/CareerProfileBreadcrumbs";
+import CareerProfileFooter from "@/app/components/careerprofile/CareerProfileFooter";
 
 type CareerProfileFormProps = {
   profile: {
@@ -188,89 +191,32 @@ export default function CareerProfileForm({ profile }: CareerProfileFormProps) {
   }
 
   return (
-    <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-      <div className="space-y-6">
-        <div className="border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-red-600">
-            Profile Details
-          </p>
+    <>
+      <CareerProfileHeader />
+      <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="space-y-6">
+          <div className="space-y-4 border border-slate-200 bg-white p-6 shadow-sm">
+            <CareerProfileBreadcrumbs
+              steps={steps}
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+            />
 
-          <h2 className="mt-2 text-2xl font-black uppercase tracking-tight text-black">
-            Core Career Information
-          </h2>
+            <div className="min-h-[560px]">{renderCurrentStep()}</div>
 
-          <p className="mt-2 text-sm leading-6 text-slate-500">
-            Start with the information that will be reused across your resumes,
-            cover letters, and interview preparation.
-          </p>
+            <CareerProfileFooter
+              currentStepIndex={currentStepIndex}
+              totalSteps={steps.length}
+              isPending={isPending}
+              onBack={goBack}
+              onNext={goNext}
+              onSave={handleSave}
+            />
+          </div>
         </div>
 
-        <div className="space-y-4 border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-4">
-            {steps.map((step, index) => (
-              <button
-                key={step.key}
-                type="button"
-                onClick={() => setCurrentStep(step.key)}
-                className={`px-4 py-2 text-xs font-black uppercase tracking-[0.14em] transition ${
-                  currentStep === step.key
-                    ? "bg-red-600 text-white"
-                    : "bg-slate-100 text-slate-500 hover:bg-slate-200"
-                }`}>
-                {index + 1}. {step.title}
-              </button>
-            ))}
-          </div>
-
-          <div className="min-h-[560px]">{renderCurrentStep()}</div>
-
-          <div className="flex items-center justify-between border-t border-slate-200 pt-4">
-            <button
-              type="button"
-              onClick={goBack}
-              disabled={currentStepIndex === 0}
-              className="h-12 border border-slate-200 px-6 text-xs font-black uppercase tracking-[0.16em] text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40">
-              Back
-            </button>
-
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={isPending}
-                className="h-12 bg-red-600 px-6 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-black disabled:opacity-60">
-                {isPending ? "Saving..." : "Save"}
-              </button>
-
-              {currentStepIndex < steps.length - 1 ? (
-                <button
-                  type="button"
-                  onClick={goNext}
-                  className="h-12 bg-black px-6 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-red-600">
-                  Next
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  disabled={isPending}
-                  className="h-12 bg-black px-6 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-red-600 disabled:opacity-60">
-                  Finish
-                </button>
-              )}
-            </div>
-          </div>
-          {/* <button
-            type="button"
-            onClick={handleSave}
-            disabled={isPending}
-            className="h-12 bg-red-600 px-6 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-black disabled:opacity-60">
-            {isPending ? "Saving..." : "Save Career Profile"}
-          </button> */}
-        </div>
-      </div>
-
-      <ProfilePreview form={form} />
-    </section>
+        <ProfilePreview form={form} />
+      </section>
+    </>
   );
 }

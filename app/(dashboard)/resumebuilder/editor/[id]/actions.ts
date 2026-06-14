@@ -3,6 +3,12 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import {
+  CertificationItem,
+  EducationItem,
+  ProjectItem,
+  WorkExperienceItem,
+} from "./types";
 
 export async function saveResumeBasics(input: {
   resumeId: string;
@@ -15,6 +21,44 @@ export async function saveResumeBasics(input: {
   address: string;
   summary: string;
   skills: string[];
+  techSkills: string[];
+  workExperience: {
+    company: string;
+    position: string;
+    location: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+  }[];
+  education: {
+    school: string;
+    degree: string;
+    location: string;
+    startDate: string;
+    endDate: string;
+  }[];
+  certifications: {
+    name: string;
+    issuer: string;
+    issuedDate: string;
+    expiresDate: string;
+    credentialUrl: string;
+    description: string;
+  }[];
+  projects: {
+    name: string;
+    role: string;
+    description: string;
+    technologies: string[];
+    url: string;
+  }[];
+  accomplishments: {
+    title: string;
+    organization: string;
+    date: string;
+    description: string;
+    impact: string;
+  }[];
 }) {
   const { userId: clerkId } = await auth();
 
@@ -46,6 +90,12 @@ export async function saveResumeBasics(input: {
       address: input.address || null,
       summary: input.summary || null,
       skills: input.skills,
+      techSkills: input.techSkills,
+      workExperience: input.workExperience,
+      education: input.education,
+      certifications: input.certifications,
+      projects: input.projects,
+      accomplishments: input.accomplishments,
       updatedAt: new Date(),
     },
   });

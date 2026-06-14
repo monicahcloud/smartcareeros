@@ -46,15 +46,15 @@ export default async function ResumesPage() {
               href="/resumebuilder"
               className="inline-flex h-12 items-center justify-center gap-2 bg-red-600 px-6 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-black">
               <FileText className="h-4 w-4" />
-              Create Resume
+              Create A Resume
             </Link>
 
-            <Link
+            {/* <Link
               href="/resumes/upload"
               className="inline-flex h-12 items-center justify-center gap-2 border border-slate-200 bg-white px-6 text-sm font-black uppercase tracking-[0.16em] text-slate-700 transition hover:border-red-600 hover:text-red-600">
               <Upload className="h-4 w-4" />
               Upload Resume
-            </Link>
+            </Link> */}
           </div>
         </div>
       </section>
@@ -107,14 +107,14 @@ export default async function ResumesPage() {
             <Link
               href="/resumebuilder"
               className="inline-flex h-12 items-center justify-center bg-red-600 px-6 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-black">
-              Create Resume
+              Create A Resume
             </Link>
 
-            <Link
+            {/* <Link
               href="/resumes/upload"
               className="inline-flex h-12 items-center justify-center border border-slate-200 px-6 text-sm font-black uppercase tracking-[0.16em] text-black transition hover:border-red-600 hover:text-red-600">
               Upload Resume
-            </Link>
+            </Link> */}
           </div>
         </section>
       ) : (

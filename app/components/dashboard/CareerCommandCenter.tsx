@@ -1,24 +1,30 @@
 "use client";
 
-import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { Card } from "@/components/ui/card";
 import {
-  ArrowRight,
   BriefcaseBusiness,
   FileSearch,
   FileText,
   MessagesSquare,
   NotebookPen,
+  UserRound,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 const toolCards = [
   {
+    icon: <UserRound className="h-6 w-6 text-red-600" />,
+    title: "Career Profile",
+    description: "Save your reusable career details in one place.",
+    linkHref: "careerprofile",
+  },
+  {
     icon: <FileText className="h-6 w-6 text-red-600" />,
     title: "Resume Builder",
-    description: "Create and refine your professional story.",
+    description:
+      "Create resumes from your profile, job descriptions, or uploads.",
     linkHref: "resumebuilder",
   },
   {
@@ -102,18 +108,18 @@ export default function CareerCommandCenter() {
             </p>
 
             <h2 className="mt-2 text-2xl font-black uppercase tracking-tight text-black">
-              Build. Apply. Track. Interview.
+              Profile. Build. Apply. Track. Interview.
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-slate-500">
-              Move through each stage of your job search with the tools below.
-              Start with your resume, tailor your materials, then manage every
-              opportunity with purpose.
+              Start with your Career Profile so your resume, cover letters, job
+              tracking, and interview tools can reuse the same accurate
+              information.
             </p>
           </div>
         </div>
 
-        <div className="relative z-10 mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-5">
+        <div className="relative z-10 mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
           {toolCards.map((tool, idx) => (
             <motion.button
               key={tool.title}

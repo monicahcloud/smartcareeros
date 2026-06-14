@@ -73,7 +73,7 @@ export default function JobDescriptionResumeForm() {
             <input
               value={company}
               onChange={(e) => setCompany(e.target.value)}
-              placeholder="CIBC Caribbean"
+              placeholder="MaxWork Consulting Agency"
               className="h-12 w-full border border-slate-200 px-4 outline-none focus:border-red-600"
             />
           </div>

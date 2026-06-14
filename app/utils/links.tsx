@@ -7,11 +7,9 @@ import {
   HomeIcon,
   Layers,
   List,
-  MessageCircleQuestion,
-  FilePen,
-  UserCheck2,
-  BookOpen,
   MessageSquare,
+  FilePen,
+  UserRound,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -30,7 +28,7 @@ type LinkGroup = {
 
 export const linkGroups: LinkGroup[] = [
   {
-    title: "Main Navigation",
+    title: "Career Workspace",
     items: [
       {
         label: "Dashboard",
@@ -38,12 +36,18 @@ export const linkGroups: LinkGroup[] = [
         icon: <HomeIcon className="h-5 w-5" />,
       },
       {
+        label: "Career Profile",
+        href: "/careerprofile",
+        icon: <UserRound className="h-5 w-5" />,
+      },
+
+      {
         label: "Resumes",
         href: "/resumes",
         icon: <List className="h-5 w-5" />,
       },
       {
-        label: "Cover Letter",
+        label: "Cover Letters",
         href: "/coverletter",
         icon: <FilePen className="h-5 w-5" />,
       },
@@ -53,30 +57,20 @@ export const linkGroups: LinkGroup[] = [
         icon: <AppWindow className="h-5 w-5" />,
       },
       {
-        label: "AI Mock Interview",
-        href: "/interviews",
-        icon: <MessageSquare className="h-5 w-5" />,
-      },
-      {
         label: "Job Tracker",
         href: "/jobtracker",
         icon: <Layers className="h-5 w-5" />,
       },
+      {
+        label: "AI Mock Interview",
+        href: "/interviews",
+        icon: <MessageSquare className="h-5 w-5" />,
+      },
     ],
   },
   {
-    title: "Resources & Support",
+    title: "Account & Support",
     items: [
-      {
-        label: "Articles & Insights",
-        href: "/articles",
-        icon: <BookOpen className="h-5 w-5" />,
-      },
-      {
-        label: "Expert Tips",
-        href: "/resources",
-        icon: <UserCheck2 className="h-5 w-5" />,
-      },
       {
         label: "Support",
         href: "/support",
@@ -86,11 +80,6 @@ export const linkGroups: LinkGroup[] = [
         label: "Pricing",
         href: "/billing",
         icon: <CreditCard className="h-5 w-5" />,
-      },
-      {
-        label: "FAQs",
-        href: "/faq",
-        icon: <MessageCircleQuestion className="h-5 w-5" />,
       },
     ],
   },
@@ -142,6 +131,7 @@ export function GroupedSidebarLinks({ onLinkClick, userStats }: Props) {
                         )}>
                         {link.icon}
                       </span>
+
                       <span>{link.label}</span>
                     </Link>
                   </li>
@@ -155,7 +145,6 @@ export function GroupedSidebarLinks({ onLinkClick, userStats }: Props) {
           </div>
         ))}
 
-        {/* Usage tracker can come back later when DB/subscriptions are ready */}
         {userStats && (
           <div className="mx-3 mt-8 rounded-[2rem] border border-slate-200 bg-slate-50 p-5">
             <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-900">

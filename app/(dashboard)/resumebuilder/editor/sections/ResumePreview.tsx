@@ -1,48 +1,39 @@
 "use client";
 
-import { CareerProfileFormState } from "../types";
+import { ResumeFormState } from "../[id]/types";
 
-export default function ProfilePreview({
-  form,
-}: {
-  form: CareerProfileFormState;
-}) {
+type ResumePreviewProps = {
+  form: ResumeFormState;
+};
+
+export default function ResumePreview({ form }: ResumePreviewProps) {
   return (
-    <div className="border border-slate-200 bg-white p-8 shadow-sm">
+    <section className="border border-slate-200 bg-white p-8 shadow-sm">
       <p className="mb-4 text-xs font-black uppercase tracking-[0.2em] text-slate-400">
-        Career Snapshot
+        Live Preview
       </p>
 
-      <div className="min-h-[620px] border border-slate-200 bg-slate-50 p-8">
+      <div className="min-h-[720px] border border-slate-200 bg-slate-50 p-8">
         <h2 className="text-3xl font-black uppercase tracking-tight text-black">
-          {form.fullName || "Your Name"}
+          {form.firstName || "First"} {form.lastName || "Last"}
         </h2>
 
         <p className="mt-2 text-sm font-bold uppercase tracking-[0.16em] text-red-600">
-          {form.headline || "Professional Headline"}
+          {form.jobTitle || "Target Job Title"}
         </p>
 
         <p className="mt-4 text-sm text-slate-500">
-          {[form.email, form.phone, form.location].filter(Boolean).join(" • ")}
+          {[form.email, form.phone, form.address].filter(Boolean).join(" • ")}
         </p>
 
-        {(form.website || form.linkedin || form.gitHub) && (
-          <div className="mt-4 space-y-1 text-sm text-slate-500">
-            {form.website && <p>Website: {form.website}</p>}
-            {form.linkedin && <p>LinkedIn: {form.linkedin}</p>}
-            {form.gitHub && <p>GitHub: {form.gitHub}</p>}
-          </div>
-        )}
-
-        <PreviewText title="Career Profile Summary">
-          {form.summary ||
-            "Your Career Profile Summary will appear here once added."}
+        <PreviewText title="Professional Summary">
+          {form.summary || "Your professional summary will appear here."}
         </PreviewText>
 
         <PreviewTags
-          title="Core Skills"
+          title="Skills"
           items={form.skills}
-          empty="Core skills will appear here."
+          empty="Skills will appear here."
         />
 
         <PreviewTags
@@ -51,28 +42,44 @@ export default function ProfilePreview({
           empty="Technical skills will appear here."
         />
 
-        <PreviewList title="Experience">
+        <PreviewList
+          title="Work Experience"
+          empty="Experience will appear here.">
           {form.workExperience.map((exp, index) => (
             <div key={index}>
               <h3 className="font-black">{exp.position}</h3>
-              <p className="text-sm text-slate-500">{exp.company}</p>
+
+              <p className="text-sm text-slate-500">
+                {[exp.company, exp.location].filter(Boolean).join(" • ")}
+              </p>
+
               <p className="text-xs text-slate-400">
                 {exp.startDate} - {exp.endDate || "Present"}
               </p>
-              <p className="mt-2 text-sm">{exp.description}</p>
+
+              {exp.description && (
+                <p className="mt-2 whitespace-pre-line text-sm leading-7 text-slate-700">
+                  {exp.description}
+                </p>
+              )}
             </div>
           ))}
         </PreviewList>
 
-        <PreviewList title="Education">
+        <PreviewList title="Education" empty="Education will appear here.">
           {form.education.map((edu, index) => (
             <div key={index}>
               <h3 className="font-black">{edu.degree}</h3>
+
               <p className="text-sm text-slate-500">{edu.school}</p>
+
               <p className="text-xs text-slate-400">
                 {edu.startDate} - {edu.endDate || "Present"}
               </p>
-              <p className="text-sm text-slate-500">{edu.location}</p>
+
+              {edu.location && (
+                <p className="text-sm text-slate-500">{edu.location}</p>
+              )}
             </div>
           ))}
         </PreviewList>
@@ -83,18 +90,24 @@ export default function ProfilePreview({
           {form.certifications.map((cert, index) => (
             <div key={index}>
               <h3 className="font-black">{cert.name}</h3>
-              <p className="text-sm text-slate-500">{cert.issuer}</p>
+
+              {cert.issuer && (
+                <p className="text-sm text-slate-500">{cert.issuer}</p>
+              )}
+
               <p className="text-xs text-slate-400">
-                {cert.issuedDate}{" "}
-                {cert.expiresDate ? `- ${cert.expiresDate}` : ""}
+                {cert.issuedDate}
+                {cert.expiresDate ? ` - ${cert.expiresDate}` : ""}
               </p>
+
               {cert.credentialUrl && (
                 <p className="mt-1 text-xs text-red-600">
                   {cert.credentialUrl}
                 </p>
               )}
+
               {cert.description && (
-                <p className="mt-2 text-sm text-slate-700">
+                <p className="mt-2 text-sm leading-7 text-slate-700">
                   {cert.description}
                 </p>
               )}
@@ -112,7 +125,7 @@ export default function ProfilePreview({
               )}
 
               {project.description && (
-                <p className="mt-2 text-sm text-slate-700">
+                <p className="mt-2 text-sm leading-7 text-slate-700">
                   {project.description}
                 </p>
               )}
@@ -152,7 +165,7 @@ export default function ProfilePreview({
               )}
 
               {item.description && (
-                <p className="mt-2 text-sm text-slate-700">
+                <p className="mt-2 text-sm leading-7 text-slate-700">
                   {item.description}
                 </p>
               )}
@@ -165,30 +178,8 @@ export default function ProfilePreview({
             </div>
           ))}
         </PreviewList>
-
-        <div className="mt-8">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-black">
-            Federal Details
-          </p>
-
-          <div className="mt-4 grid gap-2 text-sm text-slate-700">
-            {Object.entries(form.federalDetails)
-              .filter(([, value]) => value)
-              .map(([key, value]) => (
-                <p key={key}>
-                  <span className="font-bold">
-                    {key
-                      .replace(/([A-Z])/g, " $1")
-                      .replace(/^./, (char) => char.toUpperCase())}
-                    :
-                  </span>{" "}
-                  {value}
-                </p>
-              ))}
-          </div>
-        </div>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -250,7 +241,7 @@ function PreviewList({
   children,
 }: {
   title: string;
-  empty?: string;
+  empty: string;
   children: React.ReactNode;
 }) {
   const hasChildren = Array.isArray(children)
@@ -267,9 +258,7 @@ function PreviewList({
         {hasChildren ? (
           children
         ) : (
-          <p className="text-sm text-slate-500">
-            {empty || `${title} will appear here.`}
-          </p>
+          <p className="text-sm text-slate-500">{empty}</p>
         )}
       </div>
     </div>
