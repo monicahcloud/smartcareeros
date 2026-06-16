@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import ResumeEditor from "./[id]/ResumeEditor";
+import { mapToResumeValues } from "@/lib/utils";
 
 export default async function ResumeEditorPage({
   params,
@@ -37,6 +38,5 @@ export default async function ResumeEditorPage({
   if (!resume) {
     notFound();
   }
-
-  return <ResumeEditor resumeToEdit={resume} />;
+  return <ResumeEditor resumeToEdit={mapToResumeValues(resume)} />;
 }

@@ -126,5 +126,14 @@ export default async function CoverLetterEditorPage({
     notFound();
   }
 
-  return <CoverLetterEditor coverLetterToEdit={coverLetter} />;
+  return (
+    <CoverLetterEditor
+      userId={user.id}
+      clerkId={user.clerkId}
+      initialThemeId={coverLetterToEdit.themeId || "classic-left"}
+      coverLetterToEdit={coverLetterToEdit}
+      resumes={resumes}
+      jobDescription={null}
+    />
+  );
 }
