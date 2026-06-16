@@ -2,6 +2,7 @@
 
 export type CoverLetterData = {
   id?: string;
+
   firstName?: string | null;
   lastName?: string | null;
   jobTitle?: string | null;
@@ -20,10 +21,12 @@ export type CoverLetterData = {
   companyEmail?: string | null;
 
   body?: string | null;
+  content?: unknown;
 
   template?: string | null;
   themeId?: string | null;
   themeColor?: string | null;
+  borderStyle?: string | null;
 
   showPhoto?: boolean | null;
   userPhoto?: File | string | null;

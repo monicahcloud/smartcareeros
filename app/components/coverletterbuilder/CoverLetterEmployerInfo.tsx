@@ -1,7 +1,14 @@
-// components/coverletterbuilder/editor/steps/CoverLetterEmployerInfo.tsx
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { employerInfoSchema, EmployerInfoValues } from "@/lib/validation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { BriefcaseBusiness } from "lucide-react";
+
+import { CoverLetterFormProps } from "@/lib/types";
+import FormStepWrapper from "./FormStepWrapper";
+
 import {
   Form,
   FormControl,
@@ -10,15 +17,31 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
 import { Input } from "@/components/ui/input";
-import React, { useEffect } from "react";
-import { CoverLetterFormProps } from "@/lib/types";
-import FormStepWrapper from "./FormStepWrapper";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function CoverLetterEmployerInfo({
   coverLetterData,
   setCoverLetterData,
 }: CoverLetterFormProps) {
+  const [showJobDescription, setShowJobDescription] = useState(false);
+
+  const existingJobDescription =
+    typeof coverLetterData.content === "object" &&
+    coverLetterData.content !== null &&
+    "jobDescriptionText" in coverLetterData.content
+      ? String(
+          (coverLetterData.content as { jobDescriptionText?: string })
+            .jobDescriptionText ?? "",
+        )
+      : "";
+
+  const [jobDescriptionText, setJobDescriptionText] = useState(
+    existingJobDescription,
+  );
+
   const form = useForm<EmployerInfoValues>({
     resolver: zodResolver(employerInfoSchema),
     defaultValues: {
@@ -34,15 +57,28 @@ export default function CoverLetterEmployerInfo({
     const subscription = form.watch((values) => {
       setCoverLetterData((prev) => ({ ...prev, ...values }));
     });
+
     return () => subscription.unsubscribe();
   }, [form, setCoverLetterData]);
+
+  useEffect(() => {
+    setCoverLetterData((prev) => ({
+      ...prev,
+      content: {
+        ...(typeof prev.content === "object" && prev.content !== null
+          ? prev.content
+          : {}),
+        jobDescriptionText,
+      },
+    }));
+  }, [jobDescriptionText, setCoverLetterData]);
 
   return (
     <FormStepWrapper
       title="Employer Details"
-      description="Provide the details of the company and person you are contacting.">
+      description="Provide the company details and optionally paste the job description for a stronger AI-generated letter.">
       <Form {...form}>
-        <form className="space-y-4">
+        <form className="space-y-6">
           <FormField
             control={form.control}
             name="recipientName"
@@ -79,6 +115,7 @@ export default function CoverLetterEmployerInfo({
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="companyEmail"
@@ -112,6 +149,7 @@ export default function CoverLetterEmployerInfo({
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="companyAddress"
@@ -132,6 +170,46 @@ export default function CoverLetterEmployerInfo({
               )}
             />
           </div>
+
+          <section className="rounded-2xl border border-red-100 bg-red-50 p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex gap-3">
+                <BriefcaseBusiness className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-[0.18em] text-red-900">
+                    Job Description
+                  </h3>
+                  <p className="mt-1 text-sm leading-6 text-red-900/70">
+                    Paste the job description so the AI draft can match the
+                    role, company needs, and keywords.
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                onClick={() => setShowJobDescription((prev) => !prev)}
+                className="bg-red-600 text-xs font-black uppercase tracking-widest hover:bg-black">
+                {showJobDescription ? "Hide" : "Paste Job Description"}
+              </Button>
+            </div>
+
+            {showJobDescription && (
+              <div className="mt-5">
+                <Textarea
+                  value={jobDescriptionText}
+                  onChange={(e) => setJobDescriptionText(e.target.value)}
+                  placeholder="Paste the full job description here..."
+                  className="min-h-[260px] border-red-100 bg-white text-sm leading-7"
+                />
+
+                <p className="mt-2 text-xs font-semibold text-red-900/60">
+                  This will be used when generating the AI draft in the Letter
+                  Content step.
+                </p>
+              </div>
+            )}
+          </section>
         </form>
       </Form>
     </FormStepWrapper>

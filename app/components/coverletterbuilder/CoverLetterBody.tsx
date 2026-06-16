@@ -67,6 +67,22 @@ export default function CoverLetterBody({
     }));
   }, [watchedBody, setCoverLetterData]);
 
+  const contentData =
+    typeof coverLetterData.content === "object" &&
+    coverLetterData.content !== null
+      ? (coverLetterData.content as {
+          jobDescriptionText?: string;
+          applicantName?: string;
+          professionalHeadline?: string;
+          education?: string;
+          yearsExperience?: string;
+          tools?: string;
+          relevantExperience?: string;
+        })
+      : {};
+
+  const pastedJobDescription = contentData.jobDescriptionText?.trim() || "";
+
   const parsedData =
     jobDescription?.parsedData && typeof jobDescription.parsedData === "object"
       ? (jobDescription.parsedData as {
@@ -77,7 +93,10 @@ export default function CoverLetterBody({
           tools?: string;
           relevantExperience?: string;
         })
-      : {};
+      : contentData;
+
+  const activeJobDescriptionText =
+    jobDescription?.rawText || pastedJobDescription;
 
   const applyGeneratedLetter = (aiContent: string) => {
     const htmlContent = aiContent.trim().startsWith("<")
@@ -125,8 +144,8 @@ export default function CoverLetterBody({
   };
 
   const handleGenerateFromJobDescription = async () => {
-    if (!jobDescription?.rawText) {
-      toast.error("No job description found");
+    if (!activeJobDescriptionText) {
+      toast.error("Paste or load a job description first");
       return;
     }
 
@@ -134,28 +153,28 @@ export default function CoverLetterBody({
       setIsGeneratingJobDescription(true);
 
       const aiContent = await generateCoverLetter({
-        jobTitle: coverLetterData.jobTitle || jobDescription.title || "",
+        jobTitle:
+          coverLetterData.jobTitle ||
+          jobDescription?.title ||
+          manualAi.jobTitle,
         companyName:
-          coverLetterData.companyName || jobDescription.company || "",
+          coverLetterData.companyName || jobDescription?.company || "",
         applicantName: parsedData.applicantName,
         professionalHeadline: parsedData.professionalHeadline,
         education: parsedData.education,
-        yearsExperience: parsedData.yearsExperience,
-        tools: parsedData.tools,
-        relevantExperience: parsedData.relevantExperience,
-        jobDescription: jobDescription.rawText,
+        yearsExperience: parsedData.yearsExperience || manualAi.yearsExperience,
+        tools: parsedData.tools || manualAi.tools,
+        relevantExperience:
+          parsedData.relevantExperience || manualAi.achievements,
+        jobDescription: activeJobDescriptionText,
       });
 
       applyGeneratedLetter(aiContent);
 
       setCoverLetterData((prev) => ({
         ...prev,
-        firstName: parsedData.applicantName?.split(" ")[0] || prev.firstName,
-        lastName:
-          parsedData.applicantName?.split(" ").slice(1).join(" ") ||
-          prev.lastName,
-        jobTitle: jobDescription.title || prev.jobTitle,
-        companyName: jobDescription.company || prev.companyName,
+        jobTitle: jobDescription?.title || prev.jobTitle,
+        companyName: jobDescription?.company || prev.companyName,
       }));
 
       toast.success("Cover letter generated from job description");
@@ -187,11 +206,12 @@ export default function CoverLetterBody({
 
               <div
                 className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${
-                  jobDescription
+                  activeJobDescriptionText
                     ? "bg-green-100 text-green-700"
                     : "bg-red-100 text-red-700"
                 }`}>
-                Job Description: {jobDescription ? "Loaded" : "Not Loaded"}
+                Job Description:{" "}
+                {activeJobDescriptionText ? "Loaded" : "Not Loaded"}
               </div>
             </div>
 
@@ -252,7 +272,7 @@ export default function CoverLetterBody({
                 {isGeneratingManual ? "Generating..." : "Generate AI Draft"}
               </Button>
 
-              {jobDescription && (
+              {activeJobDescriptionText && (
                 <Button
                   type="button"
                   onClick={handleGenerateFromJobDescription}

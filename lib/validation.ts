@@ -263,6 +263,22 @@ export const signatureSchema = z.object({
   signatureColor: z.string().optional(),
 });
 export type SignatureValues = z.infer<typeof signatureSchema>;
+export const coverLetterContentSchema = z
+  .object({
+    jobDescriptionText: optionalString,
+    applicantName: optionalString,
+    professionalHeadline: optionalString,
+    education: optionalString,
+    yearsExperience: optionalString,
+    tools: optionalString,
+    relevantExperience: optionalString,
+    source: optionalString,
+    careerProfileId: optionalString.nullable(),
+    jobDescriptionId: optionalString.nullable(),
+  })
+  .passthrough()
+  .optional()
+  .nullable();
 
 export const coverLetterSchema = z.object({
   ...userInfoSchema.shape,
@@ -275,6 +291,8 @@ export const coverLetterSchema = z.object({
   template: optionalString,
   themeId: optionalString,
   userPhotoUrl: z.string().url().nullable().optional(),
+
+  content: coverLetterContentSchema,
 });
 
 export type CoverLetterValues = Omit<
@@ -285,4 +303,5 @@ export type CoverLetterValues = Omit<
   userPhoto?: File | string | null;
   signatureUrl?: string | null;
   userPhotoUrl?: string | null;
+  content?: z.infer<typeof coverLetterContentSchema>;
 };

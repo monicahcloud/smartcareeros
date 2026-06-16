@@ -1,3 +1,4 @@
+// app/(dashboard)/jobdescriptions/[id]/page.tsx
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
@@ -42,11 +43,21 @@ export default async function JobDescriptionDetailPage({ params }: PageProps) {
         </div>
 
         <div className="mb-6 flex flex-wrap gap-3">
-          <Link
-            href={`/coverletterbuilder/editor?jobDescriptionId=${job.id}&step=body`}
-            className="bg-red-600 px-6 py-3 text-xs font-black uppercase tracking-widest text-white hover:bg-black">
-            Create Cover Letter
-          </Link>
+          <form
+            action={async () => {
+              "use server";
+
+              const { createCoverLetterFromJobDescription } =
+                await import("../createCoverLetterFromJobDescription");
+
+              await createCoverLetterFromJobDescription(job.id);
+            }}>
+            <button
+              type="submit"
+              className="bg-red-600 px-6 py-3 text-xs font-black uppercase tracking-widest text-white hover:bg-black">
+              Create Cover Letter
+            </button>
+          </form>
 
           <Link
             href={`/resumebuilder/editor?jobDescriptionId=${job.id}`}

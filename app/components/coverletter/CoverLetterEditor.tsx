@@ -18,6 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useAutoSaveCoverLetter from "../../(dashboard)/coverletter/useAutoSaveCoverLetter";
+import Link from "next/link";
+import { Eye } from "lucide-react";
 
 interface CoverLetterEditorProps {
   userId: string;
@@ -90,9 +92,8 @@ export default function CoverLetterEditor({
   const currentStep = searchParams.get("step") || allSteps[0].key;
 
   const currentStepData = allSteps.find((step) => step.key === currentStep);
-
+  const isLastStep = currentStep === "signature";
   const CurrentStepComponent = currentStepData?.component;
-  console.log("JOB DESCRIPTION IN EDITOR:", jobDescription);
   // const activeTheme = useMemo(() => {
   //   return (
   //     COVER_LETTER_THEME_REGISTRY.find(
@@ -126,39 +127,64 @@ export default function CoverLetterEditor({
               </h1>
             </div>
 
-            <div className="w-full max-w-xs">
-              <p className="mb-2 text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">
-                Switch Template
-              </p>
+            <div className="flex items-end gap-3">
+              <div className="w-full max-w-xs">
+                <p className="mb-2 text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">
+                  Switch Template
+                </p>
 
-              <Select
-                value={coverLetterData.themeId || "classic-left"}
-                onValueChange={(themeId) => {
-                  const selectedTheme = COVER_LETTER_THEME_REGISTRY.find(
-                    (theme) => theme.id === themeId,
-                  );
+                <Select
+                  value={coverLetterData.themeId || "classic-left"}
+                  onValueChange={(themeId) => {
+                    const selectedTheme = COVER_LETTER_THEME_REGISTRY.find(
+                      (theme) => theme.id === themeId,
+                    );
 
-                  setCoverLetterData((prev) => ({
-                    ...prev,
-                    themeId,
-                    themeColor:
-                      prev.themeColor ||
-                      selectedTheme?.defaultColor ||
-                      "#dc2626",
-                  }));
-                }}>
-                <SelectTrigger className="h-12 border-slate-200 bg-white font-bold">
-                  <SelectValue placeholder="Choose template" />
-                </SelectTrigger>
+                    setCoverLetterData((prev) => ({
+                      ...prev,
+                      themeId,
+                      themeColor:
+                        prev.themeColor ||
+                        selectedTheme?.defaultColor ||
+                        "#dc2626",
+                    }));
+                  }}>
+                  <SelectTrigger className="h-12 border-slate-200 bg-white font-bold">
+                    <SelectValue placeholder="Choose template" />
+                  </SelectTrigger>
 
-                <SelectContent>
-                  {COVER_LETTER_THEME_REGISTRY.map((theme) => (
-                    <SelectItem key={theme.id} value={theme.id}>
-                      {theme.name} — {theme.category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  <SelectContent>
+                    {COVER_LETTER_THEME_REGISTRY.map((theme) => (
+                      <SelectItem key={theme.id} value={theme.id}>
+                        {theme.name} — {theme.category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              {coverLetterData.id && (
+                <Link
+                  href={
+                    isLastStep
+                      ? `/coverletter/preview/${coverLetterData.id}`
+                      : "#"
+                  }
+                  onClick={(e) => {
+                    if (!isLastStep) {
+                      e.preventDefault();
+                    }
+                  }}
+                  className={`inline-flex h-12 items-center justify-center rounded-full gap-2 px-6 text-xs font-black uppercase tracking-widest transition ${
+                    isLastStep
+                      ? "bg-red-600 text-white hover:bg-black"
+                      : "cursor-not-allowed bg-slate-200 text-slate-400"
+                  }`}>
+                  <Eye className="h-4 w-4" />
+                  {isLastStep ? "Finish & Preview" : "Complete All Steps First"}
+                </Link>
+              )}
             </div>
           </div>
 
