@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
-import CoverLetterEditor from "@/app/components/coverletter/CoverLetterEditor";
 
 export const metadata: Metadata = {
   title: "Cover Letter Editor | Smart CareerOS",

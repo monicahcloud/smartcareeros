@@ -19,7 +19,7 @@ import CoverLetterPreview from "@/app/components/coverletter/CoverLetterPreview"
 import { mapToCoverLetterValues } from "@/lib/utils";
 import { COVER_LETTER_THEME_REGISTRY } from "@/app/(dashboard)/coverletter/templates/templateRegistry";
 import type { CoverLetter } from "@prisma/client";
-import { generateCoverLetterPdf } from "@/app/(dashboard)/coverletter/preview/[id]/pdf-actions";
+
 import {
   createCoverLetterShareLink,
   deleteCoverLetter,
@@ -33,40 +33,166 @@ export default function CoverLetterPreviewView({
 }) {
   const router = useRouter();
   const [data, setData] = useState(coverLetter);
+  const [shareUrl, setShareUrl] = useState<string | null>(
+    coverLetter.shareToken
+      ? `${typeof window !== "undefined" ? window.location.origin : ""}/coverletter/share/${coverLetter.shareToken}`
+      : null,
+  );
 
-  const handleDownload = async () => {
+  const handlePrint = async () => {
+    const toastId = toast.loading("Preparing cover letter for print...");
+
     try {
-      const base64 = await generateCoverLetterPdf(data.id);
+      const htmlElement = document.querySelector(
+        ".cover-letter-paper-container",
+      );
 
-      const link = document.createElement("a");
+      if (!htmlElement) {
+        throw new Error("Cover letter content not found");
+      }
 
-      link.href = `data:application/pdf;base64,${base64}`;
+      const clone = htmlElement.cloneNode(true) as HTMLElement;
 
-      link.download = `${data.firstName || "cover-letter"}.pdf`;
+      const images = clone.querySelectorAll("img");
 
-      link.click();
+      for (const img of Array.from(images)) {
+        if (img.src.startsWith("blob:") || img.src.startsWith("http")) {
+          const response = await fetch(img.src);
+          const blob = await response.blob();
 
-      toast.success("PDF downloaded");
+          const reader = new FileReader();
+
+          const base64Str = await new Promise<string>((resolve) => {
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(blob);
+          });
+
+          img.src = base64Str;
+        }
+      }
+
+      const response = await fetch("/api/coverletter/download", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          filename: `Cover_Letter_${data.firstName || "Document"}`,
+          html: clone.outerHTML,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("PDF generation failed");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = url;
+
+      document.body.appendChild(iframe);
+
+      iframe.onload = () => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+          window.URL.revokeObjectURL(url);
+        }, 1000);
+      };
+
+      toast.success("Print preview ready", { id: toastId });
     } catch (error) {
-      console.error(error);
-      toast.error("Could not generate PDF");
+      console.error("Cover Letter Print Error:", error);
+      toast.error("Print failed", { id: toastId });
     }
   };
+
+  const handleDownload = async () => {
+    const toastId = toast.loading("Generating cover letter PDF...");
+
+    try {
+      const htmlElement = document.querySelector(
+        ".cover-letter-paper-container",
+      );
+
+      if (!htmlElement) {
+        throw new Error("Cover letter content not found");
+      }
+
+      const clone = htmlElement.cloneNode(true) as HTMLElement;
+
+      const images = clone.querySelectorAll("img");
+
+      for (const img of Array.from(images)) {
+        if (img.src.startsWith("blob:") || img.src.startsWith("http")) {
+          const response = await fetch(img.src);
+          const blob = await response.blob();
+
+          const reader = new FileReader();
+
+          const base64Str = await new Promise<string>((resolve) => {
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(blob);
+          });
+
+          img.src = base64Str;
+        }
+      }
+
+      const response = await fetch("/api/coverletter/download", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          filename: `Cover_Letter_${data.firstName || "Document"}`,
+          html: clone.outerHTML,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("PDF generation failed");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Cover_Letter_${data.firstName || "Document"}.pdf`;
+      link.click();
+
+      window.URL.revokeObjectURL(url);
+
+      toast.success("Cover letter downloaded", { id: toastId });
+    } catch (error) {
+      console.error("Cover Letter Download Error:", error);
+      toast.error("Download failed", { id: toastId });
+    }
+  };
+
   const handleShareClick = async () => {
     try {
       const shareToken = await createCoverLetterShareLink(data.id);
+
+      const url = `${window.location.origin}/coverletter/share/${shareToken}`;
 
       setData((prev) => ({
         ...prev,
         shareToken,
       }));
 
-      const shareUrl = `${window.location.origin}/coverletter/share/${shareToken}`;
+      setShareUrl(url);
 
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(url);
 
       toast.success("Share link copied", {
-        description: "Anyone with this link can view this cover letter.",
+        description: url,
       });
     } catch (error) {
       console.error(error);
@@ -97,7 +223,7 @@ export default function CoverLetterPreviewView({
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-100">
-      <header className="no-print sticky top-0 z-20 border-b bg-white px-4 py-4 shadow-sm lg:px-6">
+      <header className="no-print  top-0 z-20 border-b bg-white px-4 py-4 shadow-sm lg:px-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.24em] text-red-600">
@@ -126,7 +252,7 @@ export default function CoverLetterPreviewView({
               Share
             </Button>
 
-            <Button variant="outline" size="sm" onClick={handleDownload}>
+            <Button variant="outline" size="sm" onClick={handlePrint}>
               <Printer className="mr-2 size-4" />
               Print
             </Button>
@@ -145,11 +271,37 @@ export default function CoverLetterPreviewView({
             </Button>
           </div>
         </div>
+        {shareUrl && (
+          <div className="w-full rounded-xl border mt-4 border-red-100 bg-red-50 p-3">
+            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.2em] text-red-600">
+              Share Link
+            </p>
+
+            <div className="flex gap-2">
+              <input
+                readOnly
+                value={shareUrl}
+                className="h-10 flex-1 border border-red-100 bg-white px-3 text-xs font-semibold text-slate-700"
+              />
+
+              <Button
+                type="button"
+                size="sm"
+                className="bg-red-600 hover:bg-black"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(shareUrl);
+                  toast.success("Link copied again");
+                }}>
+                Copy
+              </Button>
+            </div>
+          </div>
+        )}
       </header>
 
       <main className="grid flex-1 grid-cols-1 xl:grid-cols-[1fr_320px]">
         <section className="overflow-auto px-4 py-8">
-          <div className="mx-auto w-fit origin-top scale-[0.58] sm:scale-[0.72] lg:scale-[0.85] xl:scale-100">
+          <div className="mx-auto w-fit origin-top scale-[0.58] print:scale-100 sm:scale-[0.72] lg:scale-[0.85] xl:scale-100">
             <CoverLetterPreview
               coverLetterData={mapToCoverLetterValues(data)}
             />
