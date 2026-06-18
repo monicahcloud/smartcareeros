@@ -63,7 +63,7 @@ export const linkGroups: LinkGroup[] = [
       },
       {
         label: "AI Mock Interview",
-        href: "/interviews",
+        href: "/interview",
         icon: <MessageSquare className="h-5 w-5" />,
       },
     ],
