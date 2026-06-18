@@ -4,7 +4,7 @@ import { Hero } from "./Hero";
 import { HowItWorks } from "./HowItWorks";
 import { LandingFooter } from "./LandingFooter";
 import { PricingSection } from "./PricingSection";
-import { SecondaryToolsSection } from "./SecondaryToolsSection";
+// import { SecondaryToolsSection } from "./SecondaryToolsSection";
 
 export default function LandingPage() {
   return (
@@ -12,7 +12,7 @@ export default function LandingPage() {
       <Hero />
       <HowItWorks />
       <FeatureSection />
-      <SecondaryToolsSection />
+      {/* <SecondaryToolsSection />*/}
       <PricingSection />
       <FinalCtaSection />
       <LandingFooter />

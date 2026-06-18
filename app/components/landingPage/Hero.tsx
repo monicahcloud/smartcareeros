@@ -10,27 +10,28 @@ import {
 import { SectionGridBackground } from "../SectionGridBackground";
 
 const highlights = [
+  "Career Profile",
   "AI Resumes and Cover Letters",
-  "AI Interview Simulations",
-  "Job Search",
-  "Job Application Tracking",
+  "Live Job Search",
+  "Smart Job Tracking",
+  "AI Interview Prep",
 ];
 
 const floatingCards = [
+  {
+    title: "Profile Strength",
+    value: "86%",
+    icon: Sparkles,
+  },
   {
     title: "Resume Score",
     value: "92%",
     icon: FileText,
   },
   {
-    title: "Applications Tracked",
+    title: "Jobs Tracked",
     value: "24",
     icon: LayoutDashboard,
-  },
-  {
-    title: "AI Suggestions",
-    value: "Ready",
-    icon: Sparkles,
   },
 ];
 
@@ -97,11 +98,11 @@ export function Hero() {
             </h1>
 
             <p className="mt-7 max-w-2xl text-base font-medium leading-8 text-slate-600 sm:text-lg">
-              Smart CareerOS gives you one place to build resumes and cover
-              letters, apply for jobs using our unique job search engines,
-              prepare for interviews, and land my next career.
+              Smart CareerOS helps you build one powerful Career Profile, create
+              tailored resumes and cover letters, search live job opportunities,
+              automatically track your job search, and prepare for interviews
+              with confidence.
             </p>
-
             <div className="mt-9 flex flex-col gap-4 sm:flex-row">
               <Link
                 href="/sign-up"
@@ -188,9 +189,10 @@ export function Hero() {
 
                 <div className="mt-5 space-y-3">
                   {[
-                    "Tailor resume for Product Analyst role",
-                    "Create cover letter for remote position",
-                    "Prepare interview questions for next round",
+                    "Complete your Career Profile",
+                    "Generate a tailored resume and coverletter",
+                    "Search live job opportunities",
+                    "Track saved and applied jobs",
                   ].map((task) => (
                     <div
                       key={task}

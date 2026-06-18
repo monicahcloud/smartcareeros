@@ -6,6 +6,7 @@ import {
   BarChart3,
   MessageSquare,
   BookOpen,
+  UserRound,
 } from "lucide-react";
 
 import { PrimaryButton } from "../PrimaryButton";
@@ -14,38 +15,38 @@ import { OutlineButton } from "../Outline";
 const steps = [
   {
     number: "01",
-    title: "Build Custom Resumes & Cover Letters",
+    title: "Create Your Career Profile",
     description:
-      "Let our AI-powered tools help you create polished resumes and cover letters tailored to the roles you want.",
-    icon: FileText,
+      "Build your professional profile once with your experience, skills, education, achievements, and career goals. It becomes the foundation for everything you do.",
+    icon: UserRound,
   },
   {
     number: "02",
-    title: "Search & Apply for Jobs",
+    title: "Build Resumes & Cover Letters",
     description:
-      "Search and apply for jobs with tools that help you find and organize the right opportunities.",
-    icon: Briefcase,
+      "Use AI-powered tools to create tailored resumes and cover letters optimized for the roles you want.",
+    icon: FileText,
   },
   {
     number: "03",
-    title: "Track Your Progress",
+    title: "Search Opportunities",
     description:
-      "Keep up with jobs applied for, follow-ups, interviews, and next steps in one organized dashboard.",
-    icon: BarChart3,
+      "Explore live job opportunities and discover positions that align with your experience and career goals.",
+    icon: Briefcase,
   },
   {
     number: "04",
-    title: "Prepare for Interviews",
+    title: "Track Your Job Search",
     description:
-      "Practice with AI-powered interview prep tools so you can answer with clarity and confidence.",
-    icon: MessageSquare,
+      "Automatically organize viewed, saved, and applied jobs while managing interviews, follow-ups, and next steps from one dashboard.",
+    icon: BarChart3,
   },
   {
     number: "05",
-    title: "Career Resources",
+    title: "Prepare With AI",
     description:
-      "Access career advice, resume tips, interview guidance, and resources to help you grow.",
-    icon: BookOpen,
+      "Practice realistic interviews, improve your answers, and build confidence with AI-powered interview simulations.",
+    icon: MessageSquare,
   },
 ];
 

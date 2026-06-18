@@ -2,26 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 const footerLinks = [
-  {
-    label: "Resume Builder",
-    href: "/resumebuilder",
-  },
-  {
-    label: "Job Search",
-    href: "/jobsearch",
-  },
-  {
-    label: "Job Tracker",
-    href: "/jobs",
-  },
-  {
-    label: "Interview AI",
-    href: "/mockinterview",
-  },
-  {
-    label: "Career Blog",
-    href: "/blog",
-  },
+  "Career Profile",
+  "Resume Builder",
+  "Cover Letters",
+  "Live Job Search",
+  "Smart Job Tracker",
+  "Interview AI",
 ];
 
 export function LandingFooter() {
@@ -44,19 +30,17 @@ export function LandingFooter() {
         <nav
           aria-label="Footer navigation"
           className="flex flex-wrap items-center justify-center gap-3 text-[11px] font-black uppercase tracking-widest text-black md:justify-start">
-          {footerLinks.map((link, index) => (
-            <span key={link.label} className="flex items-center gap-3">
-              <Link
-                href={link.href}
-                className="transition-colors hover:text-red-600">
-                {link.label}
-              </Link>
+          {footerLinks.map((label, index) => (
+            <span key={label} className="flex items-center gap-3">
+              <span className="transition-colors hover:text-red-600">
+                {label}
+              </span>
 
-              {index < footerLinks.length - 1 ? (
+              {index < footerLinks.length - 1 && (
                 <span aria-hidden="true" className="text-slate-300">
                   |
                 </span>
-              ) : null}
+              )}
             </span>
           ))}
         </nav>

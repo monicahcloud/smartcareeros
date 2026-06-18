@@ -6,6 +6,7 @@ import {
   BookOpen,
   Briefcase,
   FileText,
+  LayoutDashboard,
   MessageSquare,
   Sparkles,
 } from "lucide-react";
@@ -148,11 +149,11 @@ export default function FeatureSection() {
             </div>
 
             <div>
-              <h3 className="mb-3 text-2xl font-black uppercase leading-tight text-black">
-                Job Search
+              <h3 className="mb-3 text-2xl font-black uppercase leading-tight">
+                Job Search Command Center
               </h3>
 
-              <p className="text-sm font-semibold leading-6 text-slate-500">
+              <p className="text-sm font-semibold leading-6 text-red-500">
                 Search opportunities and keep your next move organized from one
                 place.
               </p>
@@ -163,20 +164,21 @@ export default function FeatureSection() {
           <motion.div
             whileHover={{ y: -5 }}
             className="group relative flex min-h-[240px] flex-col justify-between overflow-hidden bg-red-600 p-8 text-white">
-            <BookOpen className="absolute -bottom-3 -right-3 h-24 w-24 opacity-10 transition-transform group-hover:scale-110" />
+            <LayoutDashboard className="absolute -bottom-3 -right-3 h-24 w-24 opacity-10 transition-transform group-hover:scale-110" />
 
             <div className="flex h-11 w-11 items-center justify-center bg-white/20 backdrop-blur-md">
-              <Sparkles className="h-5 w-5 text-white" />
+              <LayoutDashboard className="h-5 w-5 text-white" />
             </div>
 
             <div>
               <h3 className="mb-3 text-2xl font-black uppercase leading-tight">
-                Career Resources
+                Smart Job Tracker
               </h3>
 
               <p className="text-sm font-semibold leading-6 text-red-50">
-                Access career tips, guides, and resources that help you move
-                smarter.
+                Automatically organize viewed, saved, and applied jobs. Track
+                interviews, follow-ups, and every stage of your job search from
+                one intelligent dashboard.
               </p>
             </div>
           </motion.div>
