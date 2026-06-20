@@ -42,6 +42,9 @@ export type AccomplishmentItem = {
 
 export type ResumeFormState = {
   resumeTitle: string;
+  resumeType: string;
+  description: string;
+
   jobTitle: string;
   firstName: string;
   lastName: string;
@@ -56,4 +59,13 @@ export type ResumeFormState = {
   certifications: CertificationItem[];
   projects: ProjectItem[];
   accomplishments: AccomplishmentItem[];
+
+  themeId?: string;
+  themeColor?: string;
+  borderStyle?: string;
+  photo?: File;
+  photoUrl?: string;
+  website?: string;
+  linkedin?: string;
+  gitHub?: string;
 };

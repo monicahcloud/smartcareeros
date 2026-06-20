@@ -1,185 +1,392 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { toast } from "sonner";
-import { saveResumeBasics } from "./actions";
+import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { Eye } from "lucide-react";
+
 import {
-  AccomplishmentItem,
-  CertificationItem,
-  EducationItem,
-  ProjectItem,
-  ResumeFormState,
-  WorkExperienceItem,
-} from "./types";
+  Certification,
+  Education,
+  JobDescription,
+  Project,
+  Resume,
+  TechSkill,
+  WorkExperience,
+} from "@prisma/client";
+
+import { cn } from "@/lib/utils";
+import { ResumeFormState } from "./types";
+
 import BasicInfoSection from "../sections/BasicInfoSection";
 import SkillsSection from "../sections/SkillsSection";
-import ResumePreview from "../sections/ResumePreview";
-import ResumeEditorHeader from "@/app/components/resumebuilder/editor/ResumeEditorHeader";
-import ResumeEditorBreadcrumbs from "@/app/components/resumebuilder/editor/ResumeEditorBreadcrumbs";
-import ResumeEditorFooter from "@/app/components/resumebuilder/editor/ResumeEditorFooter";
 import WorkExperienceSection from "../sections/WorkExperienceSection";
 import EducationSection from "../sections/EducationSection";
 import CertificationsSection from "../sections/CertificationsSection";
 import ProjectsSection from "../sections/ProjectsSection";
 import AccomplishmentsSection from "../sections/AccomplishmentsSection";
+import ResumePreview from "../sections/ResumePreview";
 
-type ResumeEditorProps = {
-  resumeToEdit: {
-    id: string;
-    resumeTitle: string | null;
-    resumeType: string | null;
-    summary: string | null;
-    jobTitle?: string | null;
-    firstName?: string | null;
-    lastName?: string | null;
-    email?: string | null;
-    phone?: string | null;
-    address?: string | null;
-    skills?: string[];
-    techSkills?: Array<
-      | string
-      | {
-          id?: string;
-          resumeId?: string;
-          name?: string | null;
-          rating?: number | null;
-          createdAt?: Date | string;
-          updatedAt?: Date | string;
-        }
-    >;
-    workExperience?: WorkExperienceItem[];
-    education?: EducationItem[];
-    certifications?: CertificationItem[];
-    projects?: ProjectItem[];
-    accomplishments?: AccomplishmentItem[];
-  };
+import ResumeEditorBreadcrumbs from "@/app/components/resumebuilder/editor/ResumeEditorBreadcrumbs";
+import ResumeEditorFooter from "@/app/components/resumebuilder/editor/ResumeEditorFooter";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import PersonalInfoSection from "../sections/PersonalInfoForm";
+
+type ResumeWithRelations = Resume & {
+  techSkills: TechSkill[];
+  workExperience: WorkExperience[];
+  education: Education[];
+  certifications: Certification[];
+  projects: Project[];
 };
 
-const steps = [
-  { key: "basic", title: "Basic Info" },
-  { key: "skills", title: "Skills" },
-  { key: "experience", title: "Experience" },
-  { key: "education", title: "Education" },
-  { key: "certifications", title: "Certifications" },
-  { key: "projects", title: "Projects" },
-  { key: "accomplishments", title: "Accomplishments" },
-  { key: "review", title: "Review" },
+interface ResumeEditorProps {
+  userId: string;
+  clerkId: string;
+  initialThemeId: string;
+  resumeToEdit: ResumeWithRelations | null;
+  resumes: Partial<Resume>[];
+  jobDescription?: JobDescription | null;
+}
+
+const RESUME_THEME_REGISTRY = [
+  {
+    id: "classic-left",
+    name: "Classic Left",
+    category: "Professional",
+    defaultColor: "#2563eb",
+  },
+  {
+    id: "centered-modern",
+    name: "Centered Modern",
+    category: "Modern",
+    defaultColor: "#2563eb",
+  },
+  {
+    id: "split-header",
+    name: "Split Header",
+    category: "Corporate",
+    defaultColor: "#2563eb",
+  },
+  {
+    id: "minimal",
+    name: "Minimal",
+    category: "Clean",
+    defaultColor: "#2563eb",
+  },
+  {
+    id: "executive",
+    name: "Executive",
+    category: "Leadership",
+    defaultColor: "#111827",
+  },
+  {
+    id: "right-header",
+    name: "Right Header",
+    category: "Professional",
+    defaultColor: "#2563eb",
+  },
+  {
+    id: "boxed-header",
+    name: "Boxed Header",
+    category: "Corporate",
+    defaultColor: "#111827",
+  },
+  {
+    id: "accent-bar",
+    name: "Accent Bar",
+    category: "Modern",
+    defaultColor: "#2563eb",
+  },
+  {
+    id: "two-column-minimal",
+    name: "Two Column Minimal",
+    category: "Clean",
+    defaultColor: "#2563eb",
+  },
+  {
+    id: "corporate-panel",
+    name: "Corporate Panel",
+    category: "Executive",
+    defaultColor: "#111827",
+  },
+  {
+    id: "modern-sidebar",
+    name: "Modern Sidebar",
+    category: "Modern",
+    defaultColor: "#2563eb",
+  },
+  {
+    id: "federal-clean",
+    name: "Federal Clean",
+    category: "Federal",
+    defaultColor: "#111827",
+  },
+  {
+    id: "bold-topline",
+    name: "Bold Topline",
+    category: "Bold",
+    defaultColor: "#111827",
+  },
+  {
+    id: "letterhead",
+    name: "Letterhead",
+    category: "Corporate",
+    defaultColor: "#111827",
+  },
+  {
+    id: "simple-professional",
+    name: "Simple Professional",
+    category: "Traditional",
+    defaultColor: "#2563eb",
+  },
+];
+
+const allResumeSteps = [
+  { key: "basic", title: "General", component: BasicInfoSection },
+  { key: "personal", title: "Personal", component: PersonalInfoSection },
+  { key: "skills", title: "Skills", component: SkillsSection },
+  { key: "experience", title: "Experience", component: WorkExperienceSection },
+  { key: "education", title: "Education", component: EducationSection },
+  {
+    key: "certifications",
+    title: "Certifications",
+    component: CertificationsSection,
+  },
+  { key: "projects", title: "Projects", component: ProjectsSection },
+  {
+    key: "accomplishments",
+    title: "Accomplishments",
+    component: AccomplishmentsSection,
+  },
+  { key: "review", title: "Review", component: null },
 ] as const;
 
-type StepKey = (typeof steps)[number]["key"];
+export default function ResumeEditor({
+  initialThemeId,
+  resumeToEdit,
+  jobDescription,
+}: ResumeEditorProps) {
+  const searchParams = useSearchParams();
 
-export default function ResumeEditor({ resumeToEdit }: ResumeEditorProps) {
-  const [isPending, startTransition] = useTransition();
-  const [currentStep, setCurrentStep] = useState<StepKey>("basic");
+  const [showMobilePreview, setShowMobilePreview] = useState(false);
 
-  const [form, setForm] = useState<ResumeFormState>({
-    resumeTitle: resumeToEdit.resumeTitle || "",
-    jobTitle: resumeToEdit.jobTitle || "",
-    firstName: resumeToEdit.firstName || "",
-    lastName: resumeToEdit.lastName || "",
-    email: resumeToEdit.email || "",
-    phone: resumeToEdit.phone || "",
-    address: resumeToEdit.address || "",
-    summary: resumeToEdit.summary || "",
-    skills: resumeToEdit.skills || [],
-    techSkills: Array.isArray(resumeToEdit.techSkills)
-      ? resumeToEdit.techSkills
-          .map((skill) =>
-            typeof skill === "string" ? skill : skill.name || "",
-          )
-          .filter(Boolean)
-      : [],
-    workExperience: resumeToEdit.workExperience || [],
-    education: resumeToEdit.education || [],
-    certifications: resumeToEdit.certifications || [],
-    projects: resumeToEdit.projects || [],
-    accomplishments: resumeToEdit.accomplishments || [],
+  const [resumeData, setResumeData] = useState<ResumeFormState>({
+    resumeTitle: resumeToEdit?.resumeTitle || "",
+    resumeType: resumeToEdit?.resumeType || "",
+    description: resumeToEdit?.description || "",
+    jobTitle: resumeToEdit?.jobTitle || jobDescription?.title || "",
+    firstName: resumeToEdit?.firstName || "",
+    lastName: resumeToEdit?.lastName || "",
+    email: resumeToEdit?.email || "",
+    phone: resumeToEdit?.phone || "",
+    address: resumeToEdit?.address || "",
+    summary: resumeToEdit?.summary || "",
+    skills: resumeToEdit?.skills || [],
+    techSkills:
+      resumeToEdit?.techSkills
+        ?.map((skill) => skill.name || "")
+        .filter(Boolean) || [],
+
+    workExperience:
+      resumeToEdit?.workExperience?.map((exp) => ({
+        company: exp.company || "",
+        position: exp.position || "",
+        location: exp.location || "",
+        startDate: exp.startDate
+          ? exp.startDate.toISOString().slice(0, 10)
+          : "",
+        endDate: exp.endDate ? exp.endDate.toISOString().slice(0, 10) : "",
+        description: exp.description || "",
+      })) || [],
+
+    education:
+      resumeToEdit?.education?.map((edu) => ({
+        school: edu.school || "",
+        degree: edu.degree || "",
+        location: edu.location || "",
+        startDate: edu.startDate
+          ? edu.startDate.toISOString().slice(0, 10)
+          : "",
+        endDate: edu.endDate ? edu.endDate.toISOString().slice(0, 10) : "",
+      })) || [],
+
+    certifications:
+      resumeToEdit?.certifications?.map((cert) => ({
+        name: cert.name || "",
+        issuer: cert.issuer || "",
+        issuedDate: cert.issuedDate
+          ? cert.issuedDate.toISOString().slice(0, 10)
+          : "",
+        expiresDate: cert.expiresDate
+          ? cert.expiresDate.toISOString().slice(0, 10)
+          : "",
+        credentialUrl: cert.credentialUrl || "",
+        description: cert.description || "",
+      })) || [],
+
+    projects:
+      resumeToEdit?.projects?.map((project) => ({
+        name: project.name || "",
+        role: project.role || "",
+        description: project.description || "",
+        technologies: project.technologies || [],
+        url: project.url || "",
+      })) || [],
+
+    accomplishments: [],
+
+    themeId: resumeToEdit?.themeId || initialThemeId,
+    themeColor: resumeToEdit?.themeColor || "#2563eb",
+    borderStyle: resumeToEdit?.borderStyle || "squircle",
   });
 
-  const currentStepIndex = steps.findIndex((step) => step.key === currentStep);
+  const currentStep = searchParams.get("step") || allResumeSteps[0].key;
+  const currentStepData = allResumeSteps.find(
+    (step) => step.key === currentStep,
+  );
 
-  function goNext() {
-    const nextStep = steps[currentStepIndex + 1];
-    if (nextStep) setCurrentStep(nextStep.key);
-  }
+  const isLastStep = currentStep === "review";
+  const CurrentStepComponent = currentStepData?.component;
 
-  function goBack() {
-    const previousStep = steps[currentStepIndex - 1];
-    if (previousStep) setCurrentStep(previousStep.key);
-  }
+  const handleStepChange = (step: string) => {
+    const params = new URLSearchParams(searchParams.toString());
 
-  function handleSave() {
-    startTransition(async () => {
-      try {
-        await saveResumeBasics({
-          resumeId: resumeToEdit.id,
-          ...form,
-        });
+    params.set("step", step);
 
-        toast.success("Resume saved.");
-      } catch (error) {
-        console.error(error);
-        toast.error("Could not save resume.");
-      }
-    });
-  }
-
-  function renderCurrentStep() {
-    switch (currentStep) {
-      case "basic":
-        return <BasicInfoSection form={form} setForm={setForm} />;
-
-      case "skills":
-        return <SkillsSection form={form} setForm={setForm} />;
-      case "experience":
-        return <WorkExperienceSection form={form} setForm={setForm} />;
-
-      case "education":
-        return <EducationSection form={form} setForm={setForm} />;
-
-      case "certifications":
-        return <CertificationsSection form={form} setForm={setForm} />;
-
-      case "projects":
-        return <ProjectsSection form={form} setForm={setForm} />;
-
-      case "accomplishments":
-        return <AccomplishmentsSection form={form} setForm={setForm} />;
-
-      case "review":
-        return <ResumePreview form={form} />;
-
-      default:
-        return null;
-    }
-  }
+    window.history.pushState(null, "", `?${params.toString()}`);
+  };
 
   return (
-    <main className="grid min-h-screen gap-6 bg-slate-50 p-6 lg:grid-cols-[0.9fr_1.1fr]">
-      <section className="space-y-6">
-        <ResumeEditorHeader resumeTitle={form.resumeTitle} />
+    <div className="flex h-[calc(100vh-64px)] flex-col overflow-hidden">
+      {/* HEADER */}
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white">
+        <div className="flex flex-col gap-6 px-4 py-5 lg:px-8">
+          {/* TOP */}
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-black tracking-tight text-slate-900">
+                Resume Builder
+              </h1>
+            </div>
 
-        <div className="border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="flex items-end gap-3">
+              <div className="w-full max-w-xs">
+                <p className="mb-2 text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">
+                  Switch Template
+                </p>
+
+                <Select
+                  value={resumeData.themeId || "classic-left"}
+                  onValueChange={(themeId) => {
+                    const selectedTheme = RESUME_THEME_REGISTRY.find(
+                      (theme) => theme.id === themeId,
+                    );
+
+                    setResumeData((prev) => ({
+                      ...prev,
+                      themeId,
+                      themeColor:
+                        prev.themeColor ||
+                        selectedTheme?.defaultColor ||
+                        "#2563eb",
+                    }));
+                  }}>
+                  <SelectTrigger className="h-12 border-slate-200 bg-white font-bold">
+                    <SelectValue placeholder="Choose template" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {RESUME_THEME_REGISTRY.map((theme) => (
+                      <SelectItem key={theme.id} value={theme.id}>
+                        {theme.name} — {theme.category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              {resumeToEdit?.id && (
+                <Link
+                  href={
+                    isLastStep ? `/resumes/preview/${resumeToEdit.id}` : "#"
+                  }
+                  onClick={(e) => {
+                    if (!isLastStep) {
+                      e.preventDefault();
+                    }
+                  }}
+                  className={`inline-flex h-12 items-center justify-center rounded-full gap-2 px-6 text-xs font-black uppercase tracking-widest transition ${
+                    isLastStep
+                      ? "bg-red-600 text-white hover:bg-black"
+                      : "cursor-not-allowed bg-slate-200 text-slate-400"
+                  }`}>
+                  <Eye className="h-4 w-4" />
+                  {isLastStep ? "Finish & Preview" : "Complete All Steps First"}
+                </Link>
+              )}
+            </div>
+          </div>
+
+          {/* BREADCRUMBS */}
           <ResumeEditorBreadcrumbs
-            steps={steps}
+            steps={allResumeSteps}
             currentStep={currentStep}
-            setCurrentStep={setCurrentStep}
-          />
-
-          <div className="min-h-[560px] py-6">{renderCurrentStep()}</div>
-
-          <ResumeEditorFooter
-            currentStepIndex={currentStepIndex}
-            totalSteps={steps.length}
-            isPending={isPending}
-            onBack={goBack}
-            onNext={goNext}
-            onSave={handleSave}
+            setCurrentStep={handleStepChange}
           />
         </div>
-      </section>
+      </header>
 
-      <ResumePreview form={form} />
-    </main>
+      {/* MAIN */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* LEFT SIDE */}
+        <div
+          className={cn(
+            "w-full overflow-y-auto border-r border-slate-200 bg-white md:w-1/2",
+            showMobilePreview && "hidden md:block",
+          )}>
+          <div className="mx-auto max-w-2xl px-4 py-8 lg:px-8">
+            {CurrentStepComponent ? (
+              <CurrentStepComponent form={resumeData} setForm={setResumeData} />
+            ) : (
+              <ResumePreview form={resumeData} />
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT SIDE */}
+        <div
+          className={cn(
+            "w-full overflow-y-auto bg-slate-100 md:w-1/2",
+            !showMobilePreview && "hidden md:block",
+          )}>
+          <div className="flex min-h-full items-start justify-center overflow-auto p-4 lg:p-8">
+            <div className="origin-top scale-[0.5] lg:scale-[0.58] xl:scale-[0.65] 2xl:scale-[0.72]">
+              <ResumePreview form={resumeData} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* FOOTER */}
+      <ResumeEditorFooter
+        currentStep={currentStep}
+        setCurrentStep={handleStepChange}
+        showMobilePreview={showMobilePreview}
+        setShowMobilePreview={setShowMobilePreview}
+        isSaving={false}
+        hasUnsavedChanges={false}
+        isError={false}
+      />
+    </div>
   );
 }

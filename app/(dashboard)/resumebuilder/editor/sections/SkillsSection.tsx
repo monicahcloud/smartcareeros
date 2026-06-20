@@ -1,80 +1,141 @@
 "use client";
 
-import { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { skillsSchema, SkillsValues } from "@/lib/validation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+
 import { ResumeFormState } from "../[id]/types";
+import { THEME_REGISTRY } from "@/lib/registry-theme-registry";
+import GenerateSkillsForm from "./GenerateSkills";
 
 type SkillsSectionProps = {
   form: ResumeFormState;
   setForm: React.Dispatch<React.SetStateAction<ResumeFormState>>;
 };
 
-export default function SkillsSection({ form, setForm }: SkillsSectionProps) {
-  const [skillInput, setSkillInput] = useState("");
+export default function SkillsSection({
+  form: resumeData,
+  setForm: setResumeData,
+}: SkillsSectionProps) {
+  const themeCategory = useMemo(() => {
+    const theme = THEME_REGISTRY.find((t) => t.id === resumeData.themeId);
+    return theme?.category || "chronological";
+  }, [resumeData.themeId]);
 
-  function addSkill(skill: string) {
-    const cleaned = skill.trim();
-    if (!cleaned) return;
+  const form = useForm<SkillsValues>({
+    resolver: zodResolver(skillsSchema),
+    defaultValues: {
+      skills: resumeData.skills || [],
+    },
+  });
 
-    setForm((prev) => ({
-      ...prev,
-      skills: Array.from(new Set([...prev.skills, cleaned])),
-    }));
-  }
+  const [searchedJobTitle, setSearchedJobTitle] = useState<string | null>(null);
+  const [suggestedSkills, setSuggestedSkills] = useState<string[]>([]);
 
-  function removeSkill(skill: string) {
-    setForm((prev) => ({
-      ...prev,
-      skills: prev.skills.filter((item) => item !== skill),
-    }));
-  }
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      setResumeData((prev) => ({
+        ...prev,
+        skills: values.skills?.filter(Boolean).map((s) => s!.trim()) || [],
+      }));
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, setResumeData]);
 
   return (
-    <div className="space-y-3">
-      <label className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">
-        Skills
-      </label>
-
-      <div className="flex gap-3">
-        <input
-          value={skillInput}
-          onChange={(e) => setSkillInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              addSkill(skillInput);
-              setSkillInput("");
-            }
-          }}
-          placeholder="Add a skill"
-          className="h-12 flex-1 border border-slate-200 px-4 outline-none focus:border-red-600"
-        />
-
-        <button
-          type="button"
-          onClick={() => {
-            addSkill(skillInput);
-            setSkillInput("");
-          }}
-          className="h-12 bg-black px-5 text-xs font-black uppercase tracking-[0.16em] text-white transition hover:bg-red-600">
-          Add
-        </button>
+    <div className="mx-auto max-w-xl space-y-6">
+      <div className="space-y-1.5 text-center">
+        <h2 className="text-2xl font-black uppercase tracking-tighter">
+          Soft & Hard Skills
+        </h2>
+        <p className="text-sm italic text-muted-foreground">
+          Optimizing for your{" "}
+          <span className="font-bold text-red-600">{themeCategory}</span>{" "}
+          layout.
+        </p>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {form.skills.length === 0 ? (
-          <p className="text-sm text-slate-400">No skills added yet.</p>
-        ) : (
-          form.skills.map((skill) => (
-            <button
-              key={skill}
-              type="button"
-              onClick={() => removeSkill(skill)}
-              className="border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 transition hover:border-red-600 hover:text-red-600">
-              {skill} ×
-            </button>
-          ))
-        )}
-      </div>
+      <Form {...form}>
+        <form className="space-y-4">
+          <FormField
+            control={form.control}
+            name="skills"
+            render={({ field }) => (
+              <FormItem>
+                <div className="mb-2 flex items-center justify-between">
+                  <FormLabel className="ml-1 text-[10px] font-bold uppercase">
+                    Skill List
+                  </FormLabel>
+
+                  <span className="text-[10px] font-bold uppercase text-red-500">
+                    Target: 6-10 Skills
+                  </span>
+                </div>
+
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    placeholder="e.g. Project Management, React, Leadership..."
+                    className="min-h-[120px] rounded-2xl shadow-sm"
+                    value={field.value?.join(", ") || ""}
+                    onChange={(e) => {
+                      const skills = e.target.value
+                        .split(",")
+                        .map((s) => s.trim())
+                        .filter(Boolean);
+
+                      field.onChange(skills);
+                    }}
+                  />
+                </FormControl>
+
+                <FormDescription className="text-[10px]">
+                  Separate with commas.
+                </FormDescription>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="pt-4">
+            <GenerateSkillsForm
+              resumeData={resumeData}
+              onSkillsGenerated={(skills) => {
+                const current = form.getValues("skills") || [];
+
+                form.setValue(
+                  "skills",
+                  Array.from(new Set([...current, ...skills])),
+                );
+              }}
+              onJobTitleSearched={setSearchedJobTitle}
+              onSuggestedSkills={setSuggestedSkills}
+            />
+          </div>
+
+          {searchedJobTitle && (
+            <p className="mt-4 text-center text-[10px] text-muted-foreground">
+              Analyzed <strong>{suggestedSkills.length}</strong> skills for
+              &quot;
+              {searchedJobTitle}&quot;
+            </p>
+          )}
+        </form>
+      </Form>
     </div>
   );
 }

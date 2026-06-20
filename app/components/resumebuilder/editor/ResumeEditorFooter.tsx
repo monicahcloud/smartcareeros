@@ -1,57 +1,67 @@
 "use client";
 
-import ResumeSaveButton from "./ResumeSaveButton";
+import { Eye, Pencil, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-type ResumeEditorFooterProps = {
-  currentStepIndex: number;
-  totalSteps: number;
-  isPending: boolean;
-  onBack: () => void;
-  onNext: () => void;
-  onSave: () => void;
-};
+interface ResumeEditorFooterProps {
+  currentStep: string;
+  setCurrentStep: (step: string) => void;
+  showMobilePreview: boolean;
+  setShowMobilePreview: (value: boolean) => void;
+  isSaving?: boolean;
+  hasUnsavedChanges?: boolean;
+  isError?: boolean;
+}
 
 export default function ResumeEditorFooter({
-  currentStepIndex,
-  totalSteps,
-  isPending,
-  onBack,
-  onNext,
-  onSave,
+  showMobilePreview,
+  setShowMobilePreview,
+  isSaving,
+  hasUnsavedChanges,
+  isError,
 }: ResumeEditorFooterProps) {
-  const isFirstStep = currentStepIndex === 0;
-  const isLastStep = currentStepIndex === totalSteps - 1;
-
   return (
-    <div className="flex items-center justify-between border-t border-slate-200 pt-4">
-      <button
-        type="button"
-        onClick={onBack}
-        disabled={isFirstStep}
-        className="h-12 border border-slate-200 px-6 text-xs font-black uppercase tracking-[0.16em] text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40">
-        Back
-      </button>
+    <footer className="border-t border-slate-200 bg-white px-4 py-4">
+      <div className="flex items-center justify-between gap-4">
+        <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+          {isSaving ? (
+            <span className="flex items-center gap-2 text-slate-500">
+              <Loader2 className="size-4 animate-spin" />
+              Saving
+            </span>
+          ) : isError ? (
+            <span className="flex items-center gap-2 text-red-600">
+              <AlertCircle className="size-4" />
+              Save Failed
+            </span>
+          ) : hasUnsavedChanges ? (
+            <span className="text-amber-600">Unsaved Changes</span>
+          ) : (
+            <span className="flex items-center gap-2 text-green-600">
+              <CheckCircle2 className="size-4" />
+              Saved
+            </span>
+          )}
+        </div>
 
-      <div className="flex gap-3">
-        <ResumeSaveButton isPending={isPending} onSave={onSave} />
-
-        {!isLastStep ? (
-          <button
-            type="button"
-            onClick={onNext}
-            className="h-12 bg-black px-6 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-red-600">
-            Next
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={onSave}
-            disabled={isPending}
-            className="h-12 bg-black px-6 text-sm font-black uppercase tracking-[0.16em] text-white transition hover:bg-red-600 disabled:opacity-60">
-            Finish
-          </button>
-        )}
+        <Button
+          type="button"
+          variant="outline"
+          className="gap-2 rounded-xl md:hidden"
+          onClick={() => setShowMobilePreview(!showMobilePreview)}>
+          {showMobilePreview ? (
+            <>
+              <Pencil className="size-4" />
+              Edit
+            </>
+          ) : (
+            <>
+              <Eye className="size-4" />
+              Preview
+            </>
+          )}
+        </Button>
       </div>
-    </div>
+    </footer>
   );
 }
