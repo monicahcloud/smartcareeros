@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useEffect, useMemo } from "react";
-import { Button } from "@/components/ui/button";
+import { EditorFormProps } from "@/lib/types";
+import { educationSchema, EducationValues } from "@/lib/validation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { GripHorizontal, PlusCircle, Trash2 } from "lucide-react";
+import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -12,10 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { educationSchema, EducationValues } from "@/lib/validation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { GripHorizontal, PlusCircle, Trash2 } from "lucide-react";
-import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import {
   SortableContext,
   sortableKeyboardCoordinates,
@@ -34,18 +35,11 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { THEME_REGISTRY } from "@/lib/registry-theme-registry";
-import { ResumeFormState } from "../[id]/types";
+// import { EducationTips } from "@/components/EducationTips";
+import { THEME_REGISTRY } from "@/lib/resume-theme-registry";
 
-type EducationSectionProps = {
-  form: ResumeFormState;
-  setForm: React.Dispatch<React.SetStateAction<ResumeFormState>>;
-};
-
-function EducationForm({
-  form: resumeData,
-  setForm: setResumeData,
-}: EducationSectionProps) {
+function EducationForm({ resumeData, setResumeData }: EditorFormProps) {
+  // SOURCE OF TRUTH: Get category from Registry
   const themeCategory = useMemo(() => {
     const theme = THEME_REGISTRY.find((t) => t.id === resumeData.themeId);
     return theme?.category || "chronological";
@@ -59,24 +53,14 @@ function EducationForm({
   });
 
   useEffect(() => {
-    const { unsubscribe } = form.watch((values) => {
-      const normalizedEducation =
-        values.education?.filter(Boolean).map((edu) => ({
-          school: edu?.school ?? "",
-          degree: edu?.degree ?? "",
-          location: edu?.location ?? "",
-          startDate: edu?.startDate ?? "",
-          endDate: edu?.endDate ?? "",
-        })) ?? [];
-
-      setResumeData((prev) => ({
-        ...prev,
-        education: normalizedEducation,
-      }));
+    const { unsubscribe } = form.watch(async (values) => {
+      setResumeData({
+        ...resumeData,
+        education: values.education?.filter((exp) => exp !== undefined) || [],
+      });
     });
-
-    return () => unsubscribe();
-  }, [form, setResumeData]);
+    return unsubscribe;
+  }, [form, resumeData, setResumeData]);
 
   const { fields, append, remove, move } = useFieldArray({
     control: form.control,
@@ -87,33 +71,30 @@ function EducationForm({
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    })
   );
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
-
     if (over && active.id !== over.id) {
       const oldIndex = fields.findIndex((field) => field.id === active.id);
       const newIndex = fields.findIndex((field) => field.id === over.id);
-
       move(oldIndex, newIndex);
     }
   }
 
   return (
-    <div className="education-info mx-auto max-w-xl space-y-6">
+    <div className="max-w-xl mx-auto space-y-6 education-info">
       <div className="space-y-1.5 text-center">
+        {/* <EducationTips /> */}
         <h2 className="text-2xl font-black uppercase tracking-tighter">
           Education
         </h2>
-
-        <p className="text-sm italic text-muted-foreground">
+        <p className="text-sm text-muted-foreground italic">
           Highlight your academic background for the{" "}
-          <span className="font-bold text-blue-600">{themeCategory}</span>{" "}
+          <span className="text-blue-600 font-bold">{themeCategory}</span>{" "}
           layout.
         </p>
-
         <Form {...form}>
           <form className="space-y-4 text-left">
             <DndContext
@@ -136,12 +117,11 @@ function EducationForm({
                 ))}
               </SortableContext>
             </DndContext>
-
             <div className="flex justify-center pt-6">
               <Button
                 variant="outline"
                 type="button"
-                className="h-12 rounded-full border-2 border-dashed px-10 transition-all hover:bg-slate-50"
+                className="rounded-full border-dashed border-2 px-10 h-12 hover:bg-slate-50 transition-all"
                 onClick={() =>
                   append({
                     degree: "",
@@ -193,24 +173,22 @@ function EducationItem({
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
-        "space-y-5 rounded-3xl border bg-white p-6 transition-all duration-200",
+        "space-y-5 border rounded-3xl bg-white p-6 transition-all duration-200",
         isDragging
-          ? "z-50 scale-105 cursor-grabbing border-blue-200 shadow-2xl"
-          : "border-slate-100 shadow-sm",
+          ? "shadow-2xl z-50 cursor-grabbing border-blue-200 scale-105"
+          : "shadow-sm border-slate-100"
       )}>
-      <div className="flex items-center justify-between border-b border-slate-50 pb-3">
+      <div className="flex justify-between items-center border-b border-slate-50 pb-3">
         <div className="flex items-center gap-2">
-          <div className="rounded bg-slate-900 px-2 py-0.5 text-[10px] font-bold text-white">
+          <div className="bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded">
             EDU {index + 1}
           </div>
-
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
             {category} Section
           </span>
         </div>
-
         <GripHorizontal
-          className="size-5 cursor-grab text-slate-300 transition-colors hover:text-slate-600"
+          className="size-5 cursor-grab text-slate-300 hover:text-slate-600 transition-colors"
           {...attributes}
           {...listeners}
         />
@@ -221,7 +199,7 @@ function EducationItem({
         name={`education.${index}.degree`}
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="ml-1 text-[10px] font-bold uppercase text-slate-500">
+            <FormLabel className="text-[10px] font-bold uppercase text-slate-500 ml-1">
               Degree / Certificate Name
             </FormLabel>
             <FormControl>
@@ -236,13 +214,13 @@ function EducationItem({
         )}
       />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField
           control={form.control}
           name={`education.${index}.school`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="ml-1 text-[10px] font-bold uppercase text-slate-500">
+              <FormLabel className="text-[10px] font-bold uppercase text-slate-500 ml-1">
                 Institution Name
               </FormLabel>
               <FormControl>
@@ -256,13 +234,12 @@ function EducationItem({
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name={`education.${index}.location`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="ml-1 text-[10px] font-bold uppercase text-slate-500">
+              <FormLabel className="text-[10px] font-bold uppercase text-slate-500 ml-1">
                 Location
               </FormLabel>
               <FormControl>
@@ -284,7 +261,7 @@ function EducationItem({
           name={`education.${index}.startDate`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="ml-1 text-[10px] font-bold uppercase text-slate-500">
+              <FormLabel className="text-[10px] font-bold uppercase text-slate-500 ml-1">
                 Start Date
               </FormLabel>
               <FormControl>
@@ -292,20 +269,19 @@ function EducationItem({
                   {...field}
                   type="date"
                   className="rounded-xl"
-                  value={field.value?.slice(0, 10) ?? ""}
+                  value={field.value?.slice(0, 10)}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name={`education.${index}.endDate`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="ml-1 text-[10px] font-bold uppercase text-slate-500">
+              <FormLabel className="text-[10px] font-bold uppercase text-slate-500 ml-1">
                 End Date
               </FormLabel>
               <FormControl>
@@ -313,7 +289,7 @@ function EducationItem({
                   {...field}
                   type="date"
                   className="rounded-xl"
-                  value={field.value?.slice(0, 10) ?? ""}
+                  value={field.value?.slice(0, 10)}
                 />
               </FormControl>
               <FormMessage />
@@ -323,8 +299,7 @@ function EducationItem({
       </div>
 
       <div className="flex items-center gap-2 px-1">
-        <div className="size-1.5 animate-pulse rounded-full bg-blue-500" />
-
+        <div className="size-1.5 bg-blue-500 rounded-full animate-pulse" />
         <FormDescription className="text-[10px] italic">
           Leave <span className="font-bold">end date</span> empty if currently
           enrolled.
@@ -335,10 +310,9 @@ function EducationItem({
         <Button
           variant="ghost"
           size="sm"
-          type="button"
-          className="rounded-xl text-red-400 hover:bg-red-50 hover:text-red-600"
+          className="text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl"
           onClick={() => remove(index)}>
-          <Trash2 className="mr-2 size-3" />
+          <Trash2 className="size-3 mr-2" />
           Delete Entry
         </Button>
       </div>

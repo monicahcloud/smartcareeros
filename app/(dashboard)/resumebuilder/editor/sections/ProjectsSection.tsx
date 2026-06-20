@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { PlusCircle, Trash2 } from "lucide-react";
+
 import { ProjectItem, ResumeFormState } from "../[id]/types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 type ProjectsSectionProps = {
   form: ResumeFormState;
@@ -54,6 +59,7 @@ export default function ProjectsSection({
 
   function addProjectTechnology(projectIndex: number, technology: string) {
     const cleaned = technology.trim();
+
     if (!cleaned) return;
 
     setForm((prev) => ({
@@ -88,120 +94,153 @@ export default function ProjectsSection({
   }
 
   return (
-    <div className="border-t border-slate-200 pt-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">
-            Projects
-          </p>
-          <h3 className="mt-1 text-xl font-black text-black">
-            Career Projects
-          </h3>
-        </div>
+    <div className="mx-auto max-w-xl space-y-6">
+      <div className="space-y-1.5 text-center">
+        <h2 className="text-2xl font-black uppercase tracking-tighter">
+          Projects
+        </h2>
 
-        <button
-          type="button"
-          onClick={addProject}
-          className="bg-black px-4 py-2 text-xs font-black uppercase text-white">
-          Add Project
-        </button>
+        <p className="text-sm italic text-muted-foreground">
+          Showcase career projects, technical work, and measurable outcomes.
+        </p>
       </div>
 
-      {form.projects.map((project, index) => (
-        <div key={index} className="mt-6 space-y-4 border border-slate-200 p-6">
-          <input
-            value={project.name}
-            onChange={(e) => updateProject(index, "name", e.target.value)}
-            placeholder="Project Name"
-            className="h-12 w-full border border-slate-200 px-4 outline-none focus:border-red-600"
-          />
+      <div className="space-y-4">
+        {form.projects.map((project, index) => (
+          <div
+            key={index}
+            className="space-y-5 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm transition-all duration-200">
+            <div className="flex items-center justify-between border-b border-slate-50 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="rounded bg-slate-900 px-2 py-0.5 text-[10px] font-bold text-white">
+                  PROJECT {index + 1}
+                </div>
 
-          <input
-            value={project.role}
-            onChange={(e) => updateProject(index, "role", e.target.value)}
-            placeholder="Your Role"
-            className="h-12 w-full border border-slate-200 px-4 outline-none focus:border-red-600"
-          />
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                  Career Project
+                </span>
+              </div>
+            </div>
 
-          <textarea
-            value={project.description}
-            onChange={(e) =>
-              updateProject(index, "description", e.target.value)
-            }
-            placeholder="Describe the project, outcomes, and impact..."
-            className="min-h-28 w-full resize-none border border-slate-200 p-4 outline-none focus:border-red-600"
-          />
+            <Input
+              value={project.name}
+              onChange={(e) => updateProject(index, "name", e.target.value)}
+              placeholder="Project Name"
+              className="rounded-xl"
+            />
 
-          <div className="space-y-3">
-            <label className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">
-              Technologies
-            </label>
+            <Input
+              value={project.role}
+              onChange={(e) => updateProject(index, "role", e.target.value)}
+              placeholder="Your Role"
+              className="rounded-xl"
+            />
 
-            <div className="flex gap-3">
-              <input
-                value={projectTechInputs[index] || ""}
-                onChange={(e) =>
-                  setProjectTechInputs((prev) => ({
-                    ...prev,
-                    [index]: e.target.value,
-                  }))
-                }
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addProjectTechnology(index, projectTechInputs[index] || "");
-                    setProjectTechInputs((prev) => ({ ...prev, [index]: "" }));
+            <Textarea
+              value={project.description}
+              onChange={(e) =>
+                updateProject(index, "description", e.target.value)
+              }
+              placeholder="Describe the project, outcomes, and impact..."
+              className="min-h-28 resize-none rounded-xl"
+            />
+
+            <div className="space-y-3">
+              <label className="ml-1 text-[10px] font-bold uppercase text-slate-500">
+                Technologies
+              </label>
+
+              <div className="flex gap-3">
+                <Input
+                  value={projectTechInputs[index] || ""}
+                  onChange={(e) =>
+                    setProjectTechInputs((prev) => ({
+                      ...prev,
+                      [index]: e.target.value,
+                    }))
                   }
-                }}
-                placeholder="React"
-                className="h-12 flex-1 border border-slate-200 px-4 outline-none focus:border-red-600"
-              />
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addProjectTechnology(
+                        index,
+                        projectTechInputs[index] || "",
+                      );
+                      setProjectTechInputs((prev) => ({
+                        ...prev,
+                        [index]: "",
+                      }));
+                    }
+                  }}
+                  placeholder="React"
+                  className="h-12 flex-1 rounded-xl"
+                />
 
-              <button
+                <Button
+                  type="button"
+                  className="h-12 rounded-xl bg-black px-5 text-xs font-black uppercase tracking-[0.16em] text-white transition hover:bg-red-600"
+                  onClick={() => {
+                    addProjectTechnology(index, projectTechInputs[index] || "");
+                    setProjectTechInputs((prev) => ({
+                      ...prev,
+                      [index]: "",
+                    }));
+                  }}>
+                  Add
+                </Button>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {project.technologies.length === 0 ? (
+                  <p className="text-sm text-slate-400">
+                    No technologies added.
+                  </p>
+                ) : (
+                  project.technologies.map((tech) => (
+                    <button
+                      key={tech}
+                      type="button"
+                      onClick={() => removeProjectTechnology(index, tech)}
+                      className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 transition hover:border-red-600 hover:text-red-600">
+                      {tech} ×
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <Input
+              value={project.url}
+              onChange={(e) => updateProject(index, "url", e.target.value)}
+              placeholder="Project URL"
+              className="rounded-xl"
+            />
+
+            <div className="flex justify-end border-t border-slate-50 pt-3">
+              <Button
                 type="button"
-                onClick={() => {
-                  addProjectTechnology(index, projectTechInputs[index] || "");
-                  setProjectTechInputs((prev) => ({ ...prev, [index]: "" }));
-                }}
-                className="h-12 bg-black px-5 text-xs font-black uppercase tracking-[0.16em] text-white transition hover:bg-red-600">
-                Add
-              </button>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {project.technologies.length === 0 ? (
-                <p className="text-sm text-slate-400">No technologies added.</p>
-              ) : (
-                project.technologies.map((tech) => (
-                  <button
-                    key={tech}
-                    type="button"
-                    onClick={() => removeProjectTechnology(index, tech)}
-                    className="border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 transition hover:border-red-600 hover:text-red-600">
-                    {tech} ×
-                  </button>
-                ))
-              )}
+                variant="ghost"
+                size="sm"
+                className="rounded-xl text-red-400 hover:bg-red-50 hover:text-red-600"
+                onClick={() => removeProject(index)}>
+                <Trash2 className="mr-2 size-3" />
+                Delete Project
+              </Button>
             </div>
           </div>
+        ))}
+      </div>
 
-          <input
-            value={project.url}
-            onChange={(e) => updateProject(index, "url", e.target.value)}
-            placeholder="Project URL"
-            className="h-12 w-full border border-slate-200 px-4 outline-none focus:border-red-600"
-          />
-
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={() => removeProject(index)}
-              className="border border-red-200 px-4 py-2 text-xs font-black uppercase text-red-600 transition hover:bg-red-50">
-              Remove Project
-            </button>
-          </div>
-        </div>
-      ))}
+      <div className="flex justify-center pt-6">
+        <Button
+          type="button"
+          variant="outline"
+          className="h-12 rounded-full border-2 border-dashed px-10 transition-all hover:bg-slate-50"
+          onClick={addProject}>
+          <PlusCircle className="mr-2 size-4" />
+          Add Project
+        </Button>
+      </div>
     </div>
   );
 }

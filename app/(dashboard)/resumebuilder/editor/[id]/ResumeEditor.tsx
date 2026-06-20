@@ -38,6 +38,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import PersonalInfoSection from "../sections/PersonalInfoForm";
+import TechnicalSkillsSection from "../sections/TechnicalSkillsForm";
+import SummarySection from "../sections/SummaryForm";
+import InterestSection from "../sections/InterestSection";
 
 type ResumeWithRelations = Resume & {
   techSkills: TechSkill[];
@@ -150,23 +153,66 @@ const RESUME_THEME_REGISTRY = [
 ];
 
 const allResumeSteps = [
-  { key: "basic", title: "General", component: BasicInfoSection },
-  { key: "personal", title: "Personal", component: PersonalInfoSection },
-  { key: "skills", title: "Skills", component: SkillsSection },
-  { key: "experience", title: "Experience", component: WorkExperienceSection },
-  { key: "education", title: "Education", component: EducationSection },
+  {
+    key: "general",
+    title: "General",
+    component: BasicInfoSection,
+  },
+  {
+    key: "personal",
+    title: "Personal Info",
+    component: PersonalInfoSection,
+  },
+  {
+    key: "summary",
+    title: "Summary",
+    component: SummarySection,
+  },
+  {
+    key: "skills",
+    title: "Skills",
+    component: SkillsSection,
+  },
+  {
+    key: "technical",
+    title: "Technical Skills",
+    component: TechnicalSkillsSection,
+  },
+  {
+    key: "experience",
+    title: "Experience",
+    component: WorkExperienceSection,
+  },
+  {
+    key: "education",
+    title: "Education",
+    component: EducationSection,
+  },
   {
     key: "certifications",
     title: "Certifications",
     component: CertificationsSection,
   },
-  { key: "projects", title: "Projects", component: ProjectsSection },
+  {
+    key: "projects",
+    title: "Projects",
+    component: ProjectsSection,
+  },
   {
     key: "accomplishments",
     title: "Accomplishments",
     component: AccomplishmentsSection,
   },
-  { key: "review", title: "Review", component: null },
+  {
+    key: "interests",
+    title: "Interests",
+    component: InterestSection,
+  },
+  {
+    key: "review",
+    title: "Review",
+    component: null,
+  },
 ] as const;
 
 export default function ResumeEditor({

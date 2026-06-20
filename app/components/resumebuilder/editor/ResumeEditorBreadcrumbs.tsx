@@ -27,9 +27,9 @@ export default function ResumeEditorBreadcrumbs({
   setCurrentStep,
 }: ResumeEditorBreadcrumbsProps) {
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full overflow-x-auto py-2">
       <Breadcrumb>
-        <BreadcrumbList className="flex-nowrap">
+        <BreadcrumbList className="flex flex-wrap gap-2">
           {steps.map((step, index) => {
             const isActive = step.key === currentStep;
 
