@@ -19,18 +19,19 @@ export default function ClassicLeftResumeLayout({
   const accomplishments = data.accomplishments ?? [];
   const interests = data.interests ?? [];
 
-  const photoSrc = data.photoUrl || data.photo;
-  const showPhoto = Boolean(data.photo && photoSrc);
+  const photoSrc = data.photoUrl;
+  const showPhoto = Boolean(data.showPhoto && photoSrc);
 
   return (
-    <div className="mx-auto flex min-h-[1123px] w-full max-w-[794px] bg-white text-slate-900 shadow-sm print:shadow-none">
-      {/* Left Sidebar */}
+    <div className="mx-auto flex min-h-[1123px] w-[794px] bg-white text-slate-900 shadow-sm print:shadow-none">
       <aside className="w-[32%] bg-slate-900 px-6 py-8 text-white">
         {showPhoto && (
           <div className="mb-6 flex justify-center">
             <Image
-              src={typeof photoSrc === "string" ? photoSrc : ""}
+              src={photoSrc}
               alt={fullName || "Resume photo"}
+              width={112}
+              height={112}
               className="h-28 w-28 rounded-full border-4 border-white object-cover"
             />
           </div>

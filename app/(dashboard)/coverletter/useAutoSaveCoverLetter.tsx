@@ -1,51 +1,58 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
-import { CoverLetterValues } from "@/lib/validation";
-import { fileReplacer } from "@/lib/utils";
 import useDebounce from "@/app/hooks/useDebounce";
-import { saveCoverLetter } from "../coverletterbuilder/editor/actions";
+import { fileReplacer } from "@/lib/utils";
+import { saveResume } from "@/app/(dashboard)/resumes/actions";
+import { ResumeFormState } from "../resumebuilder/editor/[id]/types";
 
-function normalizeForSave(data: CoverLetterValues) {
+function normalizeForSave(data: ResumeFormState) {
   return {
     ...data,
-    body: data.body ?? "",
-    signatureUrl: data.signatureUrl || undefined,
-    userPhotoUrl: data.userPhotoUrl || undefined,
-    userPhoto:
-      data.userPhoto instanceof File
-        ? `${data.userPhoto.name}-${data.userPhoto.size}-${data.userPhoto.type}`
-        : data.userPhoto || undefined,
+    resumeTitle: data.resumeTitle || "Untitled Resume",
+    resumeType: data.resumeType || "chronological",
+    description: data.description || "",
+
+    skills: data.skills ?? [],
+    techSkills: data.techSkills ?? [],
+    workExperience: data.workExperience ?? [],
+    education: data.education ?? [],
+    certifications: data.certifications ?? [],
+    projects: data.projects ?? [],
+    accomplishments: data.accomplishments ?? [],
+    interests: data.interests ?? [],
+
+    photo:
+      data.photo instanceof File
+        ? `${data.photo.name}-${data.photo.size}-${data.photo.type}`
+        : data.photo || undefined,
+    photoUrl: data.photoUrl || undefined,
   };
 }
 
-function snapshot(data: CoverLetterValues) {
+function snapshot(data: ResumeFormState) {
   return JSON.stringify(normalizeForSave(data), fileReplacer);
 }
 
-export default function useAutoSaveCoverLetter(
-  coverLetterData: CoverLetterValues,
-) {
+export default function useAutoSaveResume(resumeData: ResumeFormState) {
   const searchParams = useSearchParams();
-  const debounced = useDebounce(coverLetterData, 1500);
+  const debounced = useDebounce(resumeData, 1500);
 
-  const coverLetterIdRef = useRef(coverLetterData.id);
-  const [lastSavedSnapshot, setLastSavedSnapshot] = useState(
-    snapshot(coverLetterData),
-  );
+  const resumeIdRef = useRef(resumeData.id);
   const isSavingRef = useRef(false);
   const pendingSaveRef = useRef(false);
 
+  const [lastSavedSnapshot, setLastSavedSnapshot] = useState(
+    snapshot(resumeData),
+  );
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
 
   useEffect(() => {
     const currentSnapshot = snapshot(debounced);
-    console.log("CURRENT", currentSnapshot);
-    console.log("LAST", lastSavedSnapshot);
-    console.log("EQUAL?", currentSnapshot === lastSavedSnapshot);
 
     if (currentSnapshot === lastSavedSnapshot) return;
 
@@ -62,45 +69,26 @@ export default function useAutoSaveCoverLetter(
       try {
         const dataToSave = normalizeForSave(debounced);
 
-        const saved = await saveCoverLetter({
+        const saved = await saveResume({
           ...dataToSave,
-          id: coverLetterIdRef.current,
-          userPhoto:
-            dataToSave.userPhoto === normalizeForSave(coverLetterData).userPhoto
-              ? undefined
-              : dataToSave.userPhoto,
-        });
+          id: resumeIdRef.current,
+        } as any);
 
-        coverLetterIdRef.current = saved.id;
-
-        // const savedState = {
-        //   ...debounced,
-        //   id: saved.id,
-        //   userPhoto: undefined,
-        //   userPhotoUrl: saved.userPhotoUrl || debounced.userPhotoUrl,
-        //   signatureUrl: saved.signatureUrl || debounced.signatureUrl,
-        // };
-
-        // setLastSavedSnapshot(snapshot(savedState));
+        resumeIdRef.current = saved.id;
         setLastSavedSnapshot(currentSnapshot);
 
-        if (searchParams.get("coverLetterId") !== saved.id) {
-          const newSearchParams = new URLSearchParams(searchParams.toString());
-          newSearchParams.set("coverLetterId", saved.id);
+        if (searchParams.get("resumeId") !== saved.id) {
+          const params = new URLSearchParams(searchParams.toString());
+          params.set("resumeId", saved.id);
 
-          window.history.replaceState(
-            null,
-            "",
-            `?${newSearchParams.toString()}`,
-          );
+          window.history.replaceState(null, "", `?${params.toString()}`);
         }
 
         setStatus("idle");
       } catch (error) {
         console.error(error);
         setStatus("error");
-
-        toast.error("Could not save changes");
+        toast.error("Could not save resume changes");
       } finally {
         isSavingRef.current = false;
 
@@ -111,13 +99,9 @@ export default function useAutoSaveCoverLetter(
     }
 
     save();
-    // }, [debounced, searchParams, coverLetterData, lastSavedSnapshot]);
-  }, [debounced, searchParams]);
+  }, [debounced, searchParams, lastSavedSnapshot]);
 
-  const currentSnapshot = useMemo(
-    () => snapshot(coverLetterData),
-    [coverLetterData],
-  );
+  const currentSnapshot = useMemo(() => snapshot(resumeData), [resumeData]);
 
   return {
     isSaving: status === "saving",

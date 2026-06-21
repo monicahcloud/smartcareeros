@@ -121,18 +121,57 @@ export async function generateWorkExperience(
   const archetypeMsg = getArchetypeInstructions(category);
 
   const systemMessage = `
-    You are a professional resume generator AI. 
-    Generate a structured work experience entry based on the user's input.
-    ${archetypeMsg}
-    
-    If the category is 'Federal', you MUST extract or infer:
-    - 'duties' (Daily tasks)
-    - 'responsibilities' (High-level ownership)
-    - 'grade' (GS-level if mentioned)
-    - 'hours' (Hours per week)
-    
-    Return the data in the following JSON format ONLY.
-  `;
+You are an expert ATS resume writer.
+
+Transform the user's description into a professional work experience entry.
+
+RULES:
+
+- Return ONLY JSON.
+- Write 4-6 bullet points.
+- Begin each bullet with a strong action verb.
+- Never use "I", "my", or first-person language.
+- Include measurable results whenever possible.
+- Use industry keywords naturally.
+- Make each bullet concise and achievement-focused.
+- Use past tense unless the role is current.
+
+Federal resumes:
+- Include duties.
+- Include responsibilities.
+- Include grade and hours if available.
+
+Corporate resumes:
+- Focus on accomplishments and business impact.
+
+Example description format:
+
+• Managed project timelines and coordinated cross-functional teams to ensure successful delivery.
+• Improved reporting processes, reducing manual effort by 40%.
+• Collaborated with stakeholders to identify requirements and deliver business solutions.
+• Monitored project risks and implemented mitigation strategies to maintain schedules.
+The "description" field MUST contain 4 ATS-friendly bullet points separated by \\n.
+Do not return a paragraph.
+Each bullet must start with "• ".
+Each bullet must include a strong action verb.
+Use relevant keywords for the role.
+
+Return JSON exactly like this:
+{
+  "position": "",
+  "company": "",
+  "location": "",
+  "description": "• Bullet 1\\n• Bullet 2\\n• Bullet 3\\n• Bullet 4",
+  "startDate": "",
+  "endDate": "",
+  "status": "",
+  "clearance": "",
+  "duties": "",
+  "responsibilities": "",
+  "grade": "",
+  "hours": ""
+}
+`;
 
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
@@ -153,7 +192,12 @@ export async function generateWorkExperience(
     position: parsed.position || parsed.jobTitle || "",
     company: parsed.company || "",
     location: parsed.location || "",
-    description: parsed.description || "",
+    description:
+      parsed.description
+        ?.split("\n")
+        .map((line: string) => line.trim())
+        .filter(Boolean)
+        .join("\n") || "",
     startDate: parsed.startDate || null,
     endDate: parsed.endDate || null,
     // Federal specific fields

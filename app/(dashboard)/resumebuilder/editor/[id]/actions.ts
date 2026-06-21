@@ -3,12 +3,6 @@
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import {
-  CertificationItem,
-  EducationItem,
-  ProjectItem,
-  WorkExperienceItem,
-} from "./types";
 
 export async function saveResumeBasics(input: {
   resumeId: string;

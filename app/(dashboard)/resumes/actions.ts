@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -35,138 +36,151 @@ export async function deleteResume(resumeId: string) {
 
   revalidatePath("/resumes");
 }
-export async function saveResume(values: ResumeValues) {
-  const { id } = values;
+
+export async function saveResume(values: any) {
+  const dbUser = await getCurrentDbUser();
+
+  if (!dbUser) {
+    redirect("/sign-in");
+  }
 
   const {
+    id,
     photo,
-    workExperiences,
+    workExperience,
     education,
-    themeId,
     techSkills,
+    certifications,
+    projects,
+    accomplishments,
+    interests,
+    themeId,
     ...resumeValues
-  } = resumeSchema.parse(values);
+  } = values;
 
-  const { userId } = await auth();
+  const allowedResumeTypes = [
+    "chronological",
+    "functional",
+    "combination",
+    "federal",
+  ] as const;
 
-  if (!userId) {
-    throw new Error("User not authenticated");
-  }
-
-  const subscriptionLevel = await getUserSubscriptionLevel(userId);
-
-  if (!id) {
-    const resumeCount = await prisma.resume.count({
-      where: { userId },
-    });
-    if (!canCreateResume(subscriptionLevel, resumeCount)) {
-      throw new Error(
-        "Maximum resume count reached for this subscription level",
-      );
-    }
-  }
+  const safeResumeType = allowedResumeTypes.includes(
+    resumeValues.resumeType as any,
+  )
+    ? resumeValues.resumeType
+    : "CORPORATE";
 
   const existingResume = id
-    ? await prisma.resume.findUnique({ where: { id, userId } })
+    ? await prisma.resume.findFirst({
+        where: {
+          id,
+          userId: dbUser.id,
+        },
+      })
     : null;
 
   if (id && !existingResume) {
     throw new Error("Resume not found");
   }
 
-  let newPhotoUrl: string | undefined | null = undefined;
+  const data = {
+    ...resumeValues,
 
-  if (photo instanceof File) {
-    if (existingResume?.photoUrl) {
-      await del(existingResume.photoUrl);
-    }
+    // IMPORTANT: overrides invalid values like "Professional"
+    resumeType: safeResumeType,
 
-    const blob = await put(`resume_photos/${path.extname(photo.name)}`, photo, {
-      access: "public",
-    });
-    newPhotoUrl = blob.url;
-  } else if (photo === null) {
-    if (existingResume?.photoUrl) {
-      await del(existingResume.photoUrl);
-    }
-    newPhotoUrl = null;
-  }
+    themeId: themeId || undefined,
+    userId: dbUser.id,
+
+    techSkills: {
+      deleteMany: {},
+      create:
+        techSkills?.map((skill: any) =>
+          typeof skill === "string"
+            ? { name: skill, rating: 3 }
+            : {
+                name: skill.name || "",
+                rating: skill.rating || 3,
+              },
+        ) || [],
+    },
+
+    workExperience: {
+      deleteMany: {},
+      create:
+        workExperience?.map((exp: any) => ({
+          position: exp.position || "",
+          company: exp.company || "",
+          location: exp.location || "",
+          description: exp.description || "",
+          duties: exp.duties || "",
+          responsibilities: exp.responsibilities || "",
+          accomplishments: exp.accomplishments || "",
+          status: exp.status || "",
+          grade: exp.grade || "",
+          clearance: exp.clearance || "",
+          hours: exp.hours || "",
+          startDate: exp.startDate ? new Date(exp.startDate) : undefined,
+          endDate: exp.endDate ? new Date(exp.endDate) : undefined,
+        })) || [],
+    },
+
+    education: {
+      deleteMany: {},
+      create:
+        education?.map((edu: any) => ({
+          degree: edu.degree || "",
+          school: edu.school || "",
+          location: edu.location || "",
+          startDate: edu.startDate ? new Date(edu.startDate) : undefined,
+          endDate: edu.endDate ? new Date(edu.endDate) : undefined,
+        })) || [],
+    },
+    interest: interests ?? [],
+    certifications: {
+      deleteMany: {},
+      create:
+        certifications?.map((cert: any) => ({
+          name: cert.name || "",
+          issuer: cert.issuer || "",
+          issuedDate: cert.issuedDate ? new Date(cert.issuedDate) : undefined,
+          expiresDate: cert.expiresDate
+            ? new Date(cert.expiresDate)
+            : undefined,
+          credentialUrl: cert.credentialUrl || "",
+          description: cert.description || "",
+        })) || [],
+    },
+
+    projects: {
+      deleteMany: {},
+      create:
+        projects?.map((project: any) => ({
+          name: project.name || "",
+          role: project.role || "",
+          description: project.description || "",
+          technologies: project.technologies || [],
+          url: project.url || "",
+        })) || [],
+    },
+    updatedAt: new Date(),
+  };
 
   if (id) {
-    return prisma.resume.update({
+    const updatedResume = await prisma.resume.update({
       where: { id },
-      data: {
-        ...resumeValues,
-        shareToken: values.shareToken || undefined,
-        themeId,
-        photoUrl: newPhotoUrl,
-        techSkills: {
-          deleteMany: {},
-          create: techSkills?.map((skill) => ({
-            ...skill,
-            rating: skill.rating,
-          })),
-        },
-        workExperience: {
-          deleteMany: {},
-          create: workExperiences?.map((exp) => ({
-            ...exp,
-            startDate: exp.startDate ? new Date(exp.startDate) : undefined,
-            endDate: exp.endDate ? new Date(exp.endDate) : undefined,
-          })),
-        },
-        education: {
-          deleteMany: {},
-          create: education?.map((edu) => ({
-            ...edu,
-            startDate: edu.startDate ? new Date(edu.startDate) : undefined,
-            endDate: edu.endDate ? new Date(edu.endDate) : undefined,
-          })),
-        },
-        updatedAt: new Date(),
-      },
+      data,
     });
-  } else {
-    return prisma.resume.create({
-      data: {
-        ...resumeValues,
-        themeId,
-        userId,
-        user: {
-          // FIX: connectOrCreate ensures the User record exists in your DB
-          // before the Resume record is created.
-          connectOrCreate: {
-            where: { clerkId: userId },
-            create: {
-              clerkId: userId,
-              email: resumeValues.email || "", // Fallback to provided resume email
-              firstName: resumeValues.firstName || "",
-              lastName: resumeValues.lastName || "",
-            },
-          },
-        },
-        photoUrl: newPhotoUrl,
-        techSkills: {
-          create: techSkills?.map((skill) => ({
-            ...skill,
-            rating: skill.rating,
-          })),
-        },
-        workExperience: {
-          create: workExperiences?.map((exp) => ({
-            ...exp,
-            startDate: exp.startDate ? new Date(exp.startDate) : undefined,
-            endDate: exp.endDate ? new Date(exp.endDate) : undefined,
-          })),
-        },
-        education: {
-          create: education?.map((edu) => ({
-            ...edu,
-            startDate: edu.startDate ? new Date(edu.startDate) : undefined,
-            endDate: edu.endDate ? new Date(edu.endDate) : undefined,
-          })),
-        },
-      },
-    });
+
+    revalidatePath("/resumes");
+    return updatedResume;
   }
+
+  const createdResume = await prisma.resume.create({
+    data,
+  });
+
+  revalidatePath("/resumes");
+  return createdResume;
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Eye } from "lucide-react";
+import { Eye, Flashlight } from "lucide-react";
 
 import {
   Certification,
@@ -45,6 +45,7 @@ import {
   RESUME_THEME_REGISTRY,
   ResumeLayout,
 } from "@/app/(dashboard)/resumes/templates/templateRegistry";
+import useAutoSaveResume from "@/app/(dashboard)/resumes/useAutoSaveResume";
 
 type ResumeWithRelations = Resume & {
   techSkills: TechSkill[];
@@ -74,21 +75,7 @@ const allResumeSteps = [
     title: "Personal Info",
     component: PersonalInfoSection,
   },
-  {
-    key: "summary",
-    title: "Summary",
-    component: SummarySection,
-  },
-  {
-    key: "skills",
-    title: "Skills",
-    component: SkillsSection,
-  },
-  {
-    key: "technical",
-    title: "Technical Skills",
-    component: TechnicalSkillsSection,
-  },
+
   {
     key: "experience",
     title: "Experience",
@@ -110,6 +97,16 @@ const allResumeSteps = [
     component: ProjectsSection,
   },
   {
+    key: "skills",
+    title: "Skills",
+    component: SkillsSection,
+  },
+  {
+    key: "technical",
+    title: "Technical Skills",
+    component: TechnicalSkillsSection,
+  },
+  {
     key: "accomplishments",
     title: "Accomplishments",
     component: AccomplishmentsSection,
@@ -120,10 +117,15 @@ const allResumeSteps = [
     component: InterestSection,
   },
   {
-    key: "review",
-    title: "Review",
-    component: null,
+    key: "summary",
+    title: "Summary",
+    component: SummarySection,
   },
+  // {
+  //   key: "review",
+  //   title: "Review",
+  //   component: null,
+  // },
 ] as const;
 
 export default function ResumeEditor({
@@ -136,6 +138,7 @@ export default function ResumeEditor({
   const [showMobilePreview, setShowMobilePreview] = useState(false);
 
   const [resumeData, setResumeData] = useState<ResumeFormState>({
+    id: resumeToEdit?.id,
     resumeTitle: resumeToEdit?.resumeTitle || "",
     resumeType: resumeToEdit?.resumeType || "",
     description: resumeToEdit?.description || "",
@@ -204,13 +207,13 @@ export default function ResumeEditor({
     themeColor: resumeToEdit?.themeColor || "#2563eb",
     borderStyle: resumeToEdit?.borderStyle || "squircle",
   });
-
+  const { isSaving, hasUnsavedChanges } = useAutoSaveResume(resumeData);
   const currentStep = searchParams.get("step") || allResumeSteps[0].key;
   const currentStepData = allResumeSteps.find(
     (step) => step.key === currentStep,
   );
 
-  const isLastStep = currentStep === "review";
+  const isLastStep = currentStep === "summary";
   const CurrentStepComponent = currentStepData?.component;
 
   const handleStepChange = (step: string) => {
@@ -376,8 +379,8 @@ export default function ResumeEditor({
         setCurrentStep={handleStepChange}
         showMobilePreview={showMobilePreview}
         setShowMobilePreview={setShowMobilePreview}
-        isSaving={false}
-        hasUnsavedChanges={false}
+        isSaving={isSaving}
+        hasUnsavedChanges={hasUnsavedChanges}
         isError={false}
       />
     </div>

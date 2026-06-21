@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { EditorFormProps } from "@/lib/types";
 import { workExperienceSchema, WorkExperiencesValues } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GripHorizontal, PlusCircle, Trash2 } from "lucide-react";
@@ -38,7 +37,7 @@ import { cn } from "@/lib/utils";
 import GenerateDutiesButton from "./GenerateDutiesButton";
 import GenerateResponsibilitiesButton from "./GenerateResponsibilitiesButton";
 import GenerateWorkExperienceButton from "./GenerateWorkExperienceButton";
-import AIFeedbackBubble from "./AIFeedbackBubble";
+
 import { ResumeFormState } from "../[id]/types";
 import { RESUME_THEME_REGISTRY } from "@/app/(dashboard)/resumes/templates/templateRegistry";
 
@@ -387,18 +386,35 @@ function WorkExperienceItem({
                   Description
                 </FormLabel>
                 <div className="flex gap-2">
-                  <AIFeedbackBubble
+                  {/* <AIFeedbackBubble
                     text={field.value || ""}
                     category={category}
-                  />
+                  /> */}
                   <GenerateWorkExperienceButton
                     category={category}
-                    onWorkExperienceGenerated={(exp) =>
+                    onWorkExperienceGenerated={(exp) => {
+                      console.log("AI work experience response:", exp);
+
+                      const generatedText =
+                        typeof exp === "string"
+                          ? exp
+                          : exp?.description ||
+                            exp?.duties ||
+                            exp?.responsibilities ||
+                            "";
+
                       form.setValue(
                         `workExperiences.${index}.description`,
-                        exp.description,
-                      )
-                    }
+                        generatedText,
+                        {
+                          shouldDirty: true,
+                          shouldTouch: true,
+                          shouldValidate: true,
+                        },
+                      );
+
+                      form.trigger(`workExperiences.${index}.description`);
+                    }}
                   />
                 </div>
               </div>

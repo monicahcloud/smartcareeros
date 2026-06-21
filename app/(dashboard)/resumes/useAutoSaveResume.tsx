@@ -1,12 +1,14 @@
-import { ResumeValues } from "@/lib/validation";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { fileReplacer } from "@/lib/utils";
 import useDebounce from "@/app/hooks/useDebounce";
+import { saveResume } from "./actions";
+import { ResumeFormState } from "../resumebuilder/editor/[id]/types";
 
-export default function useAutoSaveResume(resumeData: ResumeValues) {
+export default function useAutoSaveResume(resumeData: ResumeFormState) {
   const searchParams = useSearchParams();
   const [resumeId, setResumeId] = useState(resumeData.id);
   const debounceResumeData = useDebounce(resumeData, 1500);
@@ -35,7 +37,7 @@ export default function useAutoSaveResume(resumeData: ResumeValues) {
             photo: undefined,
           }),
           id: resumeId,
-        });
+        } as any);
         setResumeId(updatedResume.id);
         setLastSavedData(newData);
 

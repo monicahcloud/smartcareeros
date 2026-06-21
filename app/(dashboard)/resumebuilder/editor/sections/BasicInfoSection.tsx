@@ -41,7 +41,7 @@ export default function BasicInfoSection({
       resumeTitle: resumeData.resumeTitle || "",
       description: resumeData.description || "",
       resumeType:
-        currentTheme?.category || resumeData.resumeType || "classic",
+        currentTheme?.category || resumeData.resumeType || "CORPORATE",
     },
   });
 
