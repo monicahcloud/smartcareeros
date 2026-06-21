@@ -5,59 +5,119 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { ResumeThemeToken } from "@/app/(dashboard)/resumes/templates/templateRegistry";
 import ResumePreview from "./ResumePreview";
+import { ResumeData } from "./templates/types";
 
-const MOCK_DATA = {
+const MOCK_DATA: ResumeData = {
   firstName: "Jane",
   lastName: "Doe",
-  jobTitle: "Product Manager",
-  userEmail: "janedoe@email.com",
-  userPhone: "123-456-7890",
-  userAddress: "New York, NY",
-  website: "janedoe.com",
+  jobTitle: "Business Analyst",
+
+  email: "janedoe@email.com",
+  phone: "123-456-7890",
+  address: "New York, NY",
   linkedin: "linkedin.com/in/janedoe",
-  gitHub: "github.com/janedoe",
+  github: "github.com/janedoe",
+  website: "janedoe.dev",
+
+  photoUrl: "/images/mock-profile.jpg",
+
   summary:
-    "Results-driven product manager with experience leading cross-functional teams, improving business processes, and delivering user-focused digital solutions.",
+    "Results-driven professional with experience in analytics, reporting, dashboard development, and process improvement. Skilled at transforming complex data into actionable business insights.",
+
+  skills: [
+    "Communication",
+    "Leadership",
+    "Problem Solving",
+    "Project Management",
+  ],
+
+  techSkills: ["Excel", "SQL", "Power BI", "Tableau", "Python"],
+
   workExperience: [
     {
-      id: "1",
-      position: "Product Manager",
-      company: "Innovative Tech Solutions",
-      startDate: "2021",
+      position: "Business Analyst",
+      company: "ABC Corporation",
+      location: "New York, NY",
+      startDate: "2022",
       endDate: "Present",
       description:
-        "Led product planning, coordinated with design and engineering teams, and improved delivery timelines across multiple digital initiatives.",
+        "Created dashboards and automated reporting processes that reduced manual work by 40%. Collaborated with stakeholders to improve business operations.",
     },
     {
-      id: "2",
-      position: "Business Analyst",
-      company: "Brightway Systems",
-      startDate: "2018",
-      endDate: "2021",
+      position: "Data Analyst",
+      company: "XYZ Company",
+      location: "Boston, MA",
+      startDate: "2020",
+      endDate: "2022",
       description:
-        "Analyzed business requirements, documented workflows, and supported process improvements for internal operations teams.",
+        "Performed data analysis and built KPI reports for executive leadership.",
     },
   ],
+
   education: [
     {
-      id: "1",
-      school: "New York University",
-      degree: "Bachelor of Science",
-      fieldOfStudy: "Business Administration",
-      startDate: "2014",
-      endDate: "2018",
+      degree: "Bachelor of Science in Information Systems",
+      school: "University Example",
+      location: "New York, NY",
+      startDate: "2016",
+      endDate: "2020",
     },
   ],
-  techSkills: [
-    { id: "1", name: "Project Management" },
-    { id: "2", name: "Agile" },
-    { id: "3", name: "Data Analysis" },
-    { id: "4", name: "Stakeholder Communication" },
+
+  certifications: [
+    {
+      name: "Microsoft Power BI Data Analyst Associate",
+      issuer: "Microsoft",
+      issuedDate: "2024",
+      expiresDate: "2027",
+      credentialUrl: "https://learn.microsoft.com/",
+      description:
+        "Validated skills in Power BI data modeling and visualization.",
+    },
+    {
+      name: "Certified Scrum Master",
+      issuer: "Scrum Alliance",
+      issuedDate: "2023",
+    },
   ],
-  resumeTitle: "Product Manager Resume",
-  resumeType: "Professional",
-  themeId: "classic-left",
-  themeColor: "#DC2626",
+
+  projects: [
+    {
+      name: "Sales Dashboard",
+      role: "Lead Analyst",
+      description:
+        "Built interactive dashboards providing executive visibility into sales performance.",
+      technologies: ["Power BI", "SQL", "Excel"],
+      url: "github.com/janedoe/sales-dashboard",
+    },
+    {
+      name: "HR Analytics Portal",
+      role: "Business Analyst",
+      description:
+        "Created employee retention analytics and reporting solution.",
+      technologies: ["Python", "Snowflake", "Tableau"],
+    },
+  ],
+
+  accomplishments: [
+    {
+      title: "Employee of the Year",
+      organization: "ABC Corporation",
+      date: "2024",
+      description:
+        "Recognized for outstanding contributions and process improvements.",
+      impact: "Reduced reporting time by 60%",
+    },
+    {
+      title: "Innovation Award",
+      organization: "XYZ Company",
+      date: "2022",
+      description: "Developed automation tools that increased efficiency.",
+      impact: "Saved 15 hours per week",
+    },
+  ],
+
+  interests: ["Hiking", "Chess", "Volunteering", "Travel", "Photography"],
 };
 
 export default function ResumeTemplateCard({
@@ -78,17 +138,11 @@ export default function ResumeTemplateCard({
       className="group text-left transition-transform hover:-translate-y-2">
       <Card className="overflow-hidden border border-slate-200 bg-white shadow-sm transition-all group-hover:border-red-500 group-hover:shadow-2xl">
         <CardContent className="p-0">
-          <div className="relative aspect-[4/5] overflow-hidden bg-slate-100">
+          <div className="relative h-[420px] overflow-hidden bg-slate-100">
             <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent to-white/30" />
 
-            <div className="pointer-events-none absolute left-1/2 top-0 origin-top -translate-x-1/2 scale-[0.34]">
-              <ResumePreview
-                resumeData={{
-                  ...MOCK_DATA,
-                  themeId: theme.id,
-                  themeColor: theme.defaultColor,
-                }}
-              />
+            <div className="pointer-events-none absolute left-1/2 top-4 origin-top -translate-x-1/2 scale-[0.65]">
+              <ResumePreview themeId={theme.layout} data={MOCK_DATA} />
             </div>
           </div>
 

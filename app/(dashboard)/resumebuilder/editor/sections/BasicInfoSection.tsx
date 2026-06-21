@@ -8,8 +8,6 @@ import { debounce } from "lodash";
 
 import { generalInfoSchema, GeneralInfoValues } from "@/lib/validation";
 import { ResumeFormState } from "../[id]/types";
-import { THEME_REGISTRY } from "@/lib/registry-theme-registry";
-
 import FormStepWrapper from "@/app/components/coverletterbuilder/FormStepWrapper";
 import {
   Form,
@@ -20,6 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { RESUME_THEME_REGISTRY } from "@/app/(dashboard)/resumes/templates/templateRegistry";
 
 type BasicInfoSectionProps = {
   form: ResumeFormState;
@@ -31,7 +30,9 @@ export default function BasicInfoSection({
   setForm: setResumeData,
 }: BasicInfoSectionProps) {
   const currentTheme = useMemo(() => {
-    return THEME_REGISTRY.find((theme) => theme.id === resumeData.themeId);
+    return RESUME_THEME_REGISTRY.find(
+      (theme) => theme.id === resumeData.themeId,
+    );
   }, [resumeData.themeId]);
 
   const form = useForm<GeneralInfoValues>({
@@ -40,7 +41,7 @@ export default function BasicInfoSection({
       resumeTitle: resumeData.resumeTitle || "",
       description: resumeData.description || "",
       resumeType:
-        currentTheme?.category || resumeData.resumeType || "chronological",
+        currentTheme?.category || resumeData.resumeType || "classic",
     },
   });
 

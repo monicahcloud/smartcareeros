@@ -35,14 +35,12 @@ import {
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
-// import { ExperienceTips } from "@/components/ExperienceTips";
-
-import { THEME_REGISTRY } from "@/lib/registry-theme-registry";
 import GenerateDutiesButton from "./GenerateDutiesButton";
 import GenerateResponsibilitiesButton from "./GenerateResponsibilitiesButton";
 import GenerateWorkExperienceButton from "./GenerateWorkExperienceButton";
 import AIFeedbackBubble from "./AIFeedbackBubble";
 import { ResumeFormState } from "../[id]/types";
+import { RESUME_THEME_REGISTRY } from "@/app/(dashboard)/resumes/templates/templateRegistry";
 
 type WorkExperienceSectionProps = {
   form: ResumeFormState;
@@ -55,8 +53,11 @@ function WorkExperienceForm({
 }: WorkExperienceSectionProps) {
   // SOURCE OF TRUTH: Get category from the Registry, not the resumeTitle/Type string
   const themeCategory = useMemo(() => {
-    const theme = THEME_REGISTRY.find((t) => t.id === resumeData.themeId);
-    return theme?.category || "chronological";
+    const theme = RESUME_THEME_REGISTRY.find(
+      (t) => t.id === resumeData.themeId,
+    );
+
+    return theme?.category || "Professional";
   }, [resumeData.themeId]);
 
   const form = useForm<WorkExperiencesValues>({

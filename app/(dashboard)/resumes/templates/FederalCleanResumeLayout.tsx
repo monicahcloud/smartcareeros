@@ -1,3 +1,5 @@
+"use client";
+
 type ResumeData = {
   firstName?: string;
   lastName?: string;
@@ -31,13 +33,17 @@ type ResumeData = {
 };
 
 type FederalCleanResumeLayoutProps = {
-  data: ResumeData;
+  data?: ResumeData;
 };
 
 export default function FederalCleanResumeLayout({
-  data,
+  data = {},
 }: FederalCleanResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
+
+  const skills = data.skills ?? [];
+  const workExperience = data.workExperience ?? [];
+  const education = data.education ?? [];
 
   return (
     <div className="mx-auto min-h-[1123px] w-full max-w-[794px] bg-white px-12 py-10 text-slate-900 shadow-sm print:shadow-none">
@@ -64,38 +70,40 @@ export default function FederalCleanResumeLayout({
           <h2 className="mb-3 text-sm font-bold uppercase tracking-[0.2em]">
             Professional Summary
           </h2>
+
           <p className="text-sm leading-7 text-slate-700">{data.summary}</p>
         </section>
       )}
 
-      {data.skills && data.skills.length > 0 && (
+      {skills.length > 0 && (
         <section className="mt-8">
           <h2 className="mb-3 text-sm font-bold uppercase tracking-[0.2em]">
             Core Qualifications
           </h2>
 
           <ul className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-slate-700">
-            {data.skills.map((skill, index) => (
+            {skills.map((skill, index) => (
               <li key={`${skill}-${index}`}>• {skill}</li>
             ))}
           </ul>
         </section>
       )}
 
-      {data.workExperience && data.workExperience.length > 0 && (
+      {workExperience.length > 0 && (
         <section className="mt-9">
           <h2 className="mb-4 border-b border-slate-300 pb-2 text-sm font-bold uppercase tracking-[0.2em]">
             Professional Experience
           </h2>
 
           <div className="space-y-8">
-            {data.workExperience.map((job, index) => (
+            {workExperience.map((job, index) => (
               <div key={index}>
                 <div className="flex items-start justify-between gap-5">
                   <div>
                     <h3 className="text-base font-bold text-slate-900">
                       {job.position}
                     </h3>
+
                     <p className="text-sm font-semibold text-slate-700">
                       {job.company}
                       {job.location ? ` • ${job.location}` : ""}
@@ -110,16 +118,21 @@ export default function FederalCleanResumeLayout({
 
                 <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1 text-xs text-slate-600">
                   {job.grade && <p>Grade: {job.grade}</p>}
+
                   {job.hoursPerWeek && (
                     <p>Hours per week: {job.hoursPerWeek}</p>
                   )}
+
                   {job.employmentType && (
                     <p>Employment Type: {job.employmentType}</p>
                   )}
+
                   {job.supervisor && <p>Supervisor: {job.supervisor}</p>}
+
                   {job.supervisorPhone && (
                     <p>Supervisor Phone: {job.supervisorPhone}</p>
                   )}
+
                   {job.mayContactSupervisor && (
                     <p>May Contact: {job.mayContactSupervisor}</p>
                   )}
@@ -136,14 +149,14 @@ export default function FederalCleanResumeLayout({
         </section>
       )}
 
-      {data.education && data.education.length > 0 && (
+      {education.length > 0 && (
         <section className="mt-9">
           <h2 className="mb-4 border-b border-slate-300 pb-2 text-sm font-bold uppercase tracking-[0.2em]">
             Education
           </h2>
 
           <div className="space-y-5">
-            {data.education.map((edu, index) => (
+            {education.map((edu, index) => (
               <div
                 key={index}
                 className="flex items-start justify-between gap-5">
@@ -151,6 +164,7 @@ export default function FederalCleanResumeLayout({
                   <h3 className="text-base font-bold text-slate-900">
                     {edu.degree}
                   </h3>
+
                   <p className="text-sm text-slate-600">
                     {edu.school}
                     {edu.location ? ` • ${edu.location}` : ""}

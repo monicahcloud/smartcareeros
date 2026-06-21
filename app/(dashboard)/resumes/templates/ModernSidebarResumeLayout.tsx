@@ -1,3 +1,5 @@
+"use client";
+
 type ResumeData = {
   firstName?: string;
   lastName?: string;
@@ -25,17 +27,20 @@ type ResumeData = {
 };
 
 interface ModernSidebarResumeLayoutProps {
-  data: ResumeData;
+  data?: ResumeData;
 }
 
 export default function ModernSidebarResumeLayout({
-  data,
+  data = {},
 }: ModernSidebarResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
 
+  const skills = data.skills ?? [];
+  const education = data.education ?? [];
+  const workExperience = data.workExperience ?? [];
+
   return (
     <div className="mx-auto flex min-h-[1123px] w-full max-w-[794px] bg-white shadow-sm print:shadow-none">
-      {/* Sidebar */}
       <aside className="w-[32%] bg-slate-100 px-6 py-8">
         <div className="mb-10">
           <h1 className="text-3xl font-bold leading-tight text-slate-900">
@@ -61,28 +66,28 @@ export default function ModernSidebarResumeLayout({
           </div>
         </section>
 
-        {data.skills && data.skills.length > 0 && (
+        {skills.length > 0 && (
           <section className="mb-8">
             <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-slate-500">
               Skills
             </h2>
 
             <div className="space-y-2 text-sm text-slate-700">
-              {data.skills.map((skill, index) => (
+              {skills.map((skill, index) => (
                 <div key={`${skill}-${index}`}>{skill}</div>
               ))}
             </div>
           </section>
         )}
 
-        {data.education && data.education.length > 0 && (
+        {education.length > 0 && (
           <section>
             <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-slate-500">
               Education
             </h2>
 
             <div className="space-y-5">
-              {data.education.map((edu, index) => (
+              {education.map((edu, index) => (
                 <div key={index}>
                   <h3 className="text-sm font-semibold text-slate-900">
                     {edu.degree}
@@ -105,7 +110,6 @@ export default function ModernSidebarResumeLayout({
         )}
       </aside>
 
-      {/* Main Content */}
       <main className="w-[68%] px-8 py-8">
         {data.summary && (
           <section className="mb-10">
@@ -117,14 +121,14 @@ export default function ModernSidebarResumeLayout({
           </section>
         )}
 
-        {data.workExperience && data.workExperience.length > 0 && (
+        {workExperience.length > 0 && (
           <section>
             <h2 className="mb-5 border-b border-slate-200 pb-2 text-sm font-bold uppercase tracking-[0.25em] text-slate-800">
               Experience
             </h2>
 
             <div className="space-y-8">
-              {data.workExperience.map((job, index) => (
+              {workExperience.map((job, index) => (
                 <div key={index}>
                   <div className="flex items-start justify-between gap-4">
                     <div>

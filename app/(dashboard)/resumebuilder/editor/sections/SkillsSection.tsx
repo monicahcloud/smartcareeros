@@ -17,8 +17,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 import { ResumeFormState } from "../[id]/types";
-import { THEME_REGISTRY } from "@/lib/registry-theme-registry";
 import GenerateSkillsForm from "./GenerateSkills";
+import { RESUME_THEME_REGISTRY } from "@/app/(dashboard)/resumes/templates/templateRegistry";
 
 type SkillsSectionProps = {
   form: ResumeFormState;
@@ -30,8 +30,11 @@ export default function SkillsSection({
   setForm: setResumeData,
 }: SkillsSectionProps) {
   const themeCategory = useMemo(() => {
-    const theme = THEME_REGISTRY.find((t) => t.id === resumeData.themeId);
-    return theme?.category || "chronological";
+    const theme = RESUME_THEME_REGISTRY.find(
+      (t) => t.id === resumeData.themeId,
+    );
+
+    return theme?.category || "Professional";
   }, [resumeData.themeId]);
 
   const form = useForm<SkillsValues>({

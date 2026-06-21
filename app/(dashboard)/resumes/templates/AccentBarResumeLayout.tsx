@@ -1,3 +1,5 @@
+"use client";
+
 type ResumeData = {
   firstName?: string;
   lastName?: string;
@@ -25,22 +27,23 @@ type ResumeData = {
 };
 
 type AccentBarResumeLayoutProps = {
-  data: ResumeData;
+  data?: ResumeData;
 };
 
 export default function AccentBarResumeLayout({
-  data,
+  data = {},
 }: AccentBarResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
 
+  const workExperience = data.workExperience ?? [];
+  const education = data.education ?? [];
+  const skills = data.skills ?? [];
+
   return (
     <div className="mx-auto flex min-h-[1123px] w-full max-w-[794px] bg-white shadow-sm print:shadow-none">
-      {/* Accent Bar */}
       <div className="w-5 bg-blue-700" />
 
-      {/* Content */}
       <div className="flex-1 px-10 py-10 text-slate-900">
-        {/* Header */}
         <header className="border-b border-slate-300 pb-8">
           <h1 className="text-5xl font-bold">{fullName || "Your Name"}</h1>
 
@@ -57,7 +60,6 @@ export default function AccentBarResumeLayout({
           </div>
         </header>
 
-        {/* Summary */}
         {data.summary && (
           <section className="mt-8">
             <h2 className="mb-3 text-sm font-bold uppercase tracking-[0.25em] text-blue-700">
@@ -68,15 +70,14 @@ export default function AccentBarResumeLayout({
           </section>
         )}
 
-        {/* Experience */}
-        {data.workExperience && data.workExperience.length > 0 && (
+        {workExperience.length > 0 && (
           <section className="mt-10">
             <h2 className="mb-5 border-b border-slate-200 pb-2 text-sm font-bold uppercase tracking-[0.25em] text-blue-700">
               Experience
             </h2>
 
             <div className="space-y-8">
-              {data.workExperience.map((job, index) => (
+              {workExperience.map((job, index) => (
                 <div key={index}>
                   <div className="flex items-start justify-between gap-5">
                     <div>
@@ -107,15 +108,14 @@ export default function AccentBarResumeLayout({
           </section>
         )}
 
-        {/* Education */}
-        {data.education && data.education.length > 0 && (
+        {education.length > 0 && (
           <section className="mt-10">
             <h2 className="mb-5 border-b border-slate-200 pb-2 text-sm font-bold uppercase tracking-[0.25em] text-blue-700">
               Education
             </h2>
 
             <div className="space-y-6">
-              {data.education.map((edu, index) => (
+              {education.map((edu, index) => (
                 <div
                   key={index}
                   className="flex items-start justify-between gap-5">
@@ -140,15 +140,14 @@ export default function AccentBarResumeLayout({
           </section>
         )}
 
-        {/* Skills */}
-        {data.skills && data.skills.length > 0 && (
+        {skills.length > 0 && (
           <section className="mt-10">
             <h2 className="mb-5 border-b border-slate-200 pb-2 text-sm font-bold uppercase tracking-[0.25em] text-blue-700">
               Skills
             </h2>
 
             <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-slate-700">
-              {data.skills.map((skill, index) => (
+              {skills.map((skill, index) => (
                 <div key={`${skill}-${index}`}>• {skill}</div>
               ))}
             </div>

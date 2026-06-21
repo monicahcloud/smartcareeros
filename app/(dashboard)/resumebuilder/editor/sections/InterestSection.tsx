@@ -1,46 +1,29 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Heart } from "lucide-react";
-
-import { EditorFormProps } from "@/lib/types";
-import { interestSchema, InterestValues } from "@/lib/validation";
-
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
-
 import { Textarea } from "@/components/ui/textarea";
+import { ResumeFormState } from "../[id]/types";
 
-function InterestSection({ resumeData, setResumeData }: EditorFormProps) {
-  const form = useForm<InterestValues>({
-    resolver: zodResolver(interestSchema),
-    defaultValues: {
-      interest: resumeData.interest || [],
-    },
-  });
+type InterestSectionProps = {
+  form: ResumeFormState;
+  setForm: React.Dispatch<React.SetStateAction<ResumeFormState>>;
+};
 
-  useEffect(() => {
-    const { unsubscribe } = form.watch((values) => {
-      setResumeData((prev) => ({
-        ...prev,
-        interest:
-          values.interest
-            ?.filter(Boolean)
-            .map((item) => item.trim())
-            .filter(Boolean) || [],
-      }));
-    });
+export default function InterestSection({
+  form,
+  setForm,
+}: InterestSectionProps) {
+  function updateInterests(value: string) {
+    const interests = value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
 
-    return () => unsubscribe();
-  }, [form, setResumeData]);
+    setForm((prev) => ({
+      ...prev,
+      interests,
+    }));
+  }
 
   return (
     <div className="mx-auto max-w-xl space-y-6">
@@ -75,39 +58,17 @@ function InterestSection({ resumeData, setResumeData }: EditorFormProps) {
           </p>
         </div>
 
-        <Form {...form}>
-          <form className="space-y-4">
-            <FormField
-              control={form.control}
-              name="interest"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Textarea
-                      placeholder="e.g. Chess, Cooking, Graphic Design, Hiking, Volunteering..."
-                      className="min-h-[150px] resize-none rounded-xl border-slate-200 shadow-sm"
-                      value={field.value?.join(", ") || ""}
-                      onChange={(e) => {
-                        field.onChange(
-                          e.target.value.split(",").map((item) => item.trim()),
-                        );
-                      }}
-                    />
-                  </FormControl>
+        <Textarea
+          placeholder="e.g. Chess, Cooking, Graphic Design, Hiking, Volunteering..."
+          className="min-h-[150px] resize-none rounded-xl border-slate-200 shadow-sm"
+          value={(form.interests || []).join(", ")}
+          onChange={(e) => updateInterests(e.target.value)}
+        />
 
-                  <FormDescription className="text-[10px] italic">
-                    Separate each interest with a comma.
-                  </FormDescription>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
+        <p className="text-[10px] italic">
+          Separate each interest with a comma.
+        </p>
       </div>
     </div>
   );
 }
-
-export default InterestSection;

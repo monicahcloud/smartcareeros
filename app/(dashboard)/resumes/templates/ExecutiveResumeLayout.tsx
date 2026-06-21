@@ -1,3 +1,5 @@
+"use client";
+
 type ResumeData = {
   firstName?: string;
   lastName?: string;
@@ -25,13 +27,17 @@ type ResumeData = {
 };
 
 type ExecutiveResumeLayoutProps = {
-  data: ResumeData;
+  data?: ResumeData;
 };
 
 export default function ExecutiveResumeLayout({
-  data,
+  data = {},
 }: ExecutiveResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
+
+  const skills = data.skills ?? [];
+  const workExperience = data.workExperience ?? [];
+  const education = data.education ?? [];
 
   return (
     <div className="mx-auto min-h-[1123px] w-full max-w-[794px] bg-white px-12 py-10 text-slate-900 shadow-sm print:shadow-none">
@@ -62,28 +68,28 @@ export default function ExecutiveResumeLayout({
         </section>
       )}
 
-      {data.skills && data.skills.length > 0 && (
+      {skills.length > 0 && (
         <section className="mt-8">
           <h2 className="mb-4 text-sm font-black uppercase tracking-[0.25em] text-slate-900">
             Core Competencies
           </h2>
 
           <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-slate-700">
-            {data.skills.map((skill, index) => (
+            {skills.map((skill, index) => (
               <p key={`${skill}-${index}`}>• {skill}</p>
             ))}
           </div>
         </section>
       )}
 
-      {data.workExperience && data.workExperience.length > 0 && (
+      {workExperience.length > 0 && (
         <section className="mt-10">
           <h2 className="mb-5 border-b border-slate-300 pb-2 text-sm font-black uppercase tracking-[0.25em] text-slate-900">
             Professional Experience
           </h2>
 
           <div className="space-y-8">
-            {data.workExperience.map((job, index) => (
+            {workExperience.map((job, index) => (
               <div key={index}>
                 <div className="flex items-start justify-between gap-6">
                   <div>
@@ -113,14 +119,14 @@ export default function ExecutiveResumeLayout({
         </section>
       )}
 
-      {data.education && data.education.length > 0 && (
+      {education.length > 0 && (
         <section className="mt-10">
           <h2 className="mb-5 border-b border-slate-300 pb-2 text-sm font-black uppercase tracking-[0.25em] text-slate-900">
             Education
           </h2>
 
           <div className="space-y-5">
-            {data.education.map((edu, index) => (
+            {education.map((edu, index) => (
               <div
                 key={index}
                 className="flex items-start justify-between gap-6">

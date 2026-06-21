@@ -34,8 +34,8 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { THEME_REGISTRY } from "@/lib/registry-theme-registry";
 import { ResumeFormState } from "../[id]/types";
+import { RESUME_THEME_REGISTRY } from "@/app/(dashboard)/resumes/templates/templateRegistry";
 
 type EducationSectionProps = {
   form: ResumeFormState;
@@ -47,8 +47,11 @@ function EducationForm({
   setForm: setResumeData,
 }: EducationSectionProps) {
   const themeCategory = useMemo(() => {
-    const theme = THEME_REGISTRY.find((t) => t.id === resumeData.themeId);
-    return theme?.category || "chronological";
+    const theme = RESUME_THEME_REGISTRY.find(
+      (t) => t.id === resumeData.themeId,
+    );
+
+    return theme?.category || "Professional";
   }, [resumeData.themeId]);
 
   const form = useForm<EducationValues>({

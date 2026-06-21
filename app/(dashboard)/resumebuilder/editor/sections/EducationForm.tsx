@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { EditorFormProps } from "@/lib/types";
 import { educationSchema, EducationValues } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,14 +35,16 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-// import { EducationTips } from "@/components/EducationTips";
-import { THEME_REGISTRY } from "@/lib/resume-theme-registry";
+import { RESUME_THEME_REGISTRY } from "@/app/(dashboard)/resumes/templates/templateRegistry";
 
 function EducationForm({ resumeData, setResumeData }: EditorFormProps) {
   // SOURCE OF TRUTH: Get category from Registry
   const themeCategory = useMemo(() => {
-    const theme = THEME_REGISTRY.find((t) => t.id === resumeData.themeId);
-    return theme?.category || "chronological";
+    const theme = RESUME_THEME_REGISTRY.find(
+      (t) => t.id === resumeData.themeId,
+    );
+
+    return theme?.category || "Professional";
   }, [resumeData.themeId]);
 
   const form = useForm<EducationValues>({
@@ -71,7 +73,7 @@ function EducationForm({ resumeData, setResumeData }: EditorFormProps) {
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   function handleDragEnd(event: DragEndEvent) {
@@ -176,7 +178,7 @@ function EducationItem({
         "space-y-5 border rounded-3xl bg-white p-6 transition-all duration-200",
         isDragging
           ? "shadow-2xl z-50 cursor-grabbing border-blue-200 scale-105"
-          : "shadow-sm border-slate-100"
+          : "shadow-sm border-slate-100",
       )}>
       <div className="flex justify-between items-center border-b border-slate-50 pb-3">
         <div className="flex items-center gap-2">

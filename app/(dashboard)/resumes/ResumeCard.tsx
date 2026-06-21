@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { deleteResume } from "./preview/[id]/page";
+import ResumePreview from "../resumebuilder/editor/sections/ResumePreview";
+import { deleteResume } from "./actions";
 
 export default function ResumeCard({ resume }: { resume: any }) {
   const router = useRouter();
@@ -35,7 +36,7 @@ export default function ResumeCard({ resume }: { resume: any }) {
     userAddress: resume.userAddress,
     website: resume.website,
     linkedin: resume.linkedin,
-    gitHub: resume.gitHub,
+    github: resume.github,
     summary: resume.summary,
     resumeTitle: resume.resumeTitle,
     resumeType: resume.resumeType,
@@ -65,9 +66,9 @@ export default function ResumeCard({ resume }: { resume: any }) {
           {resume.themeId || resume.resumeType || "Standard"}
         </div>
 
-        {/* <div className="pointer-events-none absolute left-1/2 top-0 origin-top -translate-x-1/2 scale-[0.34]">
+        <div className="pointer-events-none absolute left-1/2 top-0 origin-top -translate-x-1/2 scale-[0.34]">
           <ResumePreview resumeData={previewData} />
-        </div> */}
+        </div>
 
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/70" />
       </div>
@@ -82,7 +83,7 @@ export default function ResumeCard({ resume }: { resume: any }) {
         </p>
       </div>
 
-      <div className="mt-5 flex gap-2">
+      <div className="mt-5 grid grid-cols-2 gap-2 lg:flex">
         <Link
           href={`/resumebuilder/editor?resumeId=${resume.id}`}
           className="flex-1 bg-black px-4 py-3 text-center text-xs font-black uppercase tracking-[0.16em] text-white transition hover:bg-red-600">
@@ -94,6 +95,21 @@ export default function ResumeCard({ resume }: { resume: any }) {
           className="border border-slate-200 px-4 py-3 text-center text-xs font-black uppercase tracking-[0.16em] text-slate-500 transition hover:border-red-600 hover:text-red-600">
           View
         </Link>
+        <button
+          type="button"
+          onClick={handleDelete}
+          className="
+    border border-red-200
+    px-4 py-3
+    text-center
+    text-xs font-black uppercase tracking-[0.16em]
+    text-red-600
+    transition
+    hover:bg-red-600
+    hover:text-white
+  ">
+          Delete
+        </button>
 
         {resume.shareToken && (
           <Link

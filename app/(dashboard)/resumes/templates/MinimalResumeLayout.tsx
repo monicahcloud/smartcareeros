@@ -1,3 +1,5 @@
+"use client";
+
 type ResumeData = {
   firstName?: string;
   lastName?: string;
@@ -25,17 +27,20 @@ type ResumeData = {
 };
 
 type MinimalResumeLayoutProps = {
-  data: ResumeData;
+  data?: ResumeData;
 };
 
 export default function MinimalResumeLayout({
-  data,
+  data = {},
 }: MinimalResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
 
+  const workExperience = data.workExperience ?? [];
+  const education = data.education ?? [];
+  const skills = data.skills ?? [];
+
   return (
     <div className="mx-auto min-h-[1123px] w-full max-w-[794px] bg-white px-12 py-10 text-slate-900 shadow-sm print:shadow-none">
-      {/* Header */}
       <header className="mb-10">
         <h1 className="text-4xl font-light tracking-wide">
           {fullName || "Your Name"}
@@ -54,7 +59,6 @@ export default function MinimalResumeLayout({
         </div>
       </header>
 
-      {/* Summary */}
       {data.summary && (
         <section className="mb-10">
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-slate-800">
@@ -65,15 +69,14 @@ export default function MinimalResumeLayout({
         </section>
       )}
 
-      {/* Experience */}
-      {data.workExperience && data.workExperience.length > 0 && (
+      {workExperience.length > 0 && (
         <section className="mb-10">
           <h2 className="mb-5 text-sm font-semibold uppercase tracking-[0.2em] text-slate-800">
             Experience
           </h2>
 
           <div className="space-y-8">
-            {data.workExperience.map((job, index) => (
+            {workExperience.map((job, index) => (
               <div key={index}>
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -87,7 +90,7 @@ export default function MinimalResumeLayout({
                     </p>
                   </div>
 
-                  <p className="text-xs text-slate-500 whitespace-nowrap">
+                  <p className="whitespace-nowrap text-xs text-slate-500">
                     {job.startDate}
                     {job.endDate ? ` - ${job.endDate}` : ""}
                   </p>
@@ -104,15 +107,14 @@ export default function MinimalResumeLayout({
         </section>
       )}
 
-      {/* Education */}
-      {data.education && data.education.length > 0 && (
+      {education.length > 0 && (
         <section className="mb-10">
           <h2 className="mb-5 text-sm font-semibold uppercase tracking-[0.2em] text-slate-800">
             Education
           </h2>
 
           <div className="space-y-6">
-            {data.education.map((edu, index) => (
+            {education.map((edu, index) => (
               <div key={index}>
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -126,7 +128,7 @@ export default function MinimalResumeLayout({
                     </p>
                   </div>
 
-                  <p className="text-xs text-slate-500 whitespace-nowrap">
+                  <p className="whitespace-nowrap text-xs text-slate-500">
                     {edu.startDate}
                     {edu.endDate ? ` - ${edu.endDate}` : ""}
                   </p>
@@ -137,15 +139,14 @@ export default function MinimalResumeLayout({
         </section>
       )}
 
-      {/* Skills */}
-      {data.skills && data.skills.length > 0 && (
+      {skills.length > 0 && (
         <section>
           <h2 className="mb-5 text-sm font-semibold uppercase tracking-[0.2em] text-slate-800">
             Skills
           </h2>
 
           <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-700">
-            {data.skills.map((skill, index) => (
+            {skills.map((skill, index) => (
               <span key={`${skill}-${index}`}>{skill}</span>
             ))}
           </div>

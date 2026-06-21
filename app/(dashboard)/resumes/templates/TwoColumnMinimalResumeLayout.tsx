@@ -1,3 +1,5 @@
+"use client";
+
 type ResumeData = {
   firstName?: string;
   lastName?: string;
@@ -25,17 +27,20 @@ type ResumeData = {
 };
 
 type TwoColumnMinimalResumeLayoutProps = {
-  data: ResumeData;
+  data?: ResumeData;
 };
 
 export default function TwoColumnMinimalResumeLayout({
-  data,
+  data = {},
 }: TwoColumnMinimalResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
 
+  const skills = data.skills ?? [];
+  const education = data.education ?? [];
+  const workExperience = data.workExperience ?? [];
+
   return (
     <div className="mx-auto min-h-[1123px] w-full max-w-[794px] bg-white px-10 py-10 text-slate-900 shadow-sm print:shadow-none">
-      {/* Header */}
       <header className="mb-10 border-b border-slate-300 pb-6">
         <h1 className="text-4xl font-light tracking-wide">
           {fullName || "Your Name"}
@@ -55,30 +60,29 @@ export default function TwoColumnMinimalResumeLayout({
       </header>
 
       <div className="grid grid-cols-[0.32fr_1fr] gap-10">
-        {/* Left Column */}
         <aside>
-          {data.skills && data.skills.length > 0 && (
+          {skills.length > 0 && (
             <section className="mb-10">
               <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.25em] text-slate-500">
                 Skills
               </h2>
 
               <ul className="space-y-2 text-sm text-slate-700">
-                {data.skills.map((skill, index) => (
+                {skills.map((skill, index) => (
                   <li key={`${skill}-${index}`}>{skill}</li>
                 ))}
               </ul>
             </section>
           )}
 
-          {data.education && data.education.length > 0 && (
+          {education.length > 0 && (
             <section>
               <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.25em] text-slate-500">
                 Education
               </h2>
 
               <div className="space-y-5">
-                {data.education.map((edu, index) => (
+                {education.map((edu, index) => (
                   <div key={index}>
                     <h3 className="text-sm font-semibold text-slate-900">
                       {edu.degree}
@@ -101,7 +105,6 @@ export default function TwoColumnMinimalResumeLayout({
           )}
         </aside>
 
-        {/* Main Column */}
         <main>
           {data.summary && (
             <section className="mb-10">
@@ -113,14 +116,14 @@ export default function TwoColumnMinimalResumeLayout({
             </section>
           )}
 
-          {data.workExperience && data.workExperience.length > 0 && (
+          {workExperience.length > 0 && (
             <section>
               <h2 className="mb-5 text-xs font-bold uppercase tracking-[0.25em] text-slate-500">
                 Experience
               </h2>
 
               <div className="space-y-8">
-                {data.workExperience.map((job, index) => (
+                {workExperience.map((job, index) => (
                   <div key={index}>
                     <div className="flex items-start justify-between gap-4">
                       <div>

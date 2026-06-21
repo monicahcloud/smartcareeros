@@ -41,16 +41,27 @@ export type AccomplishmentItem = {
 };
 
 export type ResumeFormState = {
+  id?: string;
+
   resumeTitle: string;
   resumeType: string;
   description: string;
 
-  jobTitle: string;
+  themeId?: string;
+  themeColor?: string;
+  borderStyle?: string;
+
   firstName: string;
   lastName: string;
+  jobTitle: string;
   email: string;
   phone: string;
   address: string;
+  website?: string;
+  linkedin?: string;
+  gitHub?: string;
+  github?: string;
+
   summary: string;
   skills: string[];
   techSkills: string[];
@@ -59,13 +70,9 @@ export type ResumeFormState = {
   certifications: CertificationItem[];
   projects: ProjectItem[];
   accomplishments: AccomplishmentItem[];
+  interests: string[];
 
-  themeId?: string;
-  themeColor?: string;
-  borderStyle?: string;
-  photo?: File;
+  photo?: File | string | null;
   photoUrl?: string;
-  website?: string;
-  linkedin?: string;
-  gitHub?: string;
+  showPhoto?: boolean;
 };

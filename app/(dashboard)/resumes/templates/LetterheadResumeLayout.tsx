@@ -1,3 +1,5 @@
+"use client";
+
 type ResumeData = {
   firstName?: string;
   lastName?: string;
@@ -25,17 +27,20 @@ type ResumeData = {
 };
 
 type LetterheadResumeLayoutProps = {
-  data: ResumeData;
+  data?: ResumeData;
 };
 
 export default function LetterheadResumeLayout({
-  data,
+  data = {},
 }: LetterheadResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
 
+  const workExperience = data.workExperience ?? [];
+  const education = data.education ?? [];
+  const skills = data.skills ?? [];
+
   return (
     <div className="mx-auto min-h-[1123px] w-full max-w-[794px] bg-white text-slate-900 shadow-sm print:shadow-none">
-      {/* Letterhead */}
       <header className="border-b-4 border-slate-800 bg-slate-100 px-12 py-8">
         <div className="flex items-center justify-between gap-8">
           <div>
@@ -69,14 +74,14 @@ export default function LetterheadResumeLayout({
           </section>
         )}
 
-        {data.workExperience && data.workExperience.length > 0 && (
+        {workExperience.length > 0 && (
           <section className="mb-10">
             <h2 className="mb-5 border-b border-slate-300 pb-2 text-sm font-bold uppercase tracking-[0.2em] text-slate-800">
               Professional Experience
             </h2>
 
             <div className="space-y-8">
-              {data.workExperience.map((job, index) => (
+              {workExperience.map((job, index) => (
                 <div key={index}>
                   <div className="flex items-start justify-between gap-5">
                     <div>
@@ -107,14 +112,14 @@ export default function LetterheadResumeLayout({
           </section>
         )}
 
-        {data.education && data.education.length > 0 && (
+        {education.length > 0 && (
           <section className="mb-10">
             <h2 className="mb-5 border-b border-slate-300 pb-2 text-sm font-bold uppercase tracking-[0.2em] text-slate-800">
               Education
             </h2>
 
             <div className="space-y-5">
-              {data.education.map((edu, index) => (
+              {education.map((edu, index) => (
                 <div
                   key={index}
                   className="flex items-start justify-between gap-5">
@@ -139,14 +144,14 @@ export default function LetterheadResumeLayout({
           </section>
         )}
 
-        {data.skills && data.skills.length > 0 && (
+        {skills.length > 0 && (
           <section>
             <h2 className="mb-5 border-b border-slate-300 pb-2 text-sm font-bold uppercase tracking-[0.2em] text-slate-800">
               Skills
             </h2>
 
             <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-slate-700">
-              {data.skills.map((skill, index) => (
+              {skills.map((skill, index) => (
                 <div key={`${skill}-${index}`}>• {skill}</div>
               ))}
             </div>

@@ -1,19 +1,18 @@
 "use client";
 
 import { EditorFormProps } from "@/lib/types";
-import { THEME_REGISTRY } from "@/lib/resume-theme-registry";
 import { useMemo } from "react";
 import { CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { RESUME_THEME_REGISTRY } from "@/app/(dashboard)/resumes/templates/templateRegistry";
 
 export default function FinalReviewForm({ resumeData }: EditorFormProps) {
   const theme = useMemo(
-    () => THEME_REGISTRY.find((t) => t.id === resumeData.themeId),
-    [resumeData.themeId]
+    () => RESUME_THEME_REGISTRY.find((t) => t.id === resumeData.themeId),
+    [resumeData.themeId],
   );
 
-  const category = theme?.category || "chronological";
-
+  const category = theme?.category || "Professional";
   const auditResults = useMemo(() => {
     const checks = [
       {
@@ -63,7 +62,7 @@ export default function FinalReviewForm({ resumeData }: EditorFormProps) {
     // Category Specific Checks
     if (category === "federal") {
       const federalCheck = resumeData.workExperiences?.every(
-        (exp) => exp.grade && exp.hours
+        (exp) => exp.grade && exp.hours,
       );
       checks.push({
         section: "Federal Compliance",
@@ -101,7 +100,7 @@ export default function FinalReviewForm({ resumeData }: EditorFormProps) {
               "flex items-center justify-between p-4 rounded-2xl border transition-all",
               result.status === "pass"
                 ? "bg-white border-slate-100"
-                : "bg-red-50/5 border-red-100"
+                : "bg-red-50/5 border-red-100",
             )}>
             <div className="flex items-center gap-3">
               {result.status === "pass" ? (
@@ -112,7 +111,7 @@ export default function FinalReviewForm({ resumeData }: EditorFormProps) {
                     "size-5",
                     result.status === "fail"
                       ? "text-red-500"
-                      : "text-yellow-500"
+                      : "text-yellow-500",
                   )}
                 />
               )}
@@ -135,7 +134,7 @@ export default function FinalReviewForm({ resumeData }: EditorFormProps) {
             AI Career Coach Advice
           </p>
           <p className="text-xs leading-relaxed opacity-90 italic">
-            "Your {category} resume looks{" "}
+            &quot;Your {category} resume looks{" "}
             {auditResults.every((r) => r.status === "pass")
               ? "highly competitive and ATS-optimized"
               : "structured well, but has room for improvement"}
@@ -143,7 +142,7 @@ export default function FinalReviewForm({ resumeData }: EditorFormProps) {
             {category === "federal"
               ? " Federal HR specialists spend only seconds looking for your GS-grade; ensure it stands out."
               : " Remember to keep your most relevant skills in the top third of the page."}
-            "
+            &quot;
           </p>
         </div>
         <Sparkles className="absolute -right-4 -bottom-4 size-24 text-white/5 rotate-12" />

@@ -1,3 +1,5 @@
+"use client";
+
 type ResumeData = {
   firstName?: string;
   lastName?: string;
@@ -25,17 +27,20 @@ type ResumeData = {
 };
 
 type BoxedHeaderResumeLayoutProps = {
-  data: ResumeData;
+  data?: ResumeData;
 };
 
 export default function BoxedHeaderResumeLayout({
-  data,
+  data = {},
 }: BoxedHeaderResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
 
+  const workExperience = data.workExperience ?? [];
+  const education = data.education ?? [];
+  const skills = data.skills ?? [];
+
   return (
     <div className="mx-auto min-h-[1123px] w-full max-w-[794px] bg-white px-10 py-10 text-slate-900 shadow-sm print:shadow-none">
-      {/* Header Box */}
       <header className="rounded-lg border-2 border-slate-900 bg-slate-100 px-8 py-8 text-center">
         <h1 className="text-4xl font-bold uppercase tracking-[0.15em]">
           {fullName || "Your Name"}
@@ -54,26 +59,23 @@ export default function BoxedHeaderResumeLayout({
         </div>
       </header>
 
-      {/* Summary */}
       {data.summary && (
         <section className="mt-10">
           <h2 className="mb-4 text-sm font-bold uppercase tracking-[0.25em] text-slate-800">
             Professional Summary
           </h2>
-
           <p className="text-sm leading-7 text-slate-700">{data.summary}</p>
         </section>
       )}
 
-      {/* Experience */}
-      {data.workExperience && data.workExperience.length > 0 && (
+      {workExperience.length > 0 && (
         <section className="mt-10">
           <h2 className="mb-5 border-b border-slate-300 pb-2 text-sm font-bold uppercase tracking-[0.25em] text-slate-800">
             Professional Experience
           </h2>
 
           <div className="space-y-8">
-            {data.workExperience.map((job, index) => (
+            {workExperience.map((job, index) => (
               <div key={index}>
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -104,15 +106,14 @@ export default function BoxedHeaderResumeLayout({
         </section>
       )}
 
-      {/* Education */}
-      {data.education && data.education.length > 0 && (
+      {education.length > 0 && (
         <section className="mt-10">
           <h2 className="mb-5 border-b border-slate-300 pb-2 text-sm font-bold uppercase tracking-[0.25em] text-slate-800">
             Education
           </h2>
 
           <div className="space-y-6">
-            {data.education.map((edu, index) => (
+            {education.map((edu, index) => (
               <div key={index}>
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -137,15 +138,14 @@ export default function BoxedHeaderResumeLayout({
         </section>
       )}
 
-      {/* Skills */}
-      {data.skills && data.skills.length > 0 && (
+      {skills.length > 0 && (
         <section className="mt-10">
           <h2 className="mb-5 border-b border-slate-300 pb-2 text-sm font-bold uppercase tracking-[0.25em] text-slate-800">
             Skills
           </h2>
 
           <div className="flex flex-wrap gap-3">
-            {data.skills.map((skill, index) => (
+            {skills.map((skill, index) => (
               <span
                 key={`${skill}-${index}`}
                 className="rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-700">

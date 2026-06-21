@@ -14,9 +14,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 import { summarySchema, SummaryValues } from "@/lib/validation";
-import { THEME_REGISTRY } from "@/lib/registry-theme-registry";
 import { ResumeFormState } from "../[id]/types";
 import GenerateSummaryButton from "./GenerateSummaryButtons";
+import { RESUME_THEME_REGISTRY } from "@/app/(dashboard)/resumes/templates/templateRegistry";
 
 type SummarySectionProps = {
   form: ResumeFormState;
@@ -28,10 +28,11 @@ export default function SummarySection({
   setForm: setResumeData,
 }: SummarySectionProps) {
   const themeCategory = useMemo(() => {
-    const theme = THEME_REGISTRY.find(
-      (theme) => theme.id === resumeData.themeId,
+    const theme = RESUME_THEME_REGISTRY.find(
+      (t) => t.id === resumeData.themeId,
     );
-    return theme?.category || "chronological";
+
+    return theme?.category || "Professional";
   }, [resumeData.themeId]);
 
   const form = useForm<SummaryValues>({

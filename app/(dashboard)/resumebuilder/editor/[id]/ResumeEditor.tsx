@@ -41,6 +41,10 @@ import PersonalInfoSection from "../sections/PersonalInfoForm";
 import TechnicalSkillsSection from "../sections/TechnicalSkillsForm";
 import SummarySection from "../sections/SummaryForm";
 import InterestSection from "../sections/InterestSection";
+import {
+  RESUME_THEME_REGISTRY,
+  ResumeLayout,
+} from "@/app/(dashboard)/resumes/templates/templateRegistry";
 
 type ResumeWithRelations = Resume & {
   techSkills: TechSkill[];
@@ -58,99 +62,6 @@ interface ResumeEditorProps {
   resumes: Partial<Resume>[];
   jobDescription?: JobDescription | null;
 }
-
-const RESUME_THEME_REGISTRY = [
-  {
-    id: "classic-left",
-    name: "Classic Left",
-    category: "Professional",
-    defaultColor: "#2563eb",
-  },
-  {
-    id: "centered-modern",
-    name: "Centered Modern",
-    category: "Modern",
-    defaultColor: "#2563eb",
-  },
-  {
-    id: "split-header",
-    name: "Split Header",
-    category: "Corporate",
-    defaultColor: "#2563eb",
-  },
-  {
-    id: "minimal",
-    name: "Minimal",
-    category: "Clean",
-    defaultColor: "#2563eb",
-  },
-  {
-    id: "executive",
-    name: "Executive",
-    category: "Leadership",
-    defaultColor: "#111827",
-  },
-  {
-    id: "right-header",
-    name: "Right Header",
-    category: "Professional",
-    defaultColor: "#2563eb",
-  },
-  {
-    id: "boxed-header",
-    name: "Boxed Header",
-    category: "Corporate",
-    defaultColor: "#111827",
-  },
-  {
-    id: "accent-bar",
-    name: "Accent Bar",
-    category: "Modern",
-    defaultColor: "#2563eb",
-  },
-  {
-    id: "two-column-minimal",
-    name: "Two Column Minimal",
-    category: "Clean",
-    defaultColor: "#2563eb",
-  },
-  {
-    id: "corporate-panel",
-    name: "Corporate Panel",
-    category: "Executive",
-    defaultColor: "#111827",
-  },
-  {
-    id: "modern-sidebar",
-    name: "Modern Sidebar",
-    category: "Modern",
-    defaultColor: "#2563eb",
-  },
-  {
-    id: "federal-clean",
-    name: "Federal Clean",
-    category: "Federal",
-    defaultColor: "#111827",
-  },
-  {
-    id: "bold-topline",
-    name: "Bold Topline",
-    category: "Bold",
-    defaultColor: "#111827",
-  },
-  {
-    id: "letterhead",
-    name: "Letterhead",
-    category: "Corporate",
-    defaultColor: "#111827",
-  },
-  {
-    id: "simple-professional",
-    name: "Simple Professional",
-    category: "Traditional",
-    defaultColor: "#2563eb",
-  },
-];
 
 const allResumeSteps = [
   {
@@ -288,7 +199,7 @@ export default function ResumeEditor({
       })) || [],
 
     accomplishments: [],
-
+    interests: resumeToEdit?.interest || [],
     themeId: resumeToEdit?.themeId || initialThemeId,
     themeColor: resumeToEdit?.themeColor || "#2563eb",
     borderStyle: resumeToEdit?.borderStyle || "squircle",
@@ -308,6 +219,36 @@ export default function ResumeEditor({
     params.set("step", step);
 
     window.history.pushState(null, "", `?${params.toString()}`);
+  };
+  const currentTheme =
+    RESUME_THEME_REGISTRY.find((theme) => theme.id === resumeData.themeId) ||
+    RESUME_THEME_REGISTRY[0];
+
+  const previewData = {
+    firstName: resumeData.firstName,
+    lastName: resumeData.lastName,
+    jobTitle: resumeData.jobTitle,
+
+    email: resumeData.email,
+    phone: resumeData.phone,
+    address: resumeData.address,
+    website: resumeData.website,
+    linkedin: resumeData.linkedin,
+    github: resumeData.github || resumeData.gitHub,
+
+    photoUrl: resumeData.photoUrl,
+    showPhoto: resumeData.showPhoto ?? true,
+
+    summary: resumeData.summary,
+
+    skills: resumeData.skills ?? [],
+    techSkills: resumeData.techSkills ?? [],
+    workExperience: resumeData.workExperience ?? [],
+    education: resumeData.education ?? [],
+    certifications: resumeData.certifications ?? [],
+    projects: resumeData.projects ?? [],
+    accomplishments: resumeData.accomplishments ?? [],
+    interests: resumeData.interests ?? [],
   };
 
   return (
@@ -404,7 +345,10 @@ export default function ResumeEditor({
             {CurrentStepComponent ? (
               <CurrentStepComponent form={resumeData} setForm={setResumeData} />
             ) : (
-              <ResumePreview form={resumeData} />
+              <ResumePreview
+                themeId={currentTheme.layout as ResumeLayout}
+                data={previewData}
+              />
             )}
           </div>
         </div>
@@ -417,7 +361,10 @@ export default function ResumeEditor({
           )}>
           <div className="flex min-h-full items-start justify-center overflow-auto p-4 lg:p-8">
             <div className="origin-top scale-[0.5] lg:scale-[0.58] xl:scale-[0.65] 2xl:scale-[0.72]">
-              <ResumePreview form={resumeData} />
+              <ResumePreview
+                themeId={currentTheme.layout as ResumeLayout}
+                data={previewData}
+              />
             </div>
           </div>
         </div>

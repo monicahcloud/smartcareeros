@@ -1,3 +1,5 @@
+"use client";
+
 type ResumeData = {
   firstName?: string;
   lastName?: string;
@@ -25,17 +27,19 @@ type ResumeData = {
 };
 
 type SplitHeaderResumeLayoutProps = {
-  data: ResumeData;
+  data?: ResumeData;
 };
 
 export default function SplitHeaderResumeLayout({
-  data,
+  data = {},
 }: SplitHeaderResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
+  const workExperience = data.workExperience ?? [];
+  const education = data.education ?? [];
+  const skills = data.skills ?? [];
 
   return (
     <div className="mx-auto min-h-[1123px] w-full max-w-[794px] bg-white text-slate-900 shadow-sm print:shadow-none">
-      {/* Header */}
       <header className="grid grid-cols-[1.3fr_0.7fr] border-b border-slate-300 px-10 py-8">
         <div>
           <h1 className="text-4xl font-bold leading-tight tracking-wide">
@@ -66,14 +70,14 @@ export default function SplitHeaderResumeLayout({
           </section>
         )}
 
-        {data.workExperience && data.workExperience.length > 0 && (
+        {workExperience.length > 0 && (
           <section className="mb-8">
             <h2 className="mb-4 border-b border-slate-300 pb-2 text-xs font-bold uppercase tracking-[0.25em] text-slate-500">
               Experience
             </h2>
 
             <div className="space-y-7">
-              {data.workExperience.map((job, index) => (
+              {workExperience.map((job, index) => (
                 <div key={index} className="grid grid-cols-[0.32fr_1fr] gap-6">
                   <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     {job.startDate}
@@ -102,14 +106,14 @@ export default function SplitHeaderResumeLayout({
           </section>
         )}
 
-        {data.education && data.education.length > 0 && (
+        {education.length > 0 && (
           <section className="mb-8">
             <h2 className="mb-4 border-b border-slate-300 pb-2 text-xs font-bold uppercase tracking-[0.25em] text-slate-500">
               Education
             </h2>
 
             <div className="space-y-5">
-              {data.education.map((edu, index) => (
+              {education.map((edu, index) => (
                 <div key={index} className="grid grid-cols-[0.32fr_1fr] gap-6">
                   <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     {edu.startDate}
@@ -132,14 +136,14 @@ export default function SplitHeaderResumeLayout({
           </section>
         )}
 
-        {data.skills && data.skills.length > 0 && (
+        {skills.length > 0 && (
           <section>
             <h2 className="mb-4 border-b border-slate-300 pb-2 text-xs font-bold uppercase tracking-[0.25em] text-slate-500">
               Skills
             </h2>
 
             <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-slate-700">
-              {data.skills.map((skill, index) => (
+              {skills.map((skill, index) => (
                 <span key={`${skill}-${index}`}>{skill}</span>
               ))}
             </div>

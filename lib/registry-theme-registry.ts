@@ -1,28 +1,45 @@
 /* ---------- 1. TYPES ---------- */
 export type ResumeLayout =
-  | "top-header"
-  | "sidebar-left"
-  | "sidebar-right"
+  | "classic-left"
+  | "centered-header"
+  | "split-header"
   | "minimal"
-  | "modern-split";
+  | "executive"
+  | "right-header"
+  | "boxed-header"
+  | "accent-bar"
+  | "two-column-minimal"
+  | "corporate-panel"
+  | "modern-sidebar"
+  | "federal-clean"
+  | "bold-topline"
+  | "letterhead"
+  | "simple-professional";
 
 export type ResumeCategory =
-  | "chronological"
-  | "functional"
-  | "federal"
-  | "combination";
+  | "Professional"
+  | "Modern"
+  | "Leadership"
+  | "Minimal"
+  | "Corporate"
+  | "Creative"
+  | "Government"
+  | "Bold";
+
+export type ResumeFontId = "professional" | "traditional" | "modern";
 
 export interface ResumeThemeToken {
   id: string;
   name: string;
-  layout: ResumeLayout;
-  paletteId: keyof typeof ColorPalettes;
-  fontId: keyof typeof FontPairs;
-  spacing: "compact" | "normal" | "relaxed";
   category: ResumeCategory;
+  layout: ResumeLayout;
   defaultColor: string;
+  fontId: ResumeFontId;
+  spacing: "compact" | "normal" | "relaxed";
+  headerAlign: "left" | "center" | "right";
+  showDivider: boolean;
+  bestFor: string;
 }
-
 /* ---------- 2. INGREDIENTS ---------- */
 
 export const SPACING_OPTIONS: ("compact" | "normal" | "relaxed")[] = [
@@ -237,153 +254,183 @@ export const FontPairs = {
 
 export const THEME_REGISTRY: ResumeThemeToken[] = [
   {
-    id: "chronological-classic",
-    name: "Chronological Classic",
-    category: "chronological",
-    layout: "top-header",
-    paletteId: "classic-business",
+    id: "classic-left",
+    name: "Classic Left",
+    category: "Professional",
+    layout: "classic-left",
+    defaultColor: "#111827",
     fontId: "traditional",
     spacing: "normal",
-    defaultColor: ColorPalettes["classic-business"].primary,
+    headerAlign: "left",
+    showDivider: true,
+    bestFor: "traditional corporate resumes",
   },
   {
-    id: "executive-navy",
-    name: "Executive Navy",
-    category: "chronological",
-    layout: "top-header",
-    paletteId: "executive-navy",
-    fontId: "professional",
-    spacing: "normal",
-    defaultColor: ColorPalettes["executive-navy"].primary,
-  },
-  // {
-  //   id: "professional-charcoal",
-  //   name: "Professional Charcoal",
-  //   category: "chronological",
-  //   layout: "minimal",
-  //   paletteId: "professional-charcoal",
-  //   fontId: "professional",
-  //   spacing: "normal",
-  //   defaultColor: ColorPalettes["professional-charcoal"].primary,
-  // },
-  // {
-  //   id: "modern-tech-split",
-  //   name: "Modern Tech",
-  //   category: "combination",
-  //   layout: "modern-split",
-  //   paletteId: "modern-tech",
-  //   fontId: "modern",
-  //   spacing: "normal",
-  //   defaultColor: ColorPalettes["modern-tech"].primary,
-  // },
-  {
-    id: "combination-pro",
-    name: "Combination Pro",
-    category: "combination",
-    layout: "sidebar-left",
-    paletteId: "combination-pro",
-    fontId: "professional",
-    spacing: "normal",
-    defaultColor: ColorPalettes["combination-pro"].primary,
-  },
-  {
-    id: "functional-creative",
-    name: "Functional Creative",
-    category: "combination",
-    layout: "sidebar-left",
-    paletteId: "functional-creative",
+    id: "centered-modern",
+    name: "Centered Modern",
+    category: "Modern",
+    layout: "centered-header",
+    defaultColor: "#DC2626",
     fontId: "modern",
     spacing: "normal",
-    defaultColor: ColorPalettes["functional-creative"].primary,
+    headerAlign: "center",
+    showDivider: true,
+    bestFor: "modern business resumes",
   },
   {
-    id: "creative-rose",
-    name: "Creative Rose",
-    category: "combination",
-    layout: "sidebar-left",
-    paletteId: "creative-rose",
-    fontId: "modern",
+    id: "executive-red",
+    name: "Executive",
+    category: "Leadership",
+    layout: "executive",
+    defaultColor: "#B91C1C",
+    fontId: "professional",
     spacing: "relaxed",
-    defaultColor: ColorPalettes["creative-rose"].primary,
+    headerAlign: "left",
+    showDivider: true,
+    bestFor: "leadership and management resumes",
   },
   {
-    id: "marketing-purple",
-    name: "Marketing Purple",
-    category: "combination",
-    layout: "sidebar-right",
-    paletteId: "marketing-purple",
+    id: "minimal-clean",
+    name: "Minimal Clean",
+    category: "Minimal",
+    layout: "minimal",
+    defaultColor: "#0F172A",
     fontId: "modern",
     spacing: "normal",
-    defaultColor: ColorPalettes["marketing-purple"].primary,
+    headerAlign: "left",
+    showDivider: false,
+    bestFor: "clean ATS-friendly resumes",
   },
   {
-    id: "federal-standard",
-    name: "Federal Standard",
-    category: "federal",
-    layout: "top-header",
-    paletteId: "federal-standard",
+    id: "split-corporate",
+    name: "Split Corporate",
+    category: "Corporate",
+    layout: "split-header",
+    defaultColor: "#1F2937",
     fontId: "professional",
-    spacing: "compact",
-    defaultColor: ColorPalettes["federal-standard"].primary,
-  },
-  // {
-  //   id: "government-slate",
-  //   name: "Government Slate",
-  //   category: "federal",
-  //   layout: "minimal",
-  //   paletteId: "government-slate",
-  //   fontId: "professional",
-  //   spacing: "compact",
-  //   defaultColor: ColorPalettes["government-slate"].primary,
-  // },
-  // {
-  //   id: "legal-burgundy",
-  //   name: "Legal Burgundy",
-  //   category: "chronological",
-  //   layout: "top-header",
-  //   paletteId: "legal-burgundy",
-  //   fontId: "traditional",
-  //   spacing: "normal",
-  //   defaultColor: ColorPalettes["legal-burgundy"].primary,
-  // },
-  // {
-  //   id: "finance-emerald",
-  //   name: "Finance Emerald",
-  //   category: "chronological",
-  //   layout: "minimal",
-  //   paletteId: "finance-emerald",
-  //   fontId: "professional",
-  //   spacing: "normal",
-  //   defaultColor: ColorPalettes["finance-emerald"].primary,
-  // },
-  {
-    id: "engineering-steel",
-    name: "Engineering Steel",
-    category: "combination",
-    layout: "sidebar-right",
-    paletteId: "engineering-steel",
-    fontId: "technical",
     spacing: "normal",
-    defaultColor: ColorPalettes["engineering-steel"].primary,
+    headerAlign: "left",
+    showDivider: true,
+    bestFor: "corporate, analyst, and finance resumes",
   },
-  // {
-  //   id: "data-graphite",
-  //   name: "Data Graphite",
-  //   category: "combination",
-  //   layout: "modern-split",
-  //   paletteId: "data-graphite",
-  //   fontId: "technical",
-  //   spacing: "compact",
-  //   defaultColor: ColorPalettes["data-graphite"].primary,
-  // },
   {
-    id: "early-career-blue",
-    name: "Early Career Blue",
-    category: "chronological",
-    layout: "top-header",
-    paletteId: "early-career-blue",
+    id: "right-aligned-pro",
+    name: "Right Aligned Pro",
+    category: "Professional",
+    layout: "right-header",
+    defaultColor: "#0F172A",
+    fontId: "professional",
+    spacing: "normal",
+    headerAlign: "right",
+    showDivider: true,
+    bestFor: "formal professional resumes",
+  },
+  {
+    id: "boxed-modern",
+    name: "Boxed Modern",
+    category: "Modern",
+    layout: "boxed-header",
+    defaultColor: "#991B1B",
     fontId: "modern",
     spacing: "normal",
-    defaultColor: ColorPalettes["early-career-blue"].primary,
+    headerAlign: "left",
+    showDivider: false,
+    bestFor: "creative business resumes",
+  },
+  {
+    id: "accent-bar-red",
+    name: "Accent Bar",
+    category: "Creative",
+    layout: "accent-bar",
+    defaultColor: "#DC2626",
+    fontId: "modern",
+    spacing: "normal",
+    headerAlign: "left",
+    showDivider: false,
+    bestFor: "modern standout resumes",
+  },
+  {
+    id: "two-column-minimal",
+    name: "Two Column Minimal",
+    category: "Minimal",
+    layout: "two-column-minimal",
+    defaultColor: "#111827",
+    fontId: "modern",
+    spacing: "compact",
+    headerAlign: "left",
+    showDivider: false,
+    bestFor: "compact resumes with strong skills sections",
+  },
+  {
+    id: "corporate-panel",
+    name: "Corporate Panel",
+    category: "Corporate",
+    layout: "corporate-panel",
+    defaultColor: "#DC2626",
+    fontId: "professional",
+    spacing: "normal",
+    headerAlign: "left",
+    showDivider: true,
+    bestFor: "business, finance, and operations resumes",
+  },
+  {
+    id: "modern-sidebar",
+    name: "Modern Sidebar",
+    category: "Modern",
+    layout: "modern-sidebar",
+    defaultColor: "#111827",
+    fontId: "modern",
+    spacing: "normal",
+    headerAlign: "left",
+    showDivider: false,
+    bestFor: "tech, startup, and portfolio-style resumes",
+  },
+  {
+    id: "federal-clean",
+    name: "Federal Clean",
+    category: "Government",
+    layout: "federal-clean",
+    defaultColor: "#1F2937",
+    fontId: "traditional",
+    spacing: "relaxed",
+    headerAlign: "left",
+    showDivider: true,
+    bestFor: "federal and government resumes",
+  },
+  {
+    id: "bold-topline",
+    name: "Bold Topline",
+    category: "Bold",
+    layout: "bold-topline",
+    defaultColor: "#B91C1C",
+    fontId: "professional",
+    spacing: "normal",
+    headerAlign: "left",
+    showDivider: true,
+    bestFor: "confident career transition resumes",
+  },
+  {
+    id: "letterhead",
+    name: "Letterhead",
+    category: "Professional",
+    layout: "letterhead",
+    defaultColor: "#111827",
+    fontId: "traditional",
+    spacing: "normal",
+    headerAlign: "center",
+    showDivider: true,
+    bestFor: "formal and executive applications",
+  },
+  {
+    id: "simple-professional",
+    name: "Simple Professional",
+    category: "Professional",
+    layout: "simple-professional",
+    defaultColor: "#DC2626",
+    fontId: "professional",
+    spacing: "normal",
+    headerAlign: "left",
+    showDivider: true,
+    bestFor: "general job applications",
   },
 ];

@@ -1,3 +1,5 @@
+"use client";
+
 type ResumeData = {
   firstName?: string;
   lastName?: string;
@@ -25,17 +27,20 @@ type ResumeData = {
 };
 
 interface CorporatePanelResumeLayoutProps {
-  data: ResumeData;
+  data?: ResumeData;
 }
 
 export default function CorporatePanelResumeLayout({
-  data,
+  data = {},
 }: CorporatePanelResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
 
+  const skills = data.skills ?? [];
+  const workExperience = data.workExperience ?? [];
+  const education = data.education ?? [];
+
   return (
     <div className="mx-auto flex min-h-[1123px] w-full max-w-[794px] bg-white shadow-sm print:shadow-none">
-      {/* Left Panel */}
       <aside className="w-[30%] bg-slate-800 px-6 py-8 text-white">
         <div className="mb-10">
           <h1 className="text-3xl font-bold leading-tight">
@@ -61,14 +66,14 @@ export default function CorporatePanelResumeLayout({
           </div>
         </section>
 
-        {data.skills && data.skills.length > 0 && (
+        {skills.length > 0 && (
           <section>
             <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.25em] text-slate-400">
               Core Skills
             </h2>
 
             <div className="space-y-2 text-sm text-slate-200">
-              {data.skills.map((skill, index) => (
+              {skills.map((skill, index) => (
                 <p key={`${skill}-${index}`}>• {skill}</p>
               ))}
             </div>
@@ -76,7 +81,6 @@ export default function CorporatePanelResumeLayout({
         )}
       </aside>
 
-      {/* Main Content */}
       <main className="w-[70%] px-8 py-8 text-slate-900">
         {data.summary && (
           <section className="mb-8">
@@ -88,14 +92,14 @@ export default function CorporatePanelResumeLayout({
           </section>
         )}
 
-        {data.workExperience && data.workExperience.length > 0 && (
+        {workExperience.length > 0 && (
           <section className="mb-8">
             <h2 className="mb-5 border-b border-slate-300 pb-2 text-sm font-bold uppercase tracking-[0.2em]">
               Professional Experience
             </h2>
 
             <div className="space-y-8">
-              {data.workExperience.map((job, index) => (
+              {workExperience.map((job, index) => (
                 <div key={index}>
                   <div className="flex items-start justify-between gap-4">
                     <div>
@@ -124,14 +128,14 @@ export default function CorporatePanelResumeLayout({
           </section>
         )}
 
-        {data.education && data.education.length > 0 && (
+        {education.length > 0 && (
           <section>
             <h2 className="mb-5 border-b border-slate-300 pb-2 text-sm font-bold uppercase tracking-[0.2em]">
               Education
             </h2>
 
             <div className="space-y-6">
-              {data.education.map((edu, index) => (
+              {education.map((edu, index) => (
                 <div key={index}>
                   <div className="flex items-start justify-between">
                     <div>
@@ -143,7 +147,7 @@ export default function CorporatePanelResumeLayout({
                       </p>
                     </div>
 
-                    <p className="text-xs text-slate-500 whitespace-nowrap">
+                    <p className="whitespace-nowrap text-xs text-slate-500">
                       {edu.startDate}
                       {edu.endDate ? ` - ${edu.endDate}` : ""}
                     </p>

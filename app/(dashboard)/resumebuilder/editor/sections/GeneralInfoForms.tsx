@@ -15,15 +15,15 @@ import { Input } from "@/components/ui/input";
 import { EditorFormProps } from "@/lib/types";
 import { useEffect, useMemo } from "react";
 import { debounce } from "lodash";
-import { THEME_REGISTRY } from "@/lib/resume-theme-registry";
 import { Sparkles } from "lucide-react";
+import { RESUME_THEME_REGISTRY } from "@/app/(dashboard)/resumes/templates/templateRegistry";
 
 export default function GeneralInfoForm({
   resumeData,
   setResumeData,
 }: EditorFormProps) {
   const currentTheme = useMemo(() => {
-    return THEME_REGISTRY.find((t) => t.id === resumeData.themeId);
+    return RESUME_THEME_REGISTRY.find((t) => t.id === resumeData.themeId);
   }, [resumeData.themeId]);
 
   const form = useForm<GeneralInfoValues>({
@@ -48,9 +48,9 @@ export default function GeneralInfoForm({
     const debouncedUpdate = debounce((values: GeneralInfoValues) => {
       setResumeData((prev) => ({
         ...prev,
-        resumeTitle: values.resumeTitle,
-        resumeType: values.resumeType,
-        description: values.description,
+        resumeTitle: values.resumeTitle || "",
+        resumeType: values.resumeType || "",
+        description: values.description || "",
       }));
     }, 300);
 

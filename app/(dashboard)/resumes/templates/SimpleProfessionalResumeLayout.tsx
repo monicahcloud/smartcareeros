@@ -1,3 +1,5 @@
+"use client";
+
 type ResumeData = {
   firstName?: string;
   lastName?: string;
@@ -25,17 +27,20 @@ type ResumeData = {
 };
 
 type SimpleProfessionalResumeLayoutProps = {
-  data: ResumeData;
+  data?: ResumeData;
 };
 
 export default function SimpleProfessionalResumeLayout({
-  data,
+  data = {},
 }: SimpleProfessionalResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
 
+  const workExperience = data.workExperience ?? [];
+  const education = data.education ?? [];
+  const skills = data.skills ?? [];
+
   return (
     <div className="mx-auto min-h-[1123px] w-full max-w-[794px] bg-white px-12 py-10 text-slate-900 shadow-sm print:shadow-none">
-      {/* Header */}
       <header className="mb-8 border-b-2 border-slate-800 pb-5">
         <h1 className="text-4xl font-bold">{fullName || "Your Name"}</h1>
 
@@ -52,7 +57,6 @@ export default function SimpleProfessionalResumeLayout({
         </div>
       </header>
 
-      {/* Summary */}
       {data.summary && (
         <section className="mb-8">
           <h2 className="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-slate-800">
@@ -63,15 +67,14 @@ export default function SimpleProfessionalResumeLayout({
         </section>
       )}
 
-      {/* Experience */}
-      {data.workExperience && data.workExperience.length > 0 && (
+      {workExperience.length > 0 && (
         <section className="mb-8">
           <h2 className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-slate-800">
             Experience
           </h2>
 
           <div className="space-y-7">
-            {data.workExperience.map((job, index) => (
+            {workExperience.map((job, index) => (
               <div key={index}>
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -102,15 +105,14 @@ export default function SimpleProfessionalResumeLayout({
         </section>
       )}
 
-      {/* Education */}
-      {data.education && data.education.length > 0 && (
+      {education.length > 0 && (
         <section className="mb-8">
           <h2 className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-slate-800">
             Education
           </h2>
 
           <div className="space-y-5">
-            {data.education.map((edu, index) => (
+            {education.map((edu, index) => (
               <div key={index}>
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -135,15 +137,14 @@ export default function SimpleProfessionalResumeLayout({
         </section>
       )}
 
-      {/* Skills */}
-      {data.skills && data.skills.length > 0 && (
+      {skills.length > 0 && (
         <section>
           <h2 className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-slate-800">
             Skills
           </h2>
 
           <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-slate-700">
-            {data.skills.map((skill, index) => (
+            {skills.map((skill, index) => (
               <div key={`${skill}-${index}`}>• {skill}</div>
             ))}
           </div>

@@ -14,6 +14,7 @@ import {
 
 import prisma from "@/lib/prisma";
 import { getCurrentDbUser } from "@/lib/getCurrentUser";
+import DeleteResumeButton from "@/app/components/resumes/DeleteResumeButton";
 
 export const metadata: Metadata = {
   title: "Resumes | Smart CareerOS",
@@ -43,7 +44,6 @@ export default async function ResumesPage() {
 
   const totalCount = resumes.length;
   const uploadedCount = resumes.filter((resume) => resume.isUploaded).length;
-  const createdCount = resumes.filter((resume) => !resume.isUploaded).length;
 
   return (
     <main className="space-y-10">
@@ -211,7 +211,7 @@ export default async function ResumesPage() {
                   {new Date(resume.updatedAt).toLocaleDateString("en-US")}
                 </p>
 
-                <div className="mt-6 flex gap-3">
+                <div className="mt-6 flex flex-wrap gap-3">
                   <Link
                     href={`/resumebuilder/editor?resumeId=${resume.id}`}
                     className="inline-flex h-10 flex-1 items-center justify-center bg-black px-4 text-xs font-black uppercase tracking-[0.16em] text-white transition hover:bg-red-600">
@@ -223,6 +223,7 @@ export default async function ResumesPage() {
                     className="inline-flex h-10 items-center justify-center border border-slate-200 px-4 text-xs font-black uppercase tracking-[0.16em] text-slate-700 transition hover:border-red-600 hover:text-red-600">
                     View
                   </Link>
+                  <DeleteResumeButton resumeId={resume.id} />
                 </div>
               </article>
             ))}

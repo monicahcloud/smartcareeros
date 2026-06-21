@@ -1,65 +1,63 @@
 export type ResumeData = {
-  id?: string;
+  firstName?: string;
+  lastName?: string;
+  jobTitle?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  summary?: string;
+  linkedin?: string;
+  github?: string;
+  website?: string;
+  themeId?: string;
+  themeColor?: string;
+  borderStyle?: string;
+  photo?: File;
+  photoUrl?: string;
+  skills?: string[];
+  techSkills?: string[];
 
-  firstName?: string | null;
-  lastName?: string | null;
-  jobTitle?: string | null;
-
-  userEmail?: string | null;
-  userPhone?: string | null;
-  userAddress?: string | null;
-
-  website?: string | null;
-  linkedin?: string | null;
-  gitHub?: string | null;
-
-  summary?: string | null;
-
-  resumeTitle?: string | null;
-  resumeType?: string | null;
-
-  themeId?: string | null;
-  themeColor?: string | null;
-
-  showPhoto?: boolean | null;
-  userPhoto?: File | string | null;
-  userPhotoUrl?: string | null;
-
-  workExperiences?: {
-    id?: string;
-    position?: string | null;
-    company?: string | null;
-    startDate?: string | null;
-    endDate?: string | null;
-    description?: string | null;
+  workExperience?: {
+    position?: string;
+    company?: string;
+    location?: string;
+    startDate?: string;
+    endDate?: string;
+    description?: string;
   }[];
 
-  educations?: {
-    id?: string;
-    school?: string | null;
-    degree?: string | null;
-    fieldOfStudy?: string | null;
-    startDate?: string | null;
-    endDate?: string | null;
-  }[];
-
-  techSkills?: {
-    id?: string;
-    skill?: string | null;
-    name?: string | null;
+  education?: {
+    school?: string;
+    degree?: string;
+    location?: string;
+    startDate?: string;
+    endDate?: string;
   }[];
 
   certifications?: {
-    id?: string;
-    name?: string | null;
-    issuer?: string | null;
-    date?: string | null;
+    name?: string;
+    issuer?: string;
+    issuedDate?: string;
+    expiresDate?: string;
+    credentialUrl?: string;
+    description?: string;
   }[];
 
   projects?: {
-    id?: string;
-    name?: string | null;
-    description?: string | null;
-    url?: string | null;
+    name?: string;
+    role?: string;
+    description?: string;
+    technologies?: string[];
+    url?: string;
   }[];
+
+  accomplishments?: {
+    title?: string;
+    organization?: string;
+    date?: string;
+    description?: string;
+    impact?: string;
+  }[];
+
+  interests?: string[];
 };
