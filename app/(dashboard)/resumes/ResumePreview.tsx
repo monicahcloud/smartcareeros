@@ -26,7 +26,7 @@ type ResumeData = {
   address?: string;
   summary?: string;
   linkedin?: string;
-  github?: string;
+  gitHub?: string;
   website?: string;
   photoUrl?: string;
   skills?: string[];

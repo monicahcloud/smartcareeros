@@ -15,6 +15,7 @@ import {
 import prisma from "@/lib/prisma";
 import { getCurrentDbUser } from "@/lib/getCurrentUser";
 import DeleteResumeButton from "@/app/components/resumes/DeleteResumeButton";
+import ResumeCard from "./ResumeCard";
 
 export const metadata: Metadata = {
   title: "Resumes | Smart CareerOS",
@@ -193,39 +194,45 @@ export default async function ResumesPage() {
             </div>
           </section>
         ) : (
+          // <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          //   {resumes.map((resume) => (
+          //     <article
+          //       key={resume.id}
+          //       className="border border-slate-200 bg-white p-6 shadow-sm transition hover:border-red-600 hover:shadow-md">
+          //       <p className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-red-600">
+          //         {resume.resumeType || "Resume"}
+          //       </p>
+
+          //       <h3 className="text-xl font-black uppercase tracking-tight text-black">
+          //         {resume.resumeTitle || "Untitled Resume"}
+          //       </h3>
+
+          //       <p className="mt-2 text-sm text-slate-500">
+          //         Last updated{" "}
+          //         {new Date(resume.updatedAt).toLocaleDateString("en-US")}
+          //       </p>
+
+          //       <div className="mt-6 flex flex-wrap gap-3">
+          //         {/* <Link
+          //           href={`/resumebuilder/editor?resumeId=${resume.id}`}
+          //           className="inline-flex h-10 flex-1 items-center justify-center bg-black px-4 text-xs font-black uppercase tracking-[0.16em] text-white transition hover:bg-red-600">
+          //           Edit
+          //         </Link>
+
+          //         <Link
+          //           href={`/resumes/${resume.id}`}
+          //           className="inline-flex h-10 items-center justify-center border border-slate-200 px-4 text-xs font-black uppercase tracking-[0.16em] text-slate-700 transition hover:border-red-600 hover:text-red-600">
+          //           View
+          //         </Link>
+          //         <DeleteResumeButton resumeId={resume.id} /> */}
+
+          //       </div>
+          //     </article>
+          //   ))}
+          // </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {resumes.map((resume) => (
-              <article
-                key={resume.id}
-                className="border border-slate-200 bg-white p-6 shadow-sm transition hover:border-red-600 hover:shadow-md">
-                <p className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-red-600">
-                  {resume.resumeType || "Resume"}
-                </p>
-
-                <h3 className="text-xl font-black uppercase tracking-tight text-black">
-                  {resume.resumeTitle || "Untitled Resume"}
-                </h3>
-
-                <p className="mt-2 text-sm text-slate-500">
-                  Last updated{" "}
-                  {new Date(resume.updatedAt).toLocaleDateString("en-US")}
-                </p>
-
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <Link
-                    href={`/resumebuilder/editor?resumeId=${resume.id}`}
-                    className="inline-flex h-10 flex-1 items-center justify-center bg-black px-4 text-xs font-black uppercase tracking-[0.16em] text-white transition hover:bg-red-600">
-                    Edit
-                  </Link>
-
-                  <Link
-                    href={`/resumes/${resume.id}`}
-                    className="inline-flex h-10 items-center justify-center border border-slate-200 px-4 text-xs font-black uppercase tracking-[0.16em] text-slate-700 transition hover:border-red-600 hover:text-red-600">
-                    View
-                  </Link>
-                  <DeleteResumeButton resumeId={resume.id} />
-                </div>
-              </article>
+              <ResumeCard key={resume.id} resume={resume} />
             ))}
           </div>
         )}

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 
 import prisma from "@/lib/prisma";
 import { getCurrentDbUser } from "@/lib/getCurrentUser";
+import { auth } from "@clerk/nextjs/server";
 
 export async function deleteResume(resumeId: string) {
   const dbUser = await getCurrentDbUser();
@@ -182,4 +183,54 @@ export async function saveResume(values: any) {
 
   revalidatePath("/resumes");
   return createdResume;
+}
+
+export async function updateResumeBranding(
+  id: string,
+  themeId: string,
+  themeColor: string,
+  showPhoto: boolean,
+) {
+  const { userId: clerkId } = await auth();
+
+  if (!clerkId) throw new Error("Unauthorized");
+
+  return prisma.resume.update({
+    where: { id },
+    data: {
+      themeId,
+      themeColor,
+      showPhoto,
+    },
+  });
+}
+
+export async function createResumeShareLink(id: string) {
+  const { userId: clerkId } = await auth();
+
+  if (!clerkId) throw new Error("Unauthorized");
+
+  const resume = await prisma.resume.findFirst({
+    where: {
+      id,
+      clerkId,
+    },
+  });
+
+  if (!resume) {
+    throw new Error("Resume not found");
+  }
+
+  const shareToken = resume.shareToken || randomUUID();
+
+  await prisma.resume.update({
+    where: {
+      id,
+    },
+    data: {
+      shareToken,
+    },
+  });
+
+  return shareToken;
 }

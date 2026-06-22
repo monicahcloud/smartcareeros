@@ -19,7 +19,7 @@ const MOCK_DATA: ResumeData = {
   github: "github.com/janedoe",
   website: "janedoe.dev",
 
-  photoUrl: "/images/mock-profile.jpg",
+  photoUrl: "/images/jobseeker.jpg",
 
   summary:
     "Results-driven professional with experience in analytics, reporting, dashboard development, and process improvement. Skilled at transforming complex data into actionable business insights.",
@@ -141,7 +141,7 @@ export default function ResumeTemplateCard({
           <div className="relative h-[420px] overflow-hidden bg-slate-100">
             <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent to-white/30" />
 
-            <div className="pointer-events-none absolute left-1/2 top-4 origin-top -translate-x-1/2 scale-[0.65]">
+            <div className="pointer-events-none absolute left-1/2 top-4 origin-top -translate-x-1/2 scale-[0.4]">
               <ResumePreview themeId={theme.layout} data={MOCK_DATA} />
             </div>
           </div>

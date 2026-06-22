@@ -1,30 +1,6 @@
 "use client";
 
-type ResumeData = {
-  firstName?: string;
-  lastName?: string;
-  jobTitle?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  summary?: string;
-  skills?: string[];
-  workExperience?: {
-    position?: string;
-    company?: string;
-    location?: string;
-    startDate?: string;
-    endDate?: string;
-    description?: string;
-  }[];
-  education?: {
-    school?: string;
-    degree?: string;
-    location?: string;
-    startDate?: string;
-    endDate?: string;
-  }[];
-};
+import { ResumeData } from "./types";
 
 type LetterheadResumeLayoutProps = {
   data?: ResumeData;
@@ -38,74 +14,101 @@ export default function LetterheadResumeLayout({
   const workExperience = data.workExperience ?? [];
   const education = data.education ?? [];
   const skills = data.skills ?? [];
+  const techSkills = data.techSkills ?? [];
+  const certifications = data.certifications ?? [];
+  const projects = data.projects ?? [];
+  const accomplishments = data.accomplishments ?? [];
+  const interests = data.interests ?? [];
 
   return (
-    <div className="mx-auto min-h-[1123px] w-full max-w-[794px] bg-white text-slate-900 shadow-sm print:shadow-none">
-      <header className="border-b-4 border-slate-800 bg-slate-100 px-12 py-8">
-        <div className="flex items-center justify-between gap-8">
-          <div>
-            <h1 className="text-4xl font-bold uppercase tracking-wide">
-              {fullName || "Your Name"}
-            </h1>
+    <div className="mx-auto min-h-[1056px] w-[850px] bg-white font-serif text-black shadow-sm print:shadow-none">
+      <header className="bg-[#061b49] px-14 py-10 text-center text-white">
+        <h1 className="text-6xl uppercase tracking-wide">
+          {fullName || "Your Name"}
+        </h1>
 
-            {data.jobTitle && (
-              <p className="mt-2 text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">
-                {data.jobTitle}
-              </p>
-            )}
-          </div>
-
-          <div className="text-right text-sm text-slate-700">
-            {data.email && <p>{data.email}</p>}
-            {data.phone && <p>{data.phone}</p>}
-            {data.address && <p>{data.address}</p>}
-          </div>
+        <div className="mt-4 text-lg">
+          {[data.address, data.email, data.phone, data.linkedin]
+            .filter(Boolean)
+            .join(" | ")}
         </div>
       </header>
 
-      <main className="px-12 py-10">
-        {data.summary && (
-          <section className="mb-10">
-            <h2 className="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-slate-800">
-              Professional Summary
-            </h2>
+      <main className="px-14 py-8">
+        {data.jobTitle && (
+          <p className="mb-8 text-center text-2xl">{data.jobTitle}</p>
+        )}
 
-            <p className="text-sm leading-7 text-slate-700">{data.summary}</p>
+        {data.summary && (
+          <section className="mb-8">
+            <p className="text-lg leading-6">{data.summary}</p>
+          </section>
+        )}
+
+        {accomplishments.length > 0 && (
+          <section className="mb-10 bg-gray-200 p-4">
+            <h2 className="mb-3 text-xl font-bold">Career Highlights</h2>
+
+            <ul className="list-square space-y-1 pl-6 text-lg leading-6">
+              {accomplishments.slice(0, 3).map((item, index) => (
+                <li key={index}>
+                  {item.description || item.impact || item.title}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {(skills.length > 0 || techSkills.length > 0) && (
+          <section className="mb-10">
+            <BarTitle>Key Skills</BarTitle>
+
+            <div className="mt-6 space-y-5 text-lg">
+              {skills.length > 0 && (
+                <div className="grid grid-cols-[180px_1fr] gap-6">
+                  <h3 className="font-bold">Professional Skills</h3>
+                  <p>{skills.join(" | ")}</p>
+                </div>
+              )}
+
+              {techSkills.length > 0 && (
+                <div className="grid grid-cols-[180px_1fr] gap-6">
+                  <h3 className="font-bold">Technical Skills</h3>
+                  <p>
+                    {techSkills
+                      .map((skill) =>
+                        typeof skill === "string" ? skill : skill.name,
+                      )
+                      .join(" | ")}
+                  </p>
+                </div>
+              )}
+            </div>
           </section>
         )}
 
         {workExperience.length > 0 && (
           <section className="mb-10">
-            <h2 className="mb-5 border-b border-slate-300 pb-2 text-sm font-bold uppercase tracking-[0.2em] text-slate-800">
-              Professional Experience
-            </h2>
+            <BarTitle>Professional Experience</BarTitle>
 
-            <div className="space-y-8">
+            <div className="mt-6 space-y-8">
               {workExperience.map((job, index) => (
                 <div key={index}>
-                  <div className="flex items-start justify-between gap-5">
-                    <div>
-                      <h3 className="text-lg font-bold text-slate-900">
-                        {job.position}
-                      </h3>
+                  <p className="text-lg">
+                    <strong>
+                      {job.company || "Company Name"}
+                      {job.location ? `, ${job.location}` : ""}
+                    </strong>
+                    {" | "}
+                    {job.startDate}
+                    {job.endDate ? ` – ${job.endDate}` : ""}
+                  </p>
 
-                      <p className="text-sm font-medium text-slate-600">
-                        {job.company}
-                        {job.location ? ` • ${job.location}` : ""}
-                      </p>
-                    </div>
+                  <p className="mt-2 bg-gray-300 px-1 text-lg font-bold">
+                    {job.position || "Job Title"}
+                  </p>
 
-                    <p className="whitespace-nowrap text-xs text-slate-500">
-                      {job.startDate}
-                      {job.endDate ? ` - ${job.endDate}` : ""}
-                    </p>
-                  </div>
-
-                  {job.description && (
-                    <p className="mt-3 text-sm leading-7 text-slate-700">
-                      {job.description}
-                    </p>
-                  )}
+                  <BulletText text={job.description} />
                 </div>
               ))}
             </div>
@@ -114,29 +117,18 @@ export default function LetterheadResumeLayout({
 
         {education.length > 0 && (
           <section className="mb-10">
-            <h2 className="mb-5 border-b border-slate-300 pb-2 text-sm font-bold uppercase tracking-[0.2em] text-slate-800">
-              Education
-            </h2>
+            <BarTitle>Education</BarTitle>
 
-            <div className="space-y-5">
+            <div className="mt-6 space-y-5">
               {education.map((edu, index) => (
-                <div
-                  key={index}
-                  className="flex items-start justify-between gap-5">
-                  <div>
-                    <h3 className="text-base font-bold text-slate-900">
-                      {edu.degree}
-                    </h3>
-
-                    <p className="text-sm text-slate-600">
-                      {edu.school}
-                      {edu.location ? ` • ${edu.location}` : ""}
-                    </p>
-                  </div>
-
-                  <p className="whitespace-nowrap text-xs text-slate-500">
-                    {edu.startDate}
-                    {edu.endDate ? ` - ${edu.endDate}` : ""}
+                <div key={index}>
+                  <p className="text-lg font-bold">{edu.degree}</p>
+                  <p className="text-lg">
+                    {edu.school}
+                    {edu.location ? ` | ${edu.location}` : ""}
+                    {edu.startDate || edu.endDate
+                      ? ` | ${edu.startDate || ""} – ${edu.endDate || ""}`
+                      : ""}
                   </p>
                 </div>
               ))}
@@ -144,20 +136,74 @@ export default function LetterheadResumeLayout({
           </section>
         )}
 
-        {skills.length > 0 && (
-          <section>
-            <h2 className="mb-5 border-b border-slate-300 pb-2 text-sm font-bold uppercase tracking-[0.2em] text-slate-800">
-              Skills
-            </h2>
+        {certifications.length > 0 && (
+          <section className="mb-10">
+            <BarTitle>Certifications</BarTitle>
 
-            <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-slate-700">
-              {skills.map((skill, index) => (
-                <div key={`${skill}-${index}`}>• {skill}</div>
+            <div className="mt-6 space-y-4 text-lg">
+              {certifications.map((cert, index) => (
+                <p key={index}>
+                  <strong>{cert.name}</strong>
+                  {[cert.issuer, cert.issuedDate, cert.expiresDate].filter(
+                    Boolean,
+                  ).length > 0 &&
+                    ` | ${[cert.issuer, cert.issuedDate, cert.expiresDate]
+                      .filter(Boolean)
+                      .join(" | ")}`}
+                </p>
               ))}
             </div>
           </section>
         )}
+
+        {projects.length > 0 && (
+          <section className="mb-10">
+            <BarTitle>Projects</BarTitle>
+
+            <div className="mt-6 space-y-5">
+              {projects.map((project, index) => (
+                <div key={index}>
+                  <p className="text-lg font-bold">{project.name}</p>
+                  {project.role && <p className="text-lg">{project.role}</p>}
+                  <BulletText text={project.description} />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {interests.length > 0 && (
+          <section>
+            <BarTitle>Interests</BarTitle>
+            <p className="mt-6 text-lg">{interests.join(" | ")}</p>
+          </section>
+        )}
       </main>
     </div>
+  );
+}
+
+function BarTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="bg-[#061b49] py-1 text-center text-2xl uppercase tracking-wide text-white">
+      {children}
+    </h2>
+  );
+}
+
+function BulletText({ text }: { text?: string }) {
+  if (!text) return null;
+
+  const bullets = text
+    .split(/\n|•/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  return (
+    <ul className="mt-2 list-disc space-y-1 pl-8 text-lg leading-6">
+      {bullets.map((bullet, index) => (
+        <li key={index}>{bullet}</li>
+      ))}
+    </ul>
   );
 }

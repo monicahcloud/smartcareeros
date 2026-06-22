@@ -28,27 +28,37 @@ export default function ResumeCard({ resume }: { resume: any }) {
 
   const previewData = {
     id: resume.id,
-    firstName: resume.firstName,
-    lastName: resume.lastName,
-    jobTitle: resume.jobTitle,
-    userEmail: resume.userEmail,
-    userPhone: resume.userPhone,
-    userAddress: resume.userAddress,
-    website: resume.website,
-    linkedin: resume.linkedin,
-    github: resume.github,
-    summary: resume.summary,
-    resumeTitle: resume.resumeTitle,
-    resumeType: resume.resumeType,
-    themeId: resume.themeId,
-    themeColor: resume.themeColor,
-    showPhoto: resume.showPhoto,
-    userPhotoUrl: resume.userPhotoUrl,
-    workExperience: resume.workExperience,
-    education: resume.education,
-    techSkills: resume.techSkills,
-    certifications: resume.certifications,
-    projects: resume.projects,
+    firstName: resume.firstName || "",
+    lastName: resume.lastName || "",
+    jobTitle: resume.jobTitle || "",
+
+    email: resume.email || resume.userEmail || "",
+    phone: resume.phone || resume.userPhone || "",
+    address: resume.address || resume.userAddress || "",
+
+    website: resume.website || "",
+    linkedin: resume.linkedin || "",
+    github: resume.github || resume.gitHub || "",
+
+    summary: resume.summary || "",
+    resumeTitle: resume.resumeTitle || "",
+    resumeType: resume.resumeType || "",
+
+    themeId: resume.themeId || "classic-left",
+    themeColor: resume.themeColor || "#dc2626",
+    borderStyle: resume.borderStyle || "squircle",
+
+    showPhoto: resume.showPhoto ?? true,
+    photoUrl: resume.photoUrl || resume.userPhotoUrl || "",
+
+    skills: resume.skills || [],
+    techSkills: resume.techSkills || [],
+    workExperience: resume.workExperience || [],
+    education: resume.education || [],
+    certifications: resume.certifications || [],
+    projects: resume.projects || [],
+    accomplishments: resume.accomplishments || [],
+    interests: resume.interests || [],
   };
 
   return (
@@ -67,7 +77,7 @@ export default function ResumeCard({ resume }: { resume: any }) {
         </div>
 
         <div className="pointer-events-none absolute left-1/2 top-0 origin-top -translate-x-1/2 scale-[0.34]">
-          <ResumePreview resumeData={previewData} />
+          <ResumePreview themeId={previewData.themeId} data={previewData} />
         </div>
 
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/70" />
@@ -85,7 +95,7 @@ export default function ResumeCard({ resume }: { resume: any }) {
 
       <div className="mt-5 grid grid-cols-2 gap-2 lg:flex">
         <Link
-          href={`/resumebuilder/editor?resumeId=${resume.id}`}
+          href={`/resumebuilder/editor/${resume.id}?step=general`}
           className="flex-1 bg-black px-4 py-3 text-center text-xs font-black uppercase tracking-[0.16em] text-white transition hover:bg-red-600">
           Edit
         </Link>

@@ -19,8 +19,8 @@ export default function ClassicLeftResumeLayout({
   const accomplishments = data.accomplishments ?? [];
   const interests = data.interests ?? [];
 
-  const photoSrc = data.photoUrl;
-  const showPhoto = Boolean(data.showPhoto && photoSrc);
+  const photoSrc = data.photoUrl ?? "";
+  const showPhoto = Boolean(photoSrc);
 
   return (
     <div className="mx-auto flex min-h-[1123px] w-[794px] bg-white text-slate-900 shadow-sm print:shadow-none">
@@ -80,7 +80,10 @@ export default function ClassicLeftResumeLayout({
 
             <ul className="space-y-2 text-sm text-slate-200">
               {techSkills.map((skill, index) => (
-                <li key={`${skill}-${index}`}>• {skill}</li>
+                <li key={`${skill.name}-${index}`}>
+                  • {skill.name}
+                  {skill.rating ? ` (${skill.rating}/5)` : ""}
+                </li>
               ))}
             </ul>
           </section>

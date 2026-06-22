@@ -1,54 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  Download,
   Edit3,
-  ImageIcon,
   Printer,
   Share2,
+  ImageIcon,
+  Download,
   Trash2,
 } from "lucide-react";
+import { ResumeServerData } from "@/lib/types";
+import { mapToResumeValues } from "@/lib/utils";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { generateResumePdf } from "../../pdf-actions";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import ResumePreview from "@/app/(dashboard)/resumebuilder/editor/sections/ResumePreview";
+import { RESUME_THEME_REGISTRY } from "../../templates/templateRegistry";
 import { Switch } from "@/components/ui/switch";
-import CoverLetterPreview from "@/app/components/coverletter/CoverLetterPreview";
-import { mapToCoverLetterValues } from "@/lib/utils";
-import { COVER_LETTER_THEME_REGISTRY } from "@/app/(dashboard)/coverletter/templates/templateRegistry";
-import type { CoverLetter } from "@prisma/client";
-
 import {
-  createCoverLetterShareLink,
-  deleteCoverLetter,
-  updateCoverLetterBranding,
-} from "@/app/(dashboard)/coverletter/preview/[id]/action";
+  createResumeShareLink,
+  deleteResume,
+  updateResumeBranding,
+} from "../../actions";
+import { Resume } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
-export default function CoverLetterPreviewView({
-  coverLetter,
-}: {
-  coverLetter: CoverLetter;
-}) {
+export default function ResumePreviewView({ resume }: { resume: Resume }) {
   const router = useRouter();
-  const [data, setData] = useState(coverLetter);
+  const [data, setData] = useState(resume);
   const [shareUrl, setShareUrl] = useState<string | null>(
-    coverLetter.shareToken
-      ? `${typeof window !== "undefined" ? window.location.origin : ""}/coverletter/share/${coverLetter.shareToken}`
+    resume.shareToken
+      ? `${typeof window !== "undefined" ? window.location.origin : ""}/resume/share/${resume.shareToken}`
       : null,
   );
 
   const handlePrint = async () => {
-    const toastId = toast.loading("Preparing cover letter for print...");
+    const toastId = toast.loading("Preparing resume for print...");
 
     try {
-      const htmlElement = document.querySelector(
-        ".cover-letter-paper-container",
-      );
+      const htmlElement = document.querySelector(".resume-paper-container");
 
       if (!htmlElement) {
-        throw new Error("Cover letter content not found");
+        throw new Error("Resume content not found");
       }
 
       const clone = htmlElement.cloneNode(true) as HTMLElement;
@@ -71,13 +66,13 @@ export default function CoverLetterPreviewView({
         }
       }
 
-      const response = await fetch("/api/coverletter/download", {
+      const response = await fetch("/api/resume/download", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          filename: `Cover_Letter_${data.firstName || "Document"}`,
+          filename: `Resume_${data.firstName || "Document"}`,
           html: clone.outerHTML,
         }),
       });
@@ -107,21 +102,15 @@ export default function CoverLetterPreviewView({
 
       toast.success("Print preview ready", { id: toastId });
     } catch (error) {
-      console.error("Cover Letter Print Error:", error);
+      console.error("Resume Print Error:", error);
       toast.error("Print failed", { id: toastId });
     }
   };
-
   const handleDownload = async () => {
-    const toastId = toast.loading("Generating cover letter PDF...");
+    const toastId = toast.loading("Processing images and generating PDF...");
     try {
-      const htmlElement = document.querySelector(
-        ".cover-letter-paper-container",
-      );
-
-      if (!htmlElement) {
-        throw new Error("Cover letter content not found");
-      }
+      const htmlElement = document.querySelector(".resume-paper-container");
+      if (!htmlElement) throw new Error("Resume content not found");
 
       const clone = htmlElement.cloneNode(true) as HTMLElement;
       const images = clone.querySelectorAll("img");
@@ -131,21 +120,20 @@ export default function CoverLetterPreviewView({
           const response = await fetch(img.src);
           const blob = await response.blob();
           const reader = new FileReader();
-          const base64Str = await new Promise<string>((resolve) => {
+          const base64 = await new Promise<string>((resolve) => {
             reader.onloadend = () => resolve(reader.result as string);
             reader.readAsDataURL(blob);
           });
-          img.src = base64Str;
+          img.src = base64;
         }
       }
-
-      const response = await fetch("/api/coverletter/download", {
+      const response = await fetch("/api/resume/download", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          filename: `Cover_Letter_${data.firstName || "Document"}`,
+          filename: `Resume_${data.firstName || "Document"}`,
           html: clone.outerHTML,
         }),
       });
@@ -159,23 +147,21 @@ export default function CoverLetterPreviewView({
 
       const link = document.createElement("a");
       link.href = url;
-      link.download = `Cover_Letter_${data.firstName || "Document"}.pdf`;
+      link.download = `Resume_${data.firstName || "Document"}.pdf`;
       link.click();
-
       window.URL.revokeObjectURL(url);
 
-      toast.success("Cover letter downloaded", { id: toastId });
+      toast.success("Aligned PDF downloaded!", { id: toastId });
     } catch (error) {
-      console.error("Cover Letter Download Error:", error);
-      toast.error("Download failed", { id: toastId });
+      console.error("Resume Download Error:", error);
+      toast.error("Download failed.", { id: toastId });
     }
   };
-
   const handleShareClick = async () => {
     try {
-      const shareToken = await createCoverLetterShareLink(data.id);
+      const shareToken = await createResumeShareLink(data.id);
 
-      const url = `${window.location.origin}/coverletter/share/${shareToken}`;
+      const url = `${window.location.origin}/resume/share/${shareToken}`;
 
       setData((prev) => ({
         ...prev,
@@ -194,49 +180,68 @@ export default function CoverLetterPreviewView({
       toast.error("Could not create share link");
     }
   };
-
   const handleDelete = async () => {
-    const confirmed = window.confirm("Delete this cover letter?");
+    const confirmed = window.confirm("Delete this resume?");
     if (!confirmed) return;
 
-    await deleteCoverLetter(data.id);
-    toast.success("Cover letter deleted");
-    router.push("/coverletter");
+    try {
+      await deleteResume(data.id);
+
+      toast.success("Resume deleted");
+
+      router.push("/resumes");
+    } catch (error) {
+      console.error(error);
+
+      toast.error("Failed to delete resume");
+    }
   };
 
-  const persistChanges = async (updates: Partial<CoverLetter>) => {
-    const nextData = { ...data, ...updates };
+  const persistChanges = async (updates: Partial<Resume>) => {
+    const nextData = {
+      ...data,
+      ...updates,
+    };
+
     setData(nextData);
 
-    await updateCoverLetterBranding(
+    await updateResumeBranding(
       data.id,
       nextData.themeId ?? "classic-left",
       nextData.themeColor ?? "#dc2626",
       nextData.showPhoto ?? true,
     );
   };
+  const previewData = useMemo(() => {
+    const values = mapToResumeValues(data);
+
+    return {
+      ...values,
+      photo: values.photo instanceof File ? values.photo : undefined,
+    };
+  }, [data]);
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-100">
-      <header className="no-print  top-0 z-20 border-b bg-white px-4 py-4 shadow-sm lg:px-6">
+      <header className="no-print top-0 z-20 border-b bg-white px-4 py-4 shadow-sm lg:px-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.24em] text-red-600">
-              Cover Letter Preview
+              Resume Preview
             </p>
+
             <h1 className="mt-1 text-xl font-black tracking-tight text-slate-900">
-              {data.companyName || "Untitled Cover Letter"}
+              {data.resumeTitle || "Untitled Resume"}
             </h1>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
             <Button variant="outline" size="sm" asChild>
-              <Link href="/coverletter">Back</Link>
+              <Link href="/resumes">Back</Link>
             </Button>
 
             <Button variant="outline" size="sm" asChild>
-              <Link
-                href={`/coverletterbuilder/editor?coverLetterId=${data.id}`}>
+              <Link href={`/resumebuilder/editor?resumeId=${data.id}`}>
                 <Edit3 className="mr-2 size-4" />
                 Edit
               </Link>
@@ -259,7 +264,6 @@ export default function CoverLetterPreviewView({
               <Download className="mr-2 size-4" />
               Download
             </Button>
-
             <Button variant="destructive" size="sm" onClick={handleDelete}>
               <Trash2 className="mr-2 size-4" />
               Delete
@@ -297,8 +301,9 @@ export default function CoverLetterPreviewView({
       <main className="grid flex-1 grid-cols-1 xl:grid-cols-[1fr_320px]">
         <section className="overflow-auto px-4 py-8">
           <div className="mx-auto w-fit origin-top scale-[0.58] print:scale-100 sm:scale-[0.72] lg:scale-[0.85] xl:scale-100">
-            <CoverLetterPreview
-              coverLetterData={mapToCoverLetterValues(data)}
+            <ResumePreview
+              themeId={data.themeId ?? "classic-left"}
+              data={previewData}
             />
           </div>
         </section>
@@ -311,7 +316,7 @@ export default function CoverLetterPreviewView({
               </h3>
 
               <div className="grid gap-2">
-                {COVER_LETTER_THEME_REGISTRY.map((theme) => (
+                {RESUME_THEME_REGISTRY.map((theme) => (
                   <button
                     key={theme.id}
                     type="button"
@@ -327,6 +332,7 @@ export default function CoverLetterPreviewView({
                         : "border-slate-200 hover:bg-slate-50"
                     }`}>
                     {theme.name}
+
                     <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
                       {theme.category}
                     </span>
@@ -344,6 +350,7 @@ export default function CoverLetterPreviewView({
                 <Label className="text-[11px] font-bold uppercase text-slate-700">
                   Theme Color
                 </Label>
+
                 <div className="mt-2 flex items-center gap-3 border bg-slate-50 p-3">
                   <input
                     type="color"
@@ -353,6 +360,7 @@ export default function CoverLetterPreviewView({
                     }
                     className="h-8 w-8 cursor-pointer border-0 bg-transparent"
                   />
+
                   <span className="font-mono text-xs font-bold uppercase text-slate-500">
                     {data.themeColor || "#dc2626"}
                   </span>
@@ -362,6 +370,7 @@ export default function CoverLetterPreviewView({
               <div className="flex items-center justify-between border bg-slate-50 p-3">
                 <div className="flex items-center gap-3">
                   <ImageIcon className="size-4 text-slate-500" />
+
                   <Label
                     htmlFor="show-photo"
                     className="text-[11px] font-bold uppercase">

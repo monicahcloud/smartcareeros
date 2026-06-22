@@ -46,7 +46,7 @@ export const RESUME_THEME_REGISTRY: ResumeThemeToken[] = [
   {
     id: "centered-modern",
     name: "Centered Modern",
-    category: "Modern",
+    category: "Professional",
     layout: "centered-header",
     defaultColor: "#DC2626",
     fontId: "modern",
@@ -70,7 +70,7 @@ export const RESUME_THEME_REGISTRY: ResumeThemeToken[] = [
   {
     id: "minimal-clean",
     name: "Minimal Clean",
-    category: "Minimal",
+    category: "Modern",
     layout: "minimal",
     defaultColor: "#0F172A",
     fontId: "modern",
@@ -82,7 +82,7 @@ export const RESUME_THEME_REGISTRY: ResumeThemeToken[] = [
   {
     id: "split-corporate",
     name: "Split Corporate",
-    category: "Corporate",
+    category: "Professional",
     layout: "split-header",
     defaultColor: "#1F2937",
     fontId: "professional",
@@ -94,7 +94,7 @@ export const RESUME_THEME_REGISTRY: ResumeThemeToken[] = [
   {
     id: "right-aligned-pro",
     name: "Right Aligned Pro",
-    category: "Professional",
+    category: "Modern",
     layout: "right-header",
     defaultColor: "#0F172A",
     fontId: "professional",
@@ -106,7 +106,7 @@ export const RESUME_THEME_REGISTRY: ResumeThemeToken[] = [
   {
     id: "boxed-modern",
     name: "Boxed Modern",
-    category: "Modern",
+    category: "Corporate",
     layout: "boxed-header",
     defaultColor: "#991B1B",
     fontId: "modern",
@@ -118,7 +118,7 @@ export const RESUME_THEME_REGISTRY: ResumeThemeToken[] = [
   {
     id: "accent-bar-red",
     name: "Accent Bar",
-    category: "Creative",
+    category: "Professional",
     layout: "accent-bar",
     defaultColor: "#DC2626",
     fontId: "modern",
@@ -142,7 +142,7 @@ export const RESUME_THEME_REGISTRY: ResumeThemeToken[] = [
   {
     id: "corporate-panel",
     name: "Corporate Panel",
-    category: "Corporate",
+    category: "Modern",
     layout: "corporate-panel",
     defaultColor: "#DC2626",
     fontId: "professional",
@@ -178,7 +178,7 @@ export const RESUME_THEME_REGISTRY: ResumeThemeToken[] = [
   {
     id: "bold-topline",
     name: "Bold Topline",
-    category: "Bold",
+    category: "Profesional",
     layout: "bold-topline",
     defaultColor: "#B91C1C",
     fontId: "professional",
