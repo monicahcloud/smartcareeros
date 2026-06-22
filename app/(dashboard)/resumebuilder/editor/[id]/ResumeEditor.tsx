@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Eye, Flashlight } from "lucide-react";
+import { Eye } from "lucide-react";
 
 import {
   Certification,
@@ -140,9 +140,13 @@ export default function ResumeEditor({
   const [resumeData, setResumeData] = useState<ResumeFormState>({
     id: resumeToEdit?.id,
     resumeTitle: resumeToEdit?.resumeTitle || "",
-    resumeType: resumeToEdit?.resumeType || "",
+    resumeType: resumeToEdit?.resumeType || "CORPORATE",
     description: resumeToEdit?.description || "",
     jobTitle: resumeToEdit?.jobTitle || jobDescription?.title || "",
+    jobDescriptionId: jobDescription?.id || "",
+    jobDescriptionText: jobDescription?.rawText || "",
+    targetRole: jobDescription?.title || "",
+    targetCompany: jobDescription?.company || "",
     firstName: resumeToEdit?.firstName || "",
     lastName: resumeToEdit?.lastName || "",
     email: resumeToEdit?.email || "",
@@ -237,7 +241,7 @@ export default function ResumeEditor({
     address: resumeData.address,
     website: resumeData.website,
     linkedin: resumeData.linkedin,
-    github: resumeData.github || resumeData.gitHub,
+    gitHub: resumeData.github || resumeData.gitHub,
 
     photoUrl: resumeData.photoUrl,
     showPhoto: resumeData.showPhoto ?? true,

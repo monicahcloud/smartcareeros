@@ -30,15 +30,18 @@ import {
   WorkExperience,
 } from "@/lib/validation";
 import { generateWorkExperience } from "./actions";
+import { ResumeFormState } from "../[id]/types";
 
 interface GenerateWorkExperienceButtonProps {
   onWorkExperienceGenerated: (workExperience: WorkExperience) => void;
   category: string;
+  resumeData: ResumeFormState;
 }
 
 export default function GenerateWorkExperienceButton({
   onWorkExperienceGenerated,
   category,
+  resumeData,
 }: GenerateWorkExperienceButtonProps) {
   const [showInputDialog, setShowInputDialog] = useState(false);
 
@@ -56,6 +59,7 @@ export default function GenerateWorkExperienceButton({
         open={showInputDialog}
         onOpenChange={setShowInputDialog}
         category={category}
+        resumeData={resumeData}
         onWorkExperienceGenerated={(workExperience) => {
           onWorkExperienceGenerated(workExperience);
           setShowInputDialog(false);
@@ -70,6 +74,7 @@ interface InputDialogProps {
   onOpenChange: (open: boolean) => void;
   onWorkExperienceGenerated: (workExperience: WorkExperience) => void;
   category: string;
+  resumeData: ResumeFormState;
 }
 
 function InputDialog({
@@ -77,6 +82,7 @@ function InputDialog({
   onOpenChange,
   onWorkExperienceGenerated,
   category,
+  resumeData,
 }: InputDialogProps) {
   const form = useForm<GenerateWorkExperienceInput>({
     resolver: zodResolver(generateWorkExperienceSchema),
@@ -90,6 +96,9 @@ function InputDialog({
       const response = await generateWorkExperience({
         ...input,
         category,
+        jobDescriptionText: resumeData.jobDescriptionText,
+        targetRole: resumeData.targetRole,
+        targetCompany: resumeData.targetCompany,
       });
 
       onWorkExperienceGenerated(response);

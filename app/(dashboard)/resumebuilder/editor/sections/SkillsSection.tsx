@@ -123,6 +123,11 @@ export default function SkillsSection({
                 form.setValue(
                   "skills",
                   Array.from(new Set([...current, ...skills])),
+                  {
+                    shouldDirty: true,
+                    shouldTouch: true,
+                    shouldValidate: true,
+                  },
                 );
               }}
               onJobTitleSearched={setSearchedJobTitle}

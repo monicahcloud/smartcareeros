@@ -15,16 +15,6 @@ import {
 } from "@/lib/validation";
 import { auth } from "@clerk/nextjs/server";
 
-// type GenerateDutiesInput = {
-//   jobTitle?: string;
-//   company?: string;
-//   description?: string;
-// };
-// --- UTILS ---
-
-/**
- * Strips markdown code blocks from AI strings to ensure valid JSON parsing
- */
 function cleanJsonString(jsonStr: string): string {
   return jsonStr
     .replace(/```json\s*/i, "")
@@ -32,9 +22,6 @@ function cleanJsonString(jsonStr: string): string {
     .trim();
 }
 
-/**
- * Validates dates to prevent Prisma crashes on "Present" or "Current" strings
- */
 function safeDate(value: any): Date | undefined {
   if (
     !value ||
@@ -66,11 +53,60 @@ export async function generateSummary(
   input: GenerateSummaryInput & { category?: string },
 ) {
   const { category } = input;
-  const { jobTitle, workExperiences, skills, techSkills } =
-    generateSummarySchema.parse(input) as any;
 
-  const systemMessage = `Write a concise resume summary. ${getArchetypeInstructions(category)}`;
-  const userMessage = `Title: ${jobTitle}. Exp: ${workExperiences?.map((e: any) => e.position).join(", ")}. Skills: ${skills?.join(", ")}. TechSkills: ${techSkills?.map((s: any) => s.name).join(", ")}`;
+  const {
+    jobTitle,
+    workExperiences,
+    skills,
+    techSkills,
+    jobDescriptionText,
+    targetRole,
+    targetCompany,
+  } = generateSummarySchema.parse(input) as any;
+
+  const systemMessage = `
+You are an expert ATS resume writer.
+
+Write a concise, professional resume summary tailored to the target job.
+
+Rules:
+- Return ONLY the summary text.
+- Write 3 to 5 sentences.
+- Do not use first person language.
+- Use keywords from the job description naturally.
+- Highlight relevant experience, tools, strengths, and business impact.
+- Do not invent experience that is not supported by the resume data.
+- Keep it polished, recruiter-friendly, and ATS-ready.
+
+Use keywords and requirements from the target job description naturally.
+Write a professional ATS-friendly summary.
+Do not invent experience.
+
+${getArchetypeInstructions(category)}
+`;
+
+  const userMessage = `
+Target Role:
+${input.targetRole}
+
+Target Company:
+${input.targetCompany}
+
+Target Job Description:
+${input.jobDescriptionText}
+
+Current Job Title:
+${jobTitle}
+
+Work Experience:
+${workExperiences?.map((e: any) => `${e.position} at ${e.company}`).join("\n")}
+
+Skills:
+${skills?.join(", ")}
+
+Technical Skills:
+${techSkills?.map((s: any) => s.name).join(", ")}
+`;
 
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
@@ -78,15 +114,11 @@ export async function generateSummary(
       { role: "system", content: systemMessage },
       { role: "user", content: userMessage },
     ],
+    temperature: 0.3,
   });
 
   return completion.choices[0].message.content?.trim() || "";
 }
-
-// export async function generateDuties(
-//   input: GenerateDutiesInput,
-// ): Promise<string | null> {
-//   return null;
 
 export async function generateSkills(
   input: GenerateSkillsInput,
@@ -94,18 +126,39 @@ export async function generateSkills(
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
-  const { jobTitle } = generateSkillsSchema.parse(input);
+  const { jobTitle, jobDescriptionText, targetRole, targetCompany } =
+    generateSkillsSchema.parse(input);
 
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
       {
         role: "system",
-        content: "Return a raw JSON array of 50 skills for this job title.",
+        content: `
+Return a raw JSON array of 50 ATS-friendly resume skills.
+
+Rules:
+- Return ONLY a JSON array.
+- No markdown.
+- No explanation.
+- Prioritize skills found in the job description.
+- Include tools, systems, responsibilities, soft skills, and role keywords.
+- Do not invent highly specialized tools unless they appear in the job description.
+        `,
       },
-      { role: "user", content: jobTitle },
+      {
+        role: "user",
+        content: `
+Job title: ${jobTitle}
+Target role: ${targetRole || jobTitle}
+Target company: ${targetCompany || "Not provided"}
+
+Job description:
+${jobDescriptionText || "No job description provided."}
+        `,
+      },
     ],
-    temperature: 0.5,
+    temperature: 0.3,
   });
 
   const content = completion.choices[0].message.content || "[]";
@@ -113,48 +166,40 @@ export async function generateSkills(
 }
 
 export async function generateWorkExperience(
-  input: GenerateWorkExperienceInput & { category?: string },
+  input: GenerateWorkExperienceInput & {
+    category?: string;
+    jobDescriptionText?: string;
+    targetRole?: string;
+    targetCompany?: string;
+  },
 ) {
   const { category } = input;
-  // Use Zod to validate input
-  const { description } = generateWorkExperienceSchema.parse(input);
-  const archetypeMsg = getArchetypeInstructions(category);
+
+  const { description, jobDescriptionText, targetRole, targetCompany } =
+    generateWorkExperienceSchema.parse(input) as any;
 
   const systemMessage = `
 You are an expert ATS resume writer.
 
-Transform the user's description into a professional work experience entry.
+Transform the user's experience notes into a professional resume work experience entry tailored to the target job.
 
 RULES:
-
 - Return ONLY JSON.
-- Write 4-6 bullet points.
-- Begin each bullet with a strong action verb.
+- The "description" field MUST contain 4-6 ATS-friendly bullet points separated by \\n.
+- Each bullet must start with "• ".
+- Start each bullet with a strong action verb.
 - Never use "I", "my", or first-person language.
-- Include measurable results whenever possible.
-- Use industry keywords naturally.
-- Make each bullet concise and achievement-focused.
+- Use relevant keywords from the target job description naturally.
+- Do not keyword-stuff.
+- Do not invent experience that is not supported by the user's notes.
+- Include measurable results when possible.
+- Keep bullets concise, achievement-focused, and recruiter-friendly.
 - Use past tense unless the role is current.
+- Use keywords from the target job description.
+- Do not fabricate experience.
+- Focus bullets on what recruiters are looking for.
 
-Federal resumes:
-- Include duties.
-- Include responsibilities.
-- Include grade and hours if available.
-
-Corporate resumes:
-- Focus on accomplishments and business impact.
-
-Example description format:
-
-• Managed project timelines and coordinated cross-functional teams to ensure successful delivery.
-• Improved reporting processes, reducing manual effort by 40%.
-• Collaborated with stakeholders to identify requirements and deliver business solutions.
-• Monitored project risks and implemented mitigation strategies to maintain schedules.
-The "description" field MUST contain 4 ATS-friendly bullet points separated by \\n.
-Do not return a paragraph.
-Each bullet must start with "• ".
-Each bullet must include a strong action verb.
-Use relevant keywords for the role.
+${getArchetypeInstructions(category)}
 
 Return JSON exactly like this:
 {
@@ -173,21 +218,33 @@ Return JSON exactly like this:
 }
 `;
 
+  const userMessage = `
+User experience notes:
+${description}
+
+Target role:
+${targetRole || "Not provided"}
+
+Target company:
+${targetCompany || "Not provided"}
+
+Target job description:
+${jobDescriptionText || "No job description provided."}
+`;
+
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
       { role: "system", content: systemMessage },
-      { role: "user", content: `Input text to transform: "${description}"` },
+      { role: "user", content: userMessage },
     ],
-    // Using json_object for reliability
     response_format: { type: "json_object" },
-    temperature: 0,
+    temperature: 0.2,
   });
 
   const content = completion.choices[0].message.content || "{}";
   const parsed = JSON.parse(cleanJsonString(content));
 
-  // Map the JSON response back to our WorkExperience type
   return {
     position: parsed.position || parsed.jobTitle || "",
     company: parsed.company || "",
@@ -200,7 +257,6 @@ Return JSON exactly like this:
         .join("\n") || "",
     startDate: parsed.startDate || null,
     endDate: parsed.endDate || null,
-    // Federal specific fields
     status: parsed.status || "",
     clearance: parsed.clearance || "",
     duties: parsed.duties || "",

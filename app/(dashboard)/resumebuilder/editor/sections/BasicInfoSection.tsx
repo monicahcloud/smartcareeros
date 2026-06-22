@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RESUME_THEME_REGISTRY } from "@/app/(dashboard)/resumes/templates/templateRegistry";
+import { Textarea } from "@/components/ui/textarea";
 
 type BasicInfoSectionProps = {
   form: ResumeFormState;
@@ -42,6 +43,10 @@ export default function BasicInfoSection({
       description: resumeData.description || "",
       resumeType:
         currentTheme?.category || resumeData.resumeType || "CORPORATE",
+      jobDescriptionId: resumeData.jobDescriptionId || "",
+      jobDescriptionText: resumeData.jobDescriptionText || "",
+      targetRole: resumeData.targetRole || "",
+      targetCompany: resumeData.targetCompany || "",
     },
   });
 
@@ -56,8 +61,11 @@ export default function BasicInfoSection({
       setResumeData((prev) => ({
         ...prev,
         resumeTitle: values.resumeTitle || "",
-        resumeType: values.resumeType || "",
+        resumeType: values.resumeType || "CORPORATE",
         description: values.description || "",
+        jobDescriptionText: values.jobDescriptionText || "",
+        targetRole: values.targetRole || "",
+        targetCompany: values.targetCompany || "",
       }));
     }, 300);
 
@@ -126,6 +134,47 @@ export default function BasicInfoSection({
               </FormItem>
             )}
           />
+          <div className="space-y-3">
+            <div>
+              <FormLabel className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+                Target Job Description
+              </FormLabel>
+
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Paste the full job posting here. Smart CareerOS will use it to
+                tailor your summary, skills, work experience bullets, and ATS
+                keyword suggestions.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-red-100 bg-red-50 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-red-600">
+                How this helps
+              </p>
+              <p className="mt-2 text-sm leading-6 text-red-900">
+                Copy the job description from LinkedIn, Indeed, the company
+                website, or your saved job description page. Include
+                responsibilities, qualifications, tools, and required skills for
+                best results.
+              </p>
+            </div>
+
+            <Textarea
+              value={resumeData.jobDescriptionText || ""}
+              onChange={(e) =>
+                setResumeData((prev) => ({
+                  ...prev,
+                  jobDescriptionText: e.target.value,
+                }))
+              }
+              placeholder="Paste the full job description here..."
+              className="min-h-[260px] resize-none rounded-xl border-slate-200 bg-slate-50"
+            />
+
+            <p className="text-[10px] italic text-slate-400">
+              Optional, but recommended for a stronger ATS-tailored resume.
+            </p>
+          </div>
         </form>
       </Form>
     </FormStepWrapper>

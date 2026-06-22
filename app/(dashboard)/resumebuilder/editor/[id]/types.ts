@@ -47,6 +47,11 @@ export type ResumeFormState = {
   resumeType: string;
   description: string;
 
+  jobDescriptionId?: string;
+  jobDescriptionText?: string;
+  targetRole?: string;
+  targetCompany?: string;
+
   themeId?: string;
   themeColor?: string;
   borderStyle?: string;

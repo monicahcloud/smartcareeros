@@ -87,7 +87,6 @@ export async function saveResume(values: any) {
   const data = {
     ...resumeValues,
 
-    // IMPORTANT: overrides invalid values like "Professional"
     resumeType: safeResumeType,
 
     themeId: themeId || undefined,

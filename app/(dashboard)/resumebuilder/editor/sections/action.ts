@@ -87,28 +87,65 @@ export async function generateSummary(
 // ): Promise<string | null> {
 //   return null;
 
-export async function generateSkills(
-  input: GenerateSkillsInput,
-): Promise<string[]> {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const { jobTitle } = generateSkillsSchema.parse(input);
+export async function generateSkills(input: GenerateSkillsInput) {
+  const { jobTitle, jobDescriptionText, targetRole, targetCompany } =
+    generateSkillsSchema.parse(input);
 
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
       {
         role: "system",
-        content: "Return a raw JSON array of 50 skills for this job title.",
+        content: `
+Return ONLY a valid JSON array of resume skills.
+
+Rules:
+- Return 40 to 60 skills.
+- No markdown.
+- No explanation.
+- Every item must be a string.
+- Use ATS keywords from the job description when available.
+- Include technical skills, soft skills, tools, responsibilities, and industry terms.
+        `,
       },
-      { role: "user", content: jobTitle },
+      {
+        role: "user",
+        content: `
+Job title:
+${jobTitle}
+
+Target role:
+${targetRole || jobTitle}
+
+Target company:
+${targetCompany || "Not provided"}
+
+Job description:
+${jobDescriptionText || "No job description provided."}
+        `,
+      },
     ],
-    temperature: 0.5,
+    temperature: 0.3,
   });
 
   const content = completion.choices[0].message.content || "[]";
-  return JSON.parse(cleanJsonString(content));
+
+  try {
+    const parsed = JSON.parse(cleanJsonString(content));
+
+    if (Array.isArray(parsed)) {
+      return parsed.filter((item) => typeof item === "string");
+    }
+
+    if (Array.isArray(parsed.skills)) {
+      return parsed.skills.filter((item: unknown) => typeof item === "string");
+    }
+
+    return [];
+  } catch (error) {
+    console.error("Failed to parse generated skills:", content, error);
+    return [];
+  }
 }
 
 export async function generateWorkExperience(

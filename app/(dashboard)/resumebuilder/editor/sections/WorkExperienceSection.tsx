@@ -143,7 +143,8 @@ function WorkExperienceForm({
                     form={form}
                     remove={remove}
                     id={field.id}
-                    category={themeCategory} // Use category for UI logic
+                    category={themeCategory}
+                    resumeData={resumeData}
                   />
                 ))}
               </SortableContext>
@@ -188,6 +189,7 @@ interface WorkExperienceItemProps {
   index: number;
   remove: (index: number) => void;
   category: string;
+  resumeData: ResumeFormState;
 }
 
 function WorkExperienceItem({
@@ -196,6 +198,7 @@ function WorkExperienceItem({
   index,
   remove,
   category,
+  resumeData,
 }: WorkExperienceItemProps) {
   const {
     attributes,
@@ -392,6 +395,7 @@ function WorkExperienceItem({
                   /> */}
                   <GenerateWorkExperienceButton
                     category={category}
+                    resumeData={resumeData}
                     onWorkExperienceGenerated={(exp) => {
                       console.log("AI work experience response:", exp);
 

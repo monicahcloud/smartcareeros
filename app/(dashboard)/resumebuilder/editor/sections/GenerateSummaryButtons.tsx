@@ -28,6 +28,9 @@ export default function GenerateSummaryButton({
       const aiResponse = await generateSummary({
         ...resumeData,
         category,
+        jobDescriptionText: resumeData.jobDescriptionText,
+        targetRole: resumeData.targetRole,
+        targetCompany: resumeData.targetCompany,
         techSkills: resumeData.techSkills.map((skill) => ({
           name: skill,
           rating: 3,

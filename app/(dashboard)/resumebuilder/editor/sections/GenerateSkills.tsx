@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -18,12 +19,11 @@ const DEFAULT_SOFT_SKILLS = [
 ];
 
 export default function GenerateSkillsForm({
-  // resumeData,
+  resumeData,
   onSkillsGenerated,
   onJobTitleSearched,
   onSuggestedSkills,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   resumeData: any;
   onSkillsGenerated: (skills: string[]) => void;
   onJobTitleSearched: (title: string) => void;
@@ -34,22 +34,20 @@ export default function GenerateSkillsForm({
     useState<string[]>(DEFAULT_SOFT_SKILLS);
   const [loading, setLoading] = useState(false);
 
-  // Only set default skills when the component is mounted (not when searched)
-  useEffect(() => {
-    if (!jobTitle.trim()) {
-      // If jobTitle is empty, keep the default skills
-      setSuggestedSkills(DEFAULT_SOFT_SKILLS);
-    }
-  }, [jobTitle]);
-
   const handleSearch = async () => {
     if (!jobTitle.trim()) return; // Don't search if the job title is empty
 
     try {
       setLoading(true);
-
+      console.log("SKILLS RESUME DATA", resumeData);
+      console.log("JOB DESCRIPTION", resumeData?.jobDescriptionText);
       // Call the function to generate skills based on job title
-      const aiSkills = await generateSkills({ jobTitle });
+     const aiSkills = await generateSkills({
+       jobTitle,
+       jobDescriptionText: resumeData?.jobDescriptionText || "",
+       targetRole: resumeData?.targetRole || jobTitle,
+       targetCompany: resumeData?.targetCompany || "",
+     });
 
       if (aiSkills && aiSkills.length > 0) {
         // Limit to 100 skills if necessary

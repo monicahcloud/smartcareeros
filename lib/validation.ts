@@ -4,6 +4,10 @@ export const generalInfoSchema = z.object({
   resumeTitle: optionalString,
   resumeType: optionalString,
   description: optionalString,
+  jobDescriptionId: optionalString,
+  jobDescriptionText: optionalString,
+  targetRole: optionalString,
+  targetCompany: optionalString,
 });
 export type GeneralInfoValues = z.infer<typeof generalInfoSchema>;
 
@@ -135,6 +139,10 @@ export type ResumeValues = Omit<z.infer<typeof resumeSchema>, "photo"> & {
 };
 
 export const generateWorkExperienceSchema = z.object({
+  jobTitle: optionalString,
+  jobDescriptionText: optionalString,
+  targetRole: optionalString,
+  targetCompany: optionalString,
   description: z
     .string()
     .trim()
@@ -148,6 +156,9 @@ export type GenerateWorkExperienceInput = z.infer<
 
 export const generateSummarySchema = z.object({
   jobTitle: optionalString,
+  jobDescriptionText: optionalString,
+  targetRole: optionalString,
+  targetCompany: optionalString,
   ...workExperienceSchema.shape,
   ...educationSchema.shape,
   ...skillsSchema.shape,
@@ -177,6 +188,9 @@ export type GenerateResponsibilitiesInput = z.infer<
 >;
 
 export const generateSkillsSchema = z.object({
+  jobDescriptionText: optionalString,
+  targetRole: optionalString,
+  targetCompany: optionalString,
   jobTitle: z
     .string()
     .trim()

@@ -64,7 +64,7 @@ export default function TechnicalSkillsSection({
       <div className="space-y-3">
         {techSkills.map((skill, index) => (
           <div
-            key={`${skill.name}-${index}`}
+            key={index}
             className="flex flex-col items-center gap-4 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition-all hover:border-blue-100 md:flex-row">
             <div className="w-full flex-1">
               <p className="mb-1 ml-1 text-[10px] font-bold uppercase text-slate-400">
