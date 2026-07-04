@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Eye } from "lucide-react";
-
 import {
   Certification,
   Education,
@@ -46,6 +45,12 @@ import {
   ResumeLayout,
 } from "@/app/(dashboard)/resumes/templates/templateRegistry";
 import useAutoSaveResume from "@/app/(dashboard)/resumes/useAutoSaveResume";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import ColorPicker from "@/app/components/coverletter/ColorPicker";
 
 type ResumeWithRelations = Resume & {
   techSkills: TechSkill[];
@@ -155,10 +160,17 @@ export default function ResumeEditor({
     summary: resumeToEdit?.summary || "",
     skills: resumeToEdit?.skills || [],
     techSkills:
-      resumeToEdit?.techSkills
-        ?.map((skill) => skill.name || "")
-        .filter(Boolean) || [],
+      resumeToEdit?.techSkills?.map((skill) => ({
+        name: skill.name || "",
+        rating: skill.rating || 3,
+      })) || [],
+    website: resumeToEdit?.website || "",
+    linkedin: resumeToEdit?.linkedin || "",
+    gitHub: resumeToEdit?.gitHub || "",
 
+    photoUrl: resumeToEdit?.photoUrl || "",
+    photo: undefined,
+    showPhoto: resumeToEdit?.showPhoto ?? true,
     workExperience:
       resumeToEdit?.workExperience?.map((exp) => ({
         company: exp.company || "",
@@ -235,13 +247,15 @@ export default function ResumeEditor({
     firstName: resumeData.firstName,
     lastName: resumeData.lastName,
     jobTitle: resumeData.jobTitle,
-
+    themeId: resumeData.themeId,
+    themeColor: resumeData.themeColor,
+    borderStyle: resumeData.borderStyle,
     email: resumeData.email,
     phone: resumeData.phone,
     address: resumeData.address,
     website: resumeData.website,
     linkedin: resumeData.linkedin,
-    gitHub: resumeData.github || resumeData.gitHub,
+    gitHub: resumeData.gitHub,
 
     photoUrl: resumeData.photoUrl,
     showPhoto: resumeData.showPhoto ?? true,
@@ -271,8 +285,9 @@ export default function ResumeEditor({
               </h1>
             </div>
 
-            <div className="flex items-end gap-3">
-              <div className="w-full max-w-xs">
+            <div className="flex items-end gap-8">
+              {/* Template */}
+              <div className="w-72">
                 <p className="mb-2 text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">
                   Switch Template
                 </p>
@@ -305,6 +320,40 @@ export default function ResumeEditor({
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              {/* Theme Color */}
+              <div className="flex flex-col">
+                <p className="mb-2 text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">
+                  Theme Color
+                </p>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white shadow-sm transition hover:scale-105">
+                      <div
+                        className="h-7 w-7 rounded-full border-2 border-white shadow"
+                        style={{
+                          backgroundColor: resumeData.themeColor,
+                        }}
+                      />
+                    </button>
+                  </PopoverTrigger>
+
+                  <PopoverContent className="w-[360px] p-4">
+                    <ColorPicker
+                      value={resumeData.themeColor || "#2563eb"}
+                      onChange={(color) =>
+                        setResumeData((prev) => ({
+                          ...prev,
+                          themeColor: color,
+                        }))
+                      }
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 

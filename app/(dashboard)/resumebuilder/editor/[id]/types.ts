@@ -6,6 +6,10 @@ export type WorkExperienceItem = {
   endDate: string;
   description: string;
 };
+export type TechSkillItem = {
+  name: string;
+  rating: number;
+};
 
 export type EducationItem = {
   school: string;
@@ -65,11 +69,10 @@ export type ResumeFormState = {
   website?: string;
   linkedin?: string;
   gitHub?: string;
-  github?: string;
 
   summary: string;
   skills: string[];
-  techSkills: string[];
+  techSkills: TechSkillItem[];
   workExperience: WorkExperienceItem[];
   education: EducationItem[];
   certifications: CertificationItem[];

@@ -10,13 +10,14 @@ export default function ExecutiveResumeLayout({
   data = {},
 }: ExecutiveResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
+  const themeColor = data.themeColor || "#dc2626";
 
   const contactItems = [
     data.email,
     data.phone,
     data.address,
     data.linkedin,
-    data.github,
+    data.gitHub,
     data.website,
   ].filter(Boolean);
 
@@ -31,8 +32,8 @@ export default function ExecutiveResumeLayout({
 
   return (
     <div className="mx-auto min-h-[1056px] w-[850px] bg-white px-14 py-12 text-slate-900 shadow-sm print:shadow-none">
-      <header className="border-b-4 border-slate-900 pb-6">
-        <h1 className="text-5xl font-bold uppercase -tracking-normal">
+      <header className="border-b-4 pb-6" style={{ borderColor: themeColor }}>
+        <h1 className="text-5xl font-bold uppercase tracking-tight">
           {fullName || "Your Name"}
         </h1>
 
@@ -53,14 +54,32 @@ export default function ExecutiveResumeLayout({
 
       {data.summary && (
         <section className="mt-8">
-          <SectionTitle noBorder>Executive Profile</SectionTitle>
+          <SectionTitle noBorder themeColor={themeColor}>
+            Executive Profile
+          </SectionTitle>
           <p className="text-sm leading-7 text-slate-700">{data.summary}</p>
+        </section>
+      )}
+
+      {skills.length > 0 && (
+        <section className="mt-8">
+          <SectionTitle noBorder themeColor={themeColor}>
+            Core Competencies
+          </SectionTitle>
+
+          <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-slate-700">
+            {skills.map((skill, index) => (
+              <p key={`${skill}-${index}`}>• {skill}</p>
+            ))}
+          </div>
         </section>
       )}
 
       {workExperience.length > 0 && (
         <section className="mt-10">
-          <SectionTitle>Professional Experience</SectionTitle>
+          <SectionTitle themeColor={themeColor}>
+            Professional Experience
+          </SectionTitle>
 
           <div className="space-y-8">
             {workExperience.map((job, index) => (
@@ -68,8 +87,9 @@ export default function ExecutiveResumeLayout({
                 <div className="flex items-start justify-between gap-6">
                   <div>
                     <h3 className="text-lg font-bold uppercase text-slate-900">
-                      {job.position}
+                      {job.position || "Position Title"}
                     </h3>
+
                     <p className="text-sm font-semibold text-slate-600">
                       {job.company}
                       {job.location ? ` • ${job.location}` : ""}
@@ -77,8 +97,7 @@ export default function ExecutiveResumeLayout({
                   </div>
 
                   <p className="whitespace-nowrap text-xs font-bold uppercase text-slate-500">
-                    {job.startDate}
-                    {job.endDate ? ` - ${job.endDate}` : ""}
+                    {formatDateRange(job.startDate, job.endDate)}
                   </p>
                 </div>
 
@@ -91,7 +110,7 @@ export default function ExecutiveResumeLayout({
 
       {education.length > 0 && (
         <section className="mt-10">
-          <SectionTitle>Education</SectionTitle>
+          <SectionTitle themeColor={themeColor}>Education</SectionTitle>
 
           <div className="space-y-5">
             {education.map((edu, index) => (
@@ -102,6 +121,7 @@ export default function ExecutiveResumeLayout({
                   <h3 className="text-base font-bold text-slate-900">
                     {edu.degree}
                   </h3>
+
                   <p className="text-sm text-slate-600">
                     {edu.school}
                     {edu.location ? ` • ${edu.location}` : ""}
@@ -109,8 +129,7 @@ export default function ExecutiveResumeLayout({
                 </div>
 
                 <p className="whitespace-nowrap text-xs font-bold uppercase text-slate-500">
-                  {edu.startDate}
-                  {edu.endDate ? ` - ${edu.endDate}` : ""}
+                  {formatDateRange(edu.startDate, edu.endDate)}
                 </p>
               </div>
             ))}
@@ -120,7 +139,7 @@ export default function ExecutiveResumeLayout({
 
       {certifications.length > 0 && (
         <section className="mt-10">
-          <SectionTitle>Certifications</SectionTitle>
+          <SectionTitle themeColor={themeColor}>Certifications</SectionTitle>
 
           <div className="space-y-5">
             {certifications.map((cert, index) => (
@@ -141,11 +160,7 @@ export default function ExecutiveResumeLayout({
                   </p>
                 )}
 
-                {cert.description && (
-                  <p className="mt-2 text-sm leading-6 text-slate-700">
-                    {cert.description}
-                  </p>
-                )}
+                <BulletText text={cert.description} />
               </div>
             ))}
           </div>
@@ -154,7 +169,7 @@ export default function ExecutiveResumeLayout({
 
       {projects.length > 0 && (
         <section className="mt-10">
-          <SectionTitle> Projects</SectionTitle>
+          <SectionTitle themeColor={themeColor}>Projects</SectionTitle>
 
           <div className="space-y-5">
             {projects.map((project, index) => (
@@ -169,11 +184,7 @@ export default function ExecutiveResumeLayout({
                   </p>
                 )}
 
-                {project.description && (
-                  <p className="mt-2 text-sm leading-6 text-slate-700">
-                    {project.description}
-                  </p>
-                )}
+                <BulletText text={project.description} />
 
                 {!!project.technologies?.length && (
                   <p className="mt-2 text-xs font-bold uppercase tracking-wide text-slate-500">
@@ -194,7 +205,7 @@ export default function ExecutiveResumeLayout({
 
       {accomplishments.length > 0 && (
         <section className="mt-10">
-          <SectionTitle> Accomplishments</SectionTitle>
+          <SectionTitle themeColor={themeColor}>Accomplishments</SectionTitle>
 
           <div className="space-y-5">
             {accomplishments.map((item, index) => (
@@ -207,50 +218,40 @@ export default function ExecutiveResumeLayout({
                   {[item.organization, item.date].filter(Boolean).join(" • ")}
                 </p>
 
-                {item.description && (
-                  <p className="mt-2 text-sm leading-6 text-slate-700">
-                    {item.description}
-                  </p>
-                )}
+                <BulletText text={item.description} />
 
                 {item.impact && (
                   <p className="mt-2 text-sm font-bold text-slate-800">
-                    Impact: {item.impact}
+                    <span style={{ color: themeColor }}>Impact: </span>
+                    {item.impact}
                   </p>
-                )}
-
-                {skills.length > 0 && (
-                  <section className="mt-8">
-                    <SectionTitle noBorder>Core Competencies</SectionTitle>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-slate-700">
-                      {skills.map((skill, index) => (
-                        <p key={`${skill}-${index}`}>• {skill}</p>
-                      ))}
-                    </div>
-                  </section>
-                )}
-
-                {techSkills.length > 0 && (
-                  <section className="mt-8">
-                    <SectionTitle noBorder>Technical Expertise</SectionTitle>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-slate-700">
-                      {techSkills.map((skill, index) => (
-                        <p key={`${String(skill)}-${index}`}>
-                          • {typeof skill === "string" ? skill : skill.name}
-                        </p>
-                      ))}
-                    </div>
-                  </section>
                 )}
               </div>
             ))}
           </div>
         </section>
       )}
+      {techSkills.length > 0 && (
+        <section className="mt-8">
+          <SectionTitle noBorder themeColor={themeColor}>
+            Technical Expertise
+          </SectionTitle>
 
+          <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm text-slate-700">
+            {techSkills.map((skill, index) => (
+              <TechSkillMeter
+                key={`${getTechSkillName(skill)}-${index}`}
+                name={getTechSkillName(skill)}
+                rating={getTechSkillRating(skill)}
+                themeColor={themeColor}
+              />
+            ))}
+          </div>
+        </section>
+      )}
       {interests.length > 0 && (
         <section className="mt-10">
-          <SectionTitle>Interests</SectionTitle>
+          <SectionTitle themeColor={themeColor}>Interests</SectionTitle>
 
           <p className="text-sm leading-6 text-slate-700">
             {interests.join(" • ")}
@@ -264,19 +265,58 @@ export default function ExecutiveResumeLayout({
 function SectionTitle({
   children,
   noBorder = false,
+  themeColor,
 }: {
   children: React.ReactNode;
   noBorder?: boolean;
+  themeColor: string;
 }) {
   return (
     <h2
       className={
         noBorder
-          ? "mb-4 text-sm font-black uppercase tracking-[0.25em] text-slate-900"
-          : "mb-5 border-b border-slate-300 pb-2 text-sm font-black uppercase tracking-[0.25em] text-slate-900"
-      }>
+          ? "mb-4 text-sm font-black uppercase tracking-[0.25em]"
+          : "mb-5 border-b pb-2 text-sm font-black uppercase tracking-[0.25em]"
+      }
+      style={{
+        color: themeColor,
+        borderColor: `${themeColor}40`,
+      }}>
       {children}
     </h2>
+  );
+}
+
+function TechSkillMeter({
+  name,
+  rating,
+  themeColor,
+}: {
+  name?: string;
+  rating?: number;
+  themeColor: string;
+}) {
+  if (!name) return null;
+
+  const percent = getSkillPercent(rating);
+
+  return (
+    <div>
+      <div className="mb-1 flex items-center justify-between gap-3">
+        <p className="font-semibold">{name}</p>
+        <p className="text-[10px] font-bold text-slate-500">{rating || 3}/5</p>
+      </div>
+
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+        <div
+          className="h-full rounded-full"
+          style={{
+            width: `${percent}%`,
+            backgroundColor: themeColor,
+          }}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -288,6 +328,8 @@ function BulletText({ text }: { text?: string }) {
     .map((item) => item.trim())
     .filter(Boolean);
 
+  if (bullets.length === 0) return null;
+
   return (
     <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm leading-7 text-slate-700">
       {bullets.map((bullet, index) => (
@@ -295,4 +337,24 @@ function BulletText({ text }: { text?: string }) {
       ))}
     </ul>
   );
+}
+
+function getTechSkillName(skill: string | { name?: string }) {
+  return typeof skill === "string" ? skill : skill.name || "";
+}
+
+function getTechSkillRating(skill: string | { rating?: number }) {
+  return typeof skill === "string" ? 3 : skill.rating || 3;
+}
+
+function getSkillPercent(rating?: number) {
+  return Math.min(Math.max((rating || 3) * 20, 20), 100);
+}
+
+function formatDateRange(startDate?: string, endDate?: string) {
+  if (!startDate && !endDate) return "";
+
+  if (startDate && endDate) return `${startDate} - ${endDate}`;
+
+  return startDate || endDate || "";
 }

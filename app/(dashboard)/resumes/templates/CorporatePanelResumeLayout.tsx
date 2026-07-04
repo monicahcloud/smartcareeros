@@ -11,6 +11,8 @@ export default function CorporatePanelResumeLayout({
   data = {},
 }: CorporatePanelResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
+  const themeColor = data.themeColor || "#8A6A1F";
+  const softThemeBg = `${themeColor}18`;
 
   const skills = data.skills ?? [];
   const techSkills = data.techSkills ?? [];
@@ -21,230 +23,417 @@ export default function CorporatePanelResumeLayout({
   const accomplishments = data.accomplishments ?? [];
   const interests = data.interests ?? [];
 
-  const photoSrc = data.photoUrl;
+  const photoSrc = data.photoUrl ?? "";
   const showPhoto = Boolean(data.showPhoto && photoSrc);
 
   return (
-    <div className="mx-auto min-h-[1056px] w-[850px] bg-[#fff3c9] px-10 py-10 font-serif text-black shadow-sm print:shadow-none">
-      <section className="grid grid-cols-[1fr_1fr] gap-8">
-        <div>
-          {showPhoto ? (
-            <Image
-              src={photoSrc}
-              alt={fullName || "Resume photo"}
-              width={300}
-              height={260}
-              className="h-[260px] w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-[260px] w-full items-center justify-center bg-[#f3d98b] text-5xl font-black">
-              {data.firstName?.[0] || "Y"}
-              {data.lastName?.[0] || "N"}
-            </div>
-          )}
-        </div>
+    <div className="mx-auto min-h-[1056px] w-[850px] bg-[#f7f3ea] px-10 py-10 font-serif text-slate-950 shadow-sm print:shadow-none">
+      <header
+        className="grid grid-cols-[240px_1fr] gap-8 border-b-[6px] pb-8"
+        style={{ borderColor: themeColor }}>
+        <ProfilePhoto
+          showPhoto={showPhoto}
+          photoSrc={photoSrc}
+          fullName={fullName}
+          firstName={data.firstName}
+          lastName={data.lastName}
+          themeColor={themeColor}
+        />
 
-        <div className="text-center">
-          <h2 className="text-2xl font-black">About me</h2>
+        <div className="flex flex-col justify-center">
+          <p
+            className="mb-3 text-xs font-black uppercase tracking-[0.35em]"
+            style={{ color: themeColor }}>
+            Resume
+          </p>
 
-          {data.summary && (
-            <p className="mx-auto mt-3 max-w-[280px] text-xs leading-4">
-              {data.summary}
+          <h1 className="text-5xl font-black leading-none tracking-tight">
+            {fullName || "Your Name"}
+          </h1>
+
+          {data.jobTitle && (
+            <p
+              className="mt-4 text-xl font-black uppercase tracking-[0.12em]"
+              style={{ color: themeColor }}>
+              {data.jobTitle}
             </p>
           )}
 
-          <div className="mt-8">
-            <h2 className="text-2xl font-black">Contact</h2>
-            <div className="mt-2 text-xs leading-4">
-              {data.phone && <p>{data.phone}</p>}
-              {data.email && <p>{data.email}</p>}
-              {data.address && <p>{data.address}</p>}
-              {data.website && <p>{data.website}</p>}
-              {data.linkedin && <p>{data.linkedin}</p>}
-              {data.github && <p>{data.github}</p>}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <header className="mt-8 bg-[#ffe28f] px-8 py-5">
-        <div className="flex items-end justify-between gap-6">
-          <div>
-            <h1 className="text-4xl font-black leading-none">
-              Hi, I’m {fullName || "Your Name"}
-            </h1>
-
-            {data.jobTitle && (
-              <p className="mt-2 text-xl font-black">{data.jobTitle}</p>
-            )}
-          </div>
-
-          <div className="text-right text-xs font-bold">
-            {data.linkedin && <p>{data.linkedin}</p>}
-            {data.website && <p>{data.website}</p>}
-          </div>
+          <ContactBlock data={data} />
         </div>
       </header>
 
-      <main className="px-8 py-6">
-        {workExperience.length > 0 && (
-          <Section title="Work experience">
-            <div className="grid grid-cols-2 gap-8">
-              {workExperience.slice(0, 4).map((job, index) => (
-                <div key={index} className="text-center">
-                  <h3 className="text-base font-black">{job.position}</h3>
-                  <p className="text-sm font-semibold">{job.company}</p>
-                  <p className="text-xs">
-                    {job.startDate}
-                    {job.endDate ? ` - ${job.endDate}` : ""}
-                  </p>
+      <main className="mt-8 grid grid-cols-[250px_1fr] gap-10">
+        <aside>
+          {data.summary && (
+            <Panel title="About Me" themeColor={themeColor}>
+              <p className="text-[13px] leading-6 text-slate-700">
+                {data.summary}
+              </p>
+            </Panel>
+          )}
 
-                  <BulletText text={job.description} center />
-                </div>
-              ))}
-            </div>
-          </Section>
-        )}
+          {skills.length > 0 && (
+            <Panel title="Skills" themeColor={themeColor}>
+              <div className="flex flex-wrap gap-2">
+                {skills.map((skill, index) => (
+                  <span
+                    key={`${skill}-${index}`}
+                    className="rounded-full px-3 py-1 text-[11px] font-bold"
+                    style={{
+                      backgroundColor: softThemeBg,
+                      color: themeColor,
+                    }}>
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </Panel>
+          )}
 
-        {education.length > 0 && (
-          <Section title="Education">
-            <div className="grid grid-cols-2 gap-8">
-              {education.slice(0, 4).map((edu, index) => (
-                <div key={index} className="text-center">
-                  <h3 className="text-base font-black">{edu.degree}</h3>
-                  <p className="text-sm">{edu.school}</p>
-                  <p className="text-xs">
-                    {edu.startDate}
-                    {edu.endDate ? ` - ${edu.endDate}` : ""}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </Section>
-        )}
+          {techSkills.length > 0 && (
+            <Panel title="Technical Skills" themeColor={themeColor}>
+              <div className="space-y-3">
+                {techSkills.map((skill, index) => (
+                  <TechSkillBar
+                    key={`${getTechSkillName(skill)}-${index}`}
+                    name={getTechSkillName(skill)}
+                    rating={getTechSkillRating(skill)}
+                    themeColor={themeColor}
+                  />
+                ))}
+              </div>
+            </Panel>
+          )}
 
-        {(skills.length > 0 || techSkills.length > 0) && (
-          <div className="mt-6 grid grid-cols-2 gap-8">
-            {skills.length > 0 && (
-              <Section title="Skills">
-                <div className="text-center text-sm leading-5">
-                  {skills.map((skill, index) => (
-                    <p key={`${skill}-${index}`}>{skill}</p>
-                  ))}
-                </div>
-              </Section>
-            )}
-
-            {techSkills.length > 0 && (
-              <Section title="Technical Skills">
-                <div className="text-center text-sm leading-5">
-                  {techSkills.map((skill, index) => (
-                    <p key={`${String(skill)}-${index}`}>
-                      {typeof skill === "string" ? skill : skill.name}
+          {education.length > 0 && (
+            <Panel title="Education" themeColor={themeColor}>
+              <div className="space-y-5">
+                {education.map((edu, index) => (
+                  <div key={index}>
+                    <h3 className="text-sm font-black">{edu.degree}</h3>
+                    <p className="mt-1 text-xs font-semibold text-slate-700">
+                      {edu.school}
                     </p>
-                  ))}
-                </div>
-              </Section>
-            )}
-          </div>
-        )}
+                    <p className="text-[11px] text-slate-500">
+                      {[
+                        edu.location,
+                        formatDateRange(edu.startDate, edu.endDate),
+                      ]
+                        .filter(Boolean)
+                        .join(" • ")}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          )}
 
-        {certifications.length > 0 && (
-          <Section title="Certifications">
-            <div className="grid grid-cols-2 gap-8">
-              {certifications.slice(0, 4).map((cert, index) => (
-                <div key={index} className="text-center">
-                  <h3 className="text-base font-black">{cert.name}</h3>
-                  <p className="text-sm">{cert.issuer}</p>
-                  <p className="text-xs">
-                    {[cert.issuedDate, cert.expiresDate]
-                      .filter(Boolean)
-                      .join(" - ")}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </Section>
-        )}
+          {certifications.length > 0 && (
+            <Panel title="Certifications" themeColor={themeColor}>
+              <div className="space-y-4">
+                {certifications.map((cert, index) => (
+                  <div key={index}>
+                    <h3 className="text-xs font-black">{cert.name}</h3>
+                    <p className="text-[11px] text-slate-600">
+                      {[cert.issuer, cert.issuedDate, cert.expiresDate]
+                        .filter(Boolean)
+                        .join(" • ")}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          )}
 
-        {projects.length > 0 && (
-          <Section title="Projects">
-            <div className="grid grid-cols-2 gap-8">
-              {projects.slice(0, 4).map((project, index) => (
-                <div key={index} className="text-center">
-                  <h3 className="text-base font-black">{project.name}</h3>
-                  {project.role && <p className="text-sm">{project.role}</p>}
-                  <BulletText text={project.description} center />
-                </div>
-              ))}
-            </div>
-          </Section>
-        )}
+          {interests.length > 0 && (
+            <Panel title="Interests" themeColor={themeColor}>
+              <p className="text-xs leading-5 text-slate-700">
+                {interests.join(" • ")}
+              </p>
+            </Panel>
+          )}
+        </aside>
 
-        {accomplishments.length > 0 && (
-          <Section title="Achievements">
-            <div className="grid grid-cols-2 gap-8">
-              {accomplishments.slice(0, 4).map((item, index) => (
-                <div key={index} className="text-center">
-                  <h3 className="text-base font-black">{item.title}</h3>
-                  <p className="text-sm">{item.organization}</p>
-                  {item.impact && <p className="text-xs">{item.impact}</p>}
-                </div>
-              ))}
-            </div>
-          </Section>
-        )}
+        <section>
+          {workExperience.length > 0 && (
+            <Section title="Professional Experience" themeColor={themeColor}>
+              <div className="space-y-7">
+                {workExperience.map((job, index) => (
+                  <div key={index}>
+                    <div className="flex items-start justify-between gap-6">
+                      <div>
+                        <h3 className="text-base font-black uppercase">
+                          {job.position || "Position Title"}
+                        </h3>
+                        <p className="mt-1 text-sm font-bold text-slate-700">
+                          {job.company}
+                          {job.location ? ` • ${job.location}` : ""}
+                        </p>
+                      </div>
 
-        {interests.length > 0 && (
-          <Section title="Interests">
-            <p className="text-center text-sm">{interests.join(" • ")}</p>
-          </Section>
-        )}
+                      <p
+                        className="whitespace-nowrap text-[11px] font-black uppercase"
+                        style={{ color: themeColor }}>
+                        {formatDateRange(job.startDate, job.endDate)}
+                      </p>
+                    </div>
+
+                    <BulletText text={job.description} />
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {projects.length > 0 && (
+            <Section title="Projects" themeColor={themeColor}>
+              <div className="space-y-6">
+                {projects.map((project, index) => (
+                  <div key={index}>
+                    <h3 className="text-base font-black uppercase">
+                      {project.name}
+                    </h3>
+
+                    {project.role && (
+                      <p className="mt-1 text-sm font-bold text-slate-700">
+                        {project.role}
+                      </p>
+                    )}
+
+                    <BulletText text={project.description} />
+
+                    {!!project.technologies?.length && (
+                      <p
+                        className="mt-2 text-[11px] font-bold"
+                        style={{ color: themeColor }}>
+                        {project.technologies.join(" • ")}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {accomplishments.length > 0 && (
+            <Section title="Achievements" themeColor={themeColor}>
+              <div className="space-y-6">
+                {accomplishments.map((item, index) => (
+                  <div key={index}>
+                    <h3 className="text-base font-black uppercase">
+                      {item.title}
+                    </h3>
+
+                    <p className="mt-1 text-xs font-semibold text-slate-500">
+                      {[item.organization, item.date]
+                        .filter(Boolean)
+                        .join(" • ")}
+                    </p>
+
+                    <BulletText text={item.description} />
+
+                    {item.impact && (
+                      <p className="mt-2 text-xs font-bold text-slate-700">
+                        <span style={{ color: themeColor }}>Key Result: </span>
+                        {item.impact}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+        </section>
       </main>
     </div>
+  );
+}
+
+function ProfilePhoto({
+  showPhoto,
+  photoSrc,
+  fullName,
+  firstName,
+  lastName,
+  themeColor,
+}: {
+  showPhoto: boolean;
+  photoSrc: string;
+  fullName: string;
+  firstName?: string;
+  lastName?: string;
+  themeColor: string;
+}) {
+  if (showPhoto) {
+    return (
+      <div
+        className="h-[240px] w-[240px] overflow-hidden border-[6px] bg-white p-2"
+        style={{ borderColor: `${themeColor}55` }}>
+        <Image
+          src={photoSrc}
+          alt={fullName || "Resume photo"}
+          width={240}
+          height={240}
+          className="h-full w-full object-cover"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="flex h-[240px] w-[240px] items-center justify-center border-[6px] bg-white text-6xl font-black uppercase"
+      style={{
+        borderColor: `${themeColor}55`,
+        color: themeColor,
+      }}>
+      {getInitials(firstName, lastName)}
+    </div>
+  );
+}
+
+function ContactBlock({ data }: { data: ResumeData }) {
+  const contactItems = [
+    data.phone,
+    data.email,
+    data.address,
+    data.website,
+    data.linkedin,
+    data.gitHub,
+  ].filter(Boolean);
+
+  if (contactItems.length === 0) return null;
+
+  return (
+    <div className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-xs font-bold text-slate-700">
+      {contactItems.map((item, index) => (
+        <span key={`${item}-${index}`}>{item}</span>
+      ))}
+    </div>
+  );
+}
+
+function Panel({
+  title,
+  children,
+  themeColor,
+}: {
+  title: string;
+  children: React.ReactNode;
+  themeColor: string;
+}) {
+  return (
+    <section className="mb-7">
+      <h2
+        className="mb-3 border-b pb-2 text-sm font-black uppercase tracking-[0.18em]"
+        style={{
+          color: themeColor,
+          borderColor: `${themeColor}55`,
+        }}>
+        {title}
+      </h2>
+
+      {children}
+    </section>
   );
 }
 
 function Section({
   title,
   children,
+  themeColor,
 }: {
   title: string;
   children: React.ReactNode;
+  themeColor: string;
 }) {
   return (
-    <section className="mt-6">
-      <h2 className="mb-4 text-center text-xl font-black">{title}</h2>
+    <section className="mb-8">
+      <h2
+        className="mb-4 border-b pb-2 text-xl font-black uppercase tracking-[0.12em]"
+        style={{
+          color: themeColor,
+          borderColor: `${themeColor}55`,
+        }}>
+        {title}
+      </h2>
+
       {children}
     </section>
   );
 }
 
-function BulletText({
-  text,
-  center = false,
-}: {
-  text?: string;
-  center?: boolean;
-}) {
+function BulletText({ text }: { text?: string }) {
   if (!text) return null;
 
   const bullets = text
     .split(/\n|•/)
     .map((item) => item.trim())
-    .filter(Boolean)
-    .slice(0, 3);
+    .filter(Boolean);
+
+  if (bullets.length === 0) return null;
 
   return (
-    <ul
-      className={
-        center
-          ? "mx-auto mt-2 max-w-[260px] list-disc space-y-1 pl-5 text-left text-xs leading-4"
-          : "mt-2 list-disc space-y-1 pl-5 text-xs leading-4"
-      }>
+    <ul className="mt-3 list-disc space-y-1.5 pl-5 text-[13px] leading-6 text-slate-700">
       {bullets.map((bullet, index) => (
         <li key={index}>{bullet}</li>
       ))}
     </ul>
   );
+}
+
+function getInitials(firstName?: string, lastName?: string) {
+  const first = firstName?.trim()?.[0] ?? "Y";
+  const last = lastName?.trim()?.[0] ?? "N";
+
+  return `${first}${last}`.toUpperCase();
+}
+
+function formatDateRange(startDate?: string, endDate?: string) {
+  if (!startDate && !endDate) return "";
+
+  if (startDate && endDate) return `${startDate} - ${endDate}`;
+
+  return startDate || endDate || "";
+}
+function TechSkillBar({
+  name,
+  rating,
+  themeColor,
+}: {
+  name?: string;
+  rating?: number;
+  themeColor: string;
+}) {
+  if (!name) return null;
+
+  const percent = Math.min(Math.max((rating || 3) * 20, 20), 100);
+
+  return (
+    <div>
+      <div className="mb-1 flex items-center justify-between gap-3">
+        <p className="text-[11px] font-bold text-slate-700">{name}</p>
+        <p className="text-[10px] font-bold text-slate-500">{rating || 3}/5</p>
+      </div>
+
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-300">
+        <div
+          className="h-full rounded-full"
+          style={{
+            width: `${percent}%`,
+            backgroundColor: themeColor,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function getTechSkillName(skill: string | { name?: string }) {
+  return typeof skill === "string" ? skill : skill.name || "";
+}
+
+function getTechSkillRating(skill: string | { rating?: number }) {
+  return typeof skill === "string" ? 3 : skill.rating || 3;
 }

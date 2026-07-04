@@ -53,7 +53,7 @@ const MOCK_DATA: ResumeData = {
   phone: "123-456-7890",
   address: "New York, NY",
   linkedin: "linkedin.com/in/janedoe",
-  github: "github.com/janedoe",
+  gitHub: "github.com/janedoe",
   website: "janedoe.dev",
 
   photoUrl: "/images/mock-profile.jpg",

@@ -10,6 +10,7 @@ export default function TwoColumnMinimalResumeLayout({
   data = {},
 }: TwoColumnMinimalResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
+  const themeColor = data.themeColor || "#334155";
 
   const skills = data.skills ?? [];
   const techSkills = data.techSkills ?? [];
@@ -22,54 +23,53 @@ export default function TwoColumnMinimalResumeLayout({
 
   return (
     <div className="mx-auto min-h-[1056px] w-[850px] bg-white px-12 py-10 font-sans text-slate-800 shadow-sm print:shadow-none">
-      <header className="mb-8">
-        <h1 className="text-5xl font-black uppercase tracking-tight text-slate-800">
+      <header
+        className="mb-3 border-b-4 pb-3"
+        style={{ borderColor: themeColor }}>
+        <h1
+          className="text-5xl font-black uppercase tracking-tight"
+          style={{ color: themeColor }}>
           {fullName || "Your Name"}
         </h1>
 
         {data.jobTitle && (
-          <p className="mt-2 text-2xl font-black text-slate-500">
+          <p className="mt-2 text-xl font-black uppercase tracking-[0.08em] text-slate-500">
             {data.jobTitle}
           </p>
         )}
 
-        <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-sm font-bold text-slate-700">
-          {data.email && <span>{data.email}</span>}
-          {data.phone && <span>{data.phone}</span>}
-          {data.address && <span>{data.address}</span>}
-          {data.linkedin && <span>{data.linkedin}</span>}
-          {data.github && <span>{data.github}</span>}
-          {data.website && <span>{data.website}</span>}
-        </div>
+        <ContactRow data={data} />
       </header>
 
-      <div className="grid grid-cols-[1.08fr_0.88fr] gap-12">
+      <div className="grid grid-cols-[1.12fr_0.88fr] gap-12">
         <main>
-          <SectionTitle>Summary</SectionTitle>
-
           {data.summary && (
-            <p className="text-sm leading-6 text-slate-700">{data.summary}</p>
+            <>
+              <SectionTitle themeColor={themeColor}>Summary</SectionTitle>
+              <p className="text-sm leading-6 text-slate-700">{data.summary}</p>
+            </>
           )}
 
           {workExperience.length > 0 && (
             <>
-              <SectionTitle>Experience</SectionTitle>
+              <SectionTitle themeColor={themeColor}>Experience</SectionTitle>
 
               <div className="space-y-7">
                 {workExperience.map((job, index) => (
                   <div key={index}>
-                    <h3 className="text-xl font-medium text-slate-900">
-                      {job.position}
+                    <h3 className="text-lg font-black text-slate-900">
+                      {job.position || "Position Title"}
                     </h3>
 
-                    <p className="mt-1 text-sm font-black text-slate-500">
+                    <p
+                      className="mt-1 text-sm font-black"
+                      style={{ color: themeColor }}>
                       {job.company}
+                      {job.location ? ` • ${job.location}` : ""}
                     </p>
 
-                    <p className="mt-1 text-xs text-slate-600">
-                      {job.startDate}
-                      {job.endDate ? ` - ${job.endDate}` : ""}
-                      {job.location ? ` • ${job.location}` : ""}
+                    <p className="mt-1 text-xs font-semibold text-slate-500">
+                      {formatDateRange(job.startDate, job.endDate)}
                     </p>
 
                     <BulletText text={job.description} />
@@ -81,23 +81,22 @@ export default function TwoColumnMinimalResumeLayout({
 
           {education.length > 0 && (
             <>
-              <SectionTitle>Education</SectionTitle>
+              <SectionTitle themeColor={themeColor}>Education</SectionTitle>
 
               <div className="space-y-4">
                 {education.map((edu, index) => (
                   <div key={index}>
-                    <h3 className="text-base font-bold text-slate-900">
+                    <h3 className="text-base font-black text-slate-900">
                       {edu.degree}
                     </h3>
 
-                    <p className="text-sm text-slate-700">
+                    <p className="text-sm font-semibold text-slate-700">
                       {edu.school}
                       {edu.location ? ` • ${edu.location}` : ""}
                     </p>
 
-                    <p className="text-xs text-slate-500">
-                      {edu.startDate}
-                      {edu.endDate ? ` - ${edu.endDate}` : ""}
+                    <p className="text-xs font-semibold text-slate-500">
+                      {formatDateRange(edu.startDate, edu.endDate)}
                     </p>
                   </div>
                 ))}
@@ -107,17 +106,41 @@ export default function TwoColumnMinimalResumeLayout({
         </main>
 
         <aside>
-          {(skills.length > 0 || techSkills.length > 0) && (
+          {skills.length > 0 && (
             <section>
-              <SectionTitle>Skills</SectionTitle>
+              <SectionTitle themeColor={themeColor}>Skills</SectionTitle>
 
-              <div className="flex flex-wrap gap-x-3 gap-y-3">
-                {[...skills, ...techSkills].map((skill, index) => (
+              <div className="flex flex-wrap gap-2.5">
+                {skills.map((skill, index) => (
                   <span
-                    key={`${String(skill)}-${index}`}
-                    className="border-b border-slate-300 pb-1 text-sm font-bold text-slate-700">
-                    {typeof skill === "string" ? skill : skill.name}
+                    key={`${skill}-${index}`}
+                    className="rounded-full border px-3 py-1 text-xs font-bold"
+                    style={{
+                      borderColor: `${themeColor}40`,
+                      color: themeColor,
+                      backgroundColor: `${themeColor}10`,
+                    }}>
+                    {skill}
                   </span>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {techSkills.length > 0 && (
+            <section>
+              <SectionTitle themeColor={themeColor}>
+                Technical Skills
+              </SectionTitle>
+
+              <div className="space-y-3">
+                {techSkills.map((skill, index) => (
+                  <TechSkillBar
+                    key={`${getTechSkillName(skill)}-${index}`}
+                    name={getTechSkillName(skill)}
+                    rating={getTechSkillRating(skill)}
+                    themeColor={themeColor}
+                  />
                 ))}
               </div>
             </section>
@@ -125,7 +148,9 @@ export default function TwoColumnMinimalResumeLayout({
 
           {accomplishments.length > 0 && (
             <section>
-              <SectionTitle>Key Achievements</SectionTitle>
+              <SectionTitle themeColor={themeColor}>
+                Key Achievements
+              </SectionTitle>
 
               <div className="space-y-5">
                 {accomplishments.map((item, index) => (
@@ -136,6 +161,10 @@ export default function TwoColumnMinimalResumeLayout({
                       {item.title}
                     </h3>
 
+                    <MetaLine
+                      items={[item.organization, item.date].filter(Boolean)}
+                    />
+
                     {item.description && (
                       <p className="mt-2 text-sm leading-6 text-slate-700">
                         {item.description}
@@ -144,6 +173,7 @@ export default function TwoColumnMinimalResumeLayout({
 
                     {item.impact && (
                       <p className="mt-2 text-sm font-bold text-slate-800">
+                        <span style={{ color: themeColor }}>Impact: </span>
                         {item.impact}
                       </p>
                     )}
@@ -155,20 +185,24 @@ export default function TwoColumnMinimalResumeLayout({
 
           {certifications.length > 0 && (
             <section>
-              <SectionTitle>Training / Courses</SectionTitle>
+              <SectionTitle themeColor={themeColor}>
+                Certifications
+              </SectionTitle>
 
               <div className="space-y-4">
                 {certifications.map((cert, index) => (
                   <div key={index}>
-                    <h3 className="text-base font-black text-slate-600">
+                    <h3 className="text-base font-black text-slate-800">
                       {cert.name}
                     </h3>
 
-                    {cert.issuer && (
-                      <p className="text-sm font-semibold text-slate-500">
-                        {cert.issuer}
-                      </p>
-                    )}
+                    <MetaLine
+                      items={[
+                        cert.issuer,
+                        cert.issuedDate,
+                        cert.expiresDate,
+                      ].filter(Boolean)}
+                    />
 
                     {cert.description && (
                       <p className="mt-1 text-sm leading-6 text-slate-700">
@@ -183,7 +217,7 @@ export default function TwoColumnMinimalResumeLayout({
 
           {projects.length > 0 && (
             <section>
-              <SectionTitle>Projects</SectionTitle>
+              <SectionTitle themeColor={themeColor}>Projects</SectionTitle>
 
               <div className="space-y-4">
                 {projects.map((project, index) => (
@@ -193,7 +227,9 @@ export default function TwoColumnMinimalResumeLayout({
                     </h3>
 
                     {project.role && (
-                      <p className="text-sm font-semibold text-slate-500">
+                      <p
+                        className="text-sm font-semibold"
+                        style={{ color: themeColor }}>
                         {project.role}
                       </p>
                     )}
@@ -213,7 +249,7 @@ export default function TwoColumnMinimalResumeLayout({
 
           {interests.length > 0 && (
             <section>
-              <SectionTitle>Interests</SectionTitle>
+              <SectionTitle themeColor={themeColor}>Interests</SectionTitle>
 
               <p className="text-sm leading-6 text-slate-700">
                 {interests.join(" • ")}
@@ -226,9 +262,43 @@ export default function TwoColumnMinimalResumeLayout({
   );
 }
 
-function SectionTitle({ children }: { children: React.ReactNode }) {
+function ContactRow({ data }: { data: ResumeData }) {
+  const items = [
+    data.email,
+    data.phone,
+    data.address,
+    data.linkedin,
+    data.gitHub,
+    data.website,
+  ].filter(Boolean);
+
+  if (items.length === 0) return null;
+
   return (
-    <h2 className="mb-3 mt-8 border-b-[3px] border-slate-800 pb-1 text-2xl font-black uppercase tracking-tight text-slate-800">
+    <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm font-bold text-slate-700">
+      {items.map((item, index) => (
+        <span key={`${item}-${index}`} className="break-words">
+          {item}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function SectionTitle({
+  children,
+  themeColor,
+}: {
+  children: React.ReactNode;
+  themeColor: string;
+}) {
+  return (
+    <h2
+      className="mb-3 mt-8 border-b-[3px] pb-1 text-xl font-black uppercase tracking-tight"
+      style={{
+        color: themeColor,
+        borderColor: themeColor,
+      }}>
       {children}
     </h2>
   );
@@ -242,6 +312,8 @@ function BulletText({ text }: { text?: string }) {
     .map((item) => item.trim())
     .filter(Boolean);
 
+  if (bullets.length === 0) return null;
+
   return (
     <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-5 text-slate-700">
       {bullets.map((bullet, index) => (
@@ -249,4 +321,64 @@ function BulletText({ text }: { text?: string }) {
       ))}
     </ul>
   );
+}
+
+function MetaLine({ items }: { items: Array<string | undefined | null> }) {
+  const cleanItems = items.filter(Boolean) as string[];
+
+  if (cleanItems.length === 0) return null;
+
+  return (
+    <p className="mt-1 text-xs font-semibold text-slate-500">
+      {cleanItems.join(" • ")}
+    </p>
+  );
+}
+
+function formatDateRange(startDate?: string, endDate?: string) {
+  if (!startDate && !endDate) return "";
+
+  if (startDate && endDate) return `${startDate} - ${endDate}`;
+
+  return startDate || endDate || "";
+}
+function TechSkillBar({
+  name,
+  rating,
+  themeColor,
+}: {
+  name?: string;
+  rating?: number;
+  themeColor: string;
+}) {
+  if (!name) return null;
+
+  const percent = Math.min(Math.max((rating || 3) * 20, 20), 100);
+
+  return (
+    <div>
+      <div className="mb-1 flex items-center justify-between gap-3">
+        <p className="text-xs font-bold text-slate-700">{name}</p>
+        <p className="text-[10px] font-bold text-slate-500">{rating || 3}/5</p>
+      </div>
+
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+        <div
+          className="h-full rounded-full"
+          style={{
+            width: `${percent}%`,
+            backgroundColor: themeColor,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function getTechSkillName(skill: string | { name?: string }) {
+  return typeof skill === "string" ? skill : skill.name || "";
+}
+
+function getTechSkillRating(skill: string | { rating?: number }) {
+  return typeof skill === "string" ? 3 : skill.rating || 3;
 }

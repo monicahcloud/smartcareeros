@@ -45,7 +45,7 @@ export default function TechnicalSkillsSection({
   useEffect(() => {
     setForm((prev) => ({
       ...prev,
-      techSkills: techSkills.map((skill) => skill.name).filter(Boolean),
+      techSkills: techSkills.filter((skill) => skill.name.trim()),
     }));
   }, [techSkills, setForm]);
 

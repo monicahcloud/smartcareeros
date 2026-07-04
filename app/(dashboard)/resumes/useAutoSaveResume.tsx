@@ -30,16 +30,24 @@ export default function useAutoSaveResume(resumeData: ResumeFormState) {
 
         const newData = structuredClone(debounceResumeData);
 
+        const photoChanged =
+          JSON.stringify(lastSaveData.photo, fileReplacer) !==
+          JSON.stringify(newData.photo, fileReplacer);
+
         const updatedResume = await saveResume({
           ...newData,
-          ...(JSON.stringify(lastSaveData.photo, fileReplacer) ===
-            JSON.stringify(newData.photo, fileReplacer) && {
-            photo: undefined,
-          }),
+          photo: photoChanged ? newData.photo : undefined,
           id: resumeId,
         } as any);
+
         setResumeId(updatedResume.id);
-        setLastSavedData(newData);
+
+        setLastSavedData({
+          ...newData,
+          id: updatedResume.id,
+          photo: undefined,
+          photoUrl: updatedResume.photoUrl ?? newData.photoUrl,
+        });
 
         if (searchParams.get("resumeId") !== updatedResume.id) {
           const newSearchParams = new URLSearchParams(searchParams);

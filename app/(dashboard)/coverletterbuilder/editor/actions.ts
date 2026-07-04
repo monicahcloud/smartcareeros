@@ -5,10 +5,9 @@ import { auth } from "@clerk/nextjs/server";
 // import { canUseAITools } from "@/lib/permissions";
 // import { getUserSubscriptionLevel } from "@/lib/subscription";
 import prisma from "@/lib/prisma";
-import { del } from "@vercel/blob";
+import { del, put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 import { coverLetterSchema, CoverLetterValues } from "@/lib/validation";
-import { put } from "@vercel/blob";
 
 export async function generateCoverLetter({
   jobTitle,
@@ -192,7 +191,7 @@ export async function saveCoverLetter(values: CoverLetterValues) {
       `cover-letter-photos/${crypto.randomUUID()}-${userPhoto.name}`,
       userPhoto,
       {
-        access: "private",
+        access: "public",
       },
     );
 

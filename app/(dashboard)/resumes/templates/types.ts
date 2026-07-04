@@ -1,3 +1,8 @@
+export type TechSkill = {
+  name: string;
+  rating: number;
+};
+
 export type ResumeData = {
   firstName?: string;
   lastName?: string;
@@ -7,7 +12,7 @@ export type ResumeData = {
   address?: string;
   summary?: string;
   linkedin?: string;
-  github?: string;
+  gitHub?: string;
   website?: string;
   themeId?: string;
   themeColor?: string;
@@ -15,7 +20,7 @@ export type ResumeData = {
   photo?: File;
   photoUrl?: string;
   skills?: string[];
-  techSkills?: string[];
+  techSkills?: TechSkill[];
 
   workExperience?: {
     position?: string;

@@ -9,6 +9,7 @@ export default function ClassicLeftResumeLayout({
   data = {},
 }: ClassicLeftResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
+  const themeColor = data.themeColor || "#2563eb";
 
   const skills = data.skills ?? [];
   const techSkills = data.techSkills ?? [];
@@ -20,11 +21,13 @@ export default function ClassicLeftResumeLayout({
   const interests = data.interests ?? [];
 
   const photoSrc = data.photoUrl ?? "";
-  const showPhoto = Boolean(photoSrc);
+  const showPhoto = Boolean(data.showPhoto && photoSrc);
 
   return (
     <div className="mx-auto flex min-h-[1123px] w-[794px] bg-white text-slate-900 shadow-sm print:shadow-none">
-      <aside className="w-[32%] bg-slate-900 px-6 py-8 text-white">
+      <aside
+        className="w-[32%] px-6 py-8 text-white"
+        style={{ backgroundColor: themeColor }}>
         {showPhoto && (
           <div className="mb-6 flex justify-center">
             <Image
@@ -32,7 +35,7 @@ export default function ClassicLeftResumeLayout({
               alt={fullName || "Resume photo"}
               width={112}
               height={112}
-              className="h-28 w-28 rounded-full border-4 border-white object-cover"
+              className="h-36 w-36 rounded-full border-4 border-white object-cover"
             />
           </div>
         )}
@@ -43,7 +46,7 @@ export default function ClassicLeftResumeLayout({
           </h1>
 
           {data.jobTitle && (
-            <p className="mt-3 text-sm font-medium uppercase tracking-[0.2em] text-slate-300">
+            <p className="mt-3 text-sm font-medium uppercase tracking-[0.2em] text-white/80">
               {data.jobTitle}
             </p>
           )}
@@ -51,22 +54,14 @@ export default function ClassicLeftResumeLayout({
 
         <section className="mb-8">
           <SidebarTitle>Contact</SidebarTitle>
-
-          <div className="space-y-2 break-words text-sm text-slate-200">
-            {data.email && <p>{data.email}</p>}
-            {data.phone && <p>{data.phone}</p>}
-            {data.address && <p>{data.address}</p>}
-            {data.linkedin && <p>{data.linkedin}</p>}
-            {data.github && <p>{data.github}</p>}
-            {data.website && <p>{data.website}</p>}
-          </div>
+          <ContactList data={data} />
         </section>
 
         {skills.length > 0 && (
           <section className="mb-8">
             <SidebarTitle>Skills</SidebarTitle>
 
-            <ul className="space-y-2 text-sm text-slate-200">
+            <ul className="space-y-2 text-sm text-white/90">
               {skills.map((skill, index) => (
                 <li key={`${skill}-${index}`}>• {skill}</li>
               ))}
@@ -78,14 +73,15 @@ export default function ClassicLeftResumeLayout({
           <section className="mb-8">
             <SidebarTitle>Technical Skills</SidebarTitle>
 
-            <ul className="space-y-2 text-sm text-slate-200">
+            <div className="space-y-3">
               {techSkills.map((skill, index) => (
-                <li key={`${skill.name}-${index}`}>
-                  • {skill.name}
-                  {skill.rating ? ` (${skill.rating}/5)` : ""}
-                </li>
+                <SkillMeter
+                  key={`${getTechSkillName(skill)}-${index}`}
+                  name={getTechSkillName(skill)}
+                  rating={getTechSkillRating(skill)}
+                />
               ))}
-            </ul>
+            </div>
           </section>
         )}
 
@@ -93,25 +89,24 @@ export default function ClassicLeftResumeLayout({
           <section>
             <SidebarTitle>Interests</SidebarTitle>
 
-            <p className="text-sm leading-6 text-slate-200">
+            <p className="text-sm leading-6 text-white/90">
               {interests.join(" • ")}
             </p>
           </section>
         )}
       </aside>
 
-      {/* Main Content */}
       <main className="w-[68%] px-8 py-8">
         {data.summary && (
           <section className="mb-8">
-            <MainTitle>Professional Summary</MainTitle>
+            <MainTitle themeColor={themeColor}>Professional Summary</MainTitle>
             <p className="text-sm leading-6 text-slate-700">{data.summary}</p>
           </section>
         )}
 
         {workExperience.length > 0 && (
           <section className="mb-8">
-            <MainTitle>Work Experience</MainTitle>
+            <MainTitle themeColor={themeColor}>Work Experience</MainTitle>
 
             <div className="space-y-6">
               {workExperience.map((job, index) => (
@@ -119,7 +114,7 @@ export default function ClassicLeftResumeLayout({
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <h3 className="text-base font-bold text-slate-900">
-                        {job.position}
+                        {job.position || "Position Title"}
                       </h3>
 
                       <p className="text-sm font-medium text-slate-700">
@@ -129,16 +124,11 @@ export default function ClassicLeftResumeLayout({
                     </div>
 
                     <p className="whitespace-nowrap text-xs font-semibold text-slate-500">
-                      {job.startDate}
-                      {job.endDate ? ` - ${job.endDate}` : ""}
+                      {formatDateRange(job.startDate, job.endDate)}
                     </p>
                   </div>
 
-                  {job.description && (
-                    <p className="mt-2 whitespace-pre-line text-sm leading-6 text-slate-700">
-                      {job.description}
-                    </p>
-                  )}
+                  <BulletText text={job.description} />
                 </div>
               ))}
             </div>
@@ -147,7 +137,7 @@ export default function ClassicLeftResumeLayout({
 
         {education.length > 0 && (
           <section className="mb-8">
-            <MainTitle>Education</MainTitle>
+            <MainTitle themeColor={themeColor}>Education</MainTitle>
 
             <div className="space-y-5">
               {education.map((edu, index) => (
@@ -165,8 +155,7 @@ export default function ClassicLeftResumeLayout({
                     </div>
 
                     <p className="whitespace-nowrap text-xs font-semibold text-slate-500">
-                      {edu.startDate}
-                      {edu.endDate ? ` - ${edu.endDate}` : ""}
+                      {formatDateRange(edu.startDate, edu.endDate)}
                     </p>
                   </div>
                 </div>
@@ -177,7 +166,7 @@ export default function ClassicLeftResumeLayout({
 
         {certifications.length > 0 && (
           <section className="mb-8">
-            <MainTitle>Certifications</MainTitle>
+            <MainTitle themeColor={themeColor}>Certifications</MainTitle>
 
             <div className="space-y-5">
               {certifications.map((cert, index) => (
@@ -186,15 +175,10 @@ export default function ClassicLeftResumeLayout({
                     {cert.name}
                   </h3>
 
-                  {cert.issuer && (
-                    <p className="text-sm font-medium text-slate-700">
-                      {cert.issuer}
-                    </p>
-                  )}
-
                   <p className="text-xs font-semibold text-slate-500">
-                    {cert.issuedDate}
-                    {cert.expiresDate ? ` - ${cert.expiresDate}` : ""}
+                    {[cert.issuer, cert.issuedDate, cert.expiresDate]
+                      .filter(Boolean)
+                      .join(" | ")}
                   </p>
 
                   {cert.credentialUrl && (
@@ -203,11 +187,7 @@ export default function ClassicLeftResumeLayout({
                     </p>
                   )}
 
-                  {cert.description && (
-                    <p className="mt-2 text-sm leading-6 text-slate-700">
-                      {cert.description}
-                    </p>
-                  )}
+                  <BulletText text={cert.description} />
                 </div>
               ))}
             </div>
@@ -216,7 +196,7 @@ export default function ClassicLeftResumeLayout({
 
         {projects.length > 0 && (
           <section className="mb-8">
-            <MainTitle>Projects</MainTitle>
+            <MainTitle themeColor={themeColor}>Projects</MainTitle>
 
             <div className="space-y-5">
               {projects.map((project, index) => (
@@ -231,11 +211,7 @@ export default function ClassicLeftResumeLayout({
                     </p>
                   )}
 
-                  {project.description && (
-                    <p className="mt-2 text-sm leading-6 text-slate-700">
-                      {project.description}
-                    </p>
-                  )}
+                  <BulletText text={project.description} />
 
                   {!!project.technologies?.length && (
                     <p className="mt-2 text-xs font-semibold text-slate-500">
@@ -256,7 +232,7 @@ export default function ClassicLeftResumeLayout({
 
         {accomplishments.length > 0 && (
           <section>
-            <MainTitle>Accomplishments</MainTitle>
+            <MainTitle themeColor={themeColor}>Accomplishments</MainTitle>
 
             <div className="space-y-5">
               {accomplishments.map((item, index) => (
@@ -266,19 +242,15 @@ export default function ClassicLeftResumeLayout({
                   </h3>
 
                   <p className="text-sm font-medium text-slate-700">
-                    {item.organization}
-                    {item.date ? ` | ${item.date}` : ""}
+                    {[item.organization, item.date].filter(Boolean).join(" | ")}
                   </p>
 
-                  {item.description && (
-                    <p className="mt-2 text-sm leading-6 text-slate-700">
-                      {item.description}
-                    </p>
-                  )}
+                  <BulletText text={item.description} />
 
                   {item.impact && (
                     <p className="mt-2 text-sm font-semibold leading-6 text-slate-800">
-                      Impact: {item.impact}
+                      <span style={{ color: themeColor }}>Impact: </span>
+                      {item.impact}
                     </p>
                   )}
                 </div>
@@ -291,18 +263,111 @@ export default function ClassicLeftResumeLayout({
   );
 }
 
+function ContactList({ data }: { data: ResumeData }) {
+  const items = [
+    data.email,
+    data.phone,
+    data.address,
+    data.linkedin,
+    data.gitHub,
+    data.website,
+  ].filter(Boolean);
+
+  if (items.length === 0) return null;
+
+  return (
+    <div className="space-y-2 break-words text-sm text-white/90">
+      {items.map((item, index) => (
+        <p key={`${item}-${index}`}>{item}</p>
+      ))}
+    </div>
+  );
+}
+
 function SidebarTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="mb-3 border-b border-slate-600 pb-2 text-xs font-bold uppercase tracking-[0.2em]">
+    <h2 className="mb-3 border-b border-white/50 pb-2 text-xs font-bold uppercase tracking-[0.2em]">
       {children}
     </h2>
   );
 }
 
-function MainTitle({ children }: { children: React.ReactNode }) {
+function MainTitle({
+  children,
+  themeColor,
+}: {
+  children: React.ReactNode;
+  themeColor: string;
+}) {
   return (
-    <h2 className="mb-4 border-b border-slate-300 pb-2 text-sm font-bold uppercase tracking-[0.18em] text-slate-800">
+    <h2
+      className="mb-4 border-b pb-2 text-sm font-bold uppercase tracking-[0.18em]"
+      style={{
+        color: themeColor,
+        borderColor: themeColor,
+      }}>
       {children}
     </h2>
   );
+}
+
+function SkillMeter({ name, rating }: { name?: string; rating?: number }) {
+  if (!name) return null;
+
+  const percent = getSkillPercent(rating);
+
+  return (
+    <div>
+      <div className="mb-1 flex items-center justify-between gap-3">
+        <p className="text-sm text-white/90">{name}</p>
+        <p className="text-[10px] font-bold text-white/70">{rating || 3}/5</p>
+      </div>
+
+      <div className="h-2 w-full overflow-hidden rounded-full bg-white/30">
+        <div
+          className="h-full rounded-full bg-white"
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function BulletText({ text }: { text?: string }) {
+  if (!text) return null;
+
+  const bullets = text
+    .split(/\n|•/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  if (bullets.length === 0) return null;
+
+  return (
+    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-6 text-slate-700">
+      {bullets.map((bullet, index) => (
+        <li key={index}>{bullet}</li>
+      ))}
+    </ul>
+  );
+}
+
+function getTechSkillName(skill: string | { name?: string }) {
+  return typeof skill === "string" ? skill : skill.name || "";
+}
+
+function getTechSkillRating(skill: string | { rating?: number }) {
+  return typeof skill === "string" ? 3 : skill.rating || 3;
+}
+
+function getSkillPercent(rating?: number) {
+  return Math.min(Math.max((rating || 3) * 20, 20), 100);
+}
+
+function formatDateRange(startDate?: string, endDate?: string) {
+  if (!startDate && !endDate) return "";
+
+  if (startDate && endDate) return `${startDate} - ${endDate}`;
+
+  return startDate || endDate || "";
 }

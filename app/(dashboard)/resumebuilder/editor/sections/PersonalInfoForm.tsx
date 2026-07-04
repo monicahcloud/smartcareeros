@@ -23,7 +23,7 @@ type PersonalInfoField =
   | "address"
   | "website"
   | "linkedin"
-  | "github";
+  | "gitHub";
 
 export default function PersonalInfoSection({
   form,
@@ -229,8 +229,8 @@ export default function PersonalInfoSection({
               GitHub
             </label>
             <Input
-              value={form.github || ""}
-              onChange={(e) => updateField("github", e.target.value)}
+              value={form.gitHub || ""}
+              onChange={(e) => updateField("gitHub", e.target.value)}
               placeholder="github.com/name"
               className="mt-2 border-slate-200 bg-slate-50/50"
             />

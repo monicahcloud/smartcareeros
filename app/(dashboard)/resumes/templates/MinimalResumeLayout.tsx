@@ -11,7 +11,7 @@ export default function MinimalResumeLayout({
   data = {},
 }: MinimalResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
-
+  const themeColor = data.themeColor || "#DB2777";
   const workExperience = data.workExperience ?? [];
   const education = data.education ?? [];
   const skills = data.skills ?? [];
@@ -21,12 +21,14 @@ export default function MinimalResumeLayout({
   const accomplishments = data.accomplishments ?? [];
   const interests = data.interests ?? [];
 
-  const photoSrc = data.photoUrl;
+  const photoSrc = data.photoUrl ?? "";
   const showPhoto = Boolean(data.showPhoto && photoSrc);
 
   return (
     <div className="mx-auto flex min-h-[1056px] w-[850px] bg-white font-sans text-black shadow-sm print:shadow-none">
-      <aside className="w-[285px] bg-black px-10 py-10 text-white">
+      <aside
+        className="w-[285px] px-10 py-10 text-white"
+        style={{ backgroundColor: themeColor }}>
         <div className="mb-10 flex justify-center">
           {showPhoto ? (
             <Image
@@ -34,10 +36,10 @@ export default function MinimalResumeLayout({
               alt={fullName || "Resume photo"}
               width={145}
               height={145}
-              className="h-[145px] w-[145px] rounded-2xl border-4 border-[#ffbf00] object-cover"
+              className="h-[145px] w-[145px] rounded-2xl border-4 border-white object-cover"
             />
           ) : (
-            <div className="flex h-[145px] w-[145px] items-center justify-center rounded-2xl border-4 border-[#ffbf00] bg-white/10 text-4xl font-black">
+            <div className="flex h-[145px] w-[145px] items-center justify-center rounded-2xl border-4 border-white bg-white/10 text-4xl font-black">
               {data.firstName?.[0] || "Y"}
               {data.lastName?.[0] || "N"}
             </div>
@@ -50,40 +52,84 @@ export default function MinimalResumeLayout({
           </h1>
 
           {data.jobTitle && (
-            <p className="mt-3 text-xs font-bold uppercase tracking-wide text-slate-300">
+            <p className="mt-3 text-sm font-bold uppercase tracking-wide text-slate-300">
               {data.jobTitle}
             </p>
           )}
         </div>
 
         <SidebarSection title="Contact">
-          <div className="space-y-3 text-xs leading-5">
+          <div className="space-y-1 text-xs leading-5">
             {data.address && <p>{data.address}</p>}
             {data.phone && <p>{data.phone}</p>}
             {data.email && <p>{data.email}</p>}
             {data.linkedin && <p>{data.linkedin}</p>}
-            {data.github && <p>{data.github}</p>}
+            {data.gitHub && <p>{data.gitHub}</p>}
             {data.website && <p>{data.website}</p>}
           </div>
         </SidebarSection>
 
         {interests.length > 0 && (
           <SidebarSection title="Interests">
-            <div className="space-y-2 text-xs leading-5">
-              {interests.map((interest, index) => (
-                <p key={`${interest}-${index}`}>{interest}</p>
-              ))}
-            </div>
+            <p className="text-sm leading-5">{interests.join(" • ")}</p>
           </SidebarSection>
         )}
-
         {projects.length > 0 && (
           <SidebarSection title="Projects">
             <div className="space-y-4 text-xs leading-5">
               {projects.slice(0, 3).map((project, index) => (
                 <div key={index}>
-                  <p className="font-bold">{project.name}</p>
-                  {project.role && <p>{project.role}</p>}
+                  <p className="font-black uppercase">{project.name}</p>
+
+                  {project.role && (
+                    <p className="font-semibold text-white/85">
+                      {project.role}
+                    </p>
+                  )}
+
+                  {project.description && (
+                    <p className="mt-1 text-white/90">{project.description}</p>
+                  )}
+
+                  {!!project.technologies?.length && (
+                    <p className="mt-1 font-semibold text-white/80">
+                      {project.technologies.join(" • ")}
+                    </p>
+                  )}
+
+                  {project.url && (
+                    <p className="mt-1 break-words text-[10px] text-white/70">
+                      {project.url}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </SidebarSection>
+        )}
+
+        {accomplishments.length > 0 && (
+          <SidebarSection title="Accomplishments">
+            <div className="space-y-4 text-xs leading-5">
+              {accomplishments.slice(0, 3).map((item, index) => (
+                <div key={index}>
+                  <p className="font-black uppercase">{item.title}</p>
+
+                  {(item.organization || item.date) && (
+                    <p className="font-semibold text-white/80">
+                      {[item.organization, item.date]
+                        .filter(Boolean)
+                        .join(" • ")}
+                    </p>
+                  )}
+
+                  {item.impact && (
+                    <p className="mt-1 font-bold text-white">{item.impact}</p>
+                  )}
+
+                  {item.description && (
+                    <p className="mt-1 text-white/90">{item.description}</p>
+                  )}
                 </div>
               ))}
             </div>
@@ -91,14 +137,14 @@ export default function MinimalResumeLayout({
         )}
       </aside>
 
-      <main className="relative flex-1 px-12 py-10">
+      <main className="relative flex-1 px-12 py-12">
         <AccentTab color="bg-[#ffc400]" top="top-10" />
         <AccentTab color="bg-[#2f7fbd]" top="top-[245px]" />
         <AccentTab color="bg-[#d90000]" top="top-[560px]" />
         <AccentTab color="bg-[#86d840]" top="top-[760px]" />
 
         {data.summary && (
-          <MainSection title="Profile">
+          <MainSection title="Profile" themeColor={themeColor}>
             <p className="text-xs font-semibold leading-5 text-black">
               {data.summary}
             </p>
@@ -106,13 +152,13 @@ export default function MinimalResumeLayout({
         )}
 
         {workExperience.length > 0 && (
-          <MainSection title="Work Experience">
+          <MainSection title="Work Experience" themeColor={themeColor}>
             <div className="space-y-5">
               {workExperience.map((job, index) => (
                 <div key={index}>
                   <div className="flex items-start justify-between gap-5">
                     <div>
-                      <h3 className="text-xs font-black uppercase">
+                      <h3 className="text-sm font-black uppercase">
                         {job.company || "Company Name"}
                       </h3>
 
@@ -135,33 +181,39 @@ export default function MinimalResumeLayout({
           </MainSection>
         )}
 
-        <div className="grid grid-cols-2 gap-10 border-y border-slate-300 py-7">
-          {(skills.length > 0 || techSkills.length > 0) && (
+        <div className="grid grid-cols-2 gap-10 py-7">
+          {skills.length > 0 && (
             <section>
-              <h2 className="mb-4 text-xl font-normal uppercase">Skills</h2>
+              <h2
+                className="mb-4 text-xl font-normal uppercase"
+                style={{ color: themeColor }}>
+                Skills
+              </h2>
 
-              <div className="space-y-3">
-                {[...skills, ...techSkills].slice(0, 6).map((skill, index) => (
-                  <RatingSkill
-                    key={`${String(skill)}-${index}`}
-                    name={typeof skill === "string" ? skill : skill.name}
-                    rating={getRating(index)}
-                  />
+              <div className="space-y-2 text-xs font-semibold leading-5">
+                {skills.slice(0, 8).map((skill, index) => (
+                  <p key={`${skill}-${index}`}>• {skill}</p>
                 ))}
               </div>
             </section>
           )}
 
-          {certifications.length > 0 && (
+          {techSkills.length > 0 && (
             <section>
-              <h2 className="mb-4 text-xl font-normal uppercase">Expertise</h2>
+              <h2
+                className="mb-4 text-xl font-normal uppercase"
+                style={{ color: themeColor }}>
+                Technical Skills
+              </h2>
 
-              <div className="space-y-3 text-xs leading-5">
-                {certifications.slice(0, 4).map((cert, index) => (
-                  <div key={index}>
-                    <p className="font-black">{cert.name}</p>
-                    <p>{cert.issuer}</p>
-                  </div>
+              <div className="space-y-3">
+                {techSkills.slice(0, 6).map((skill, index) => (
+                  <RatingSkill
+                    key={`${getTechSkillName(skill)}-${index}`}
+                    name={getTechSkillName(skill)}
+                    rating={getTechSkillRating(skill)}
+                    themeColor={themeColor}
+                  />
                 ))}
               </div>
             </section>
@@ -169,15 +221,14 @@ export default function MinimalResumeLayout({
         </div>
 
         {education.length > 0 && (
-          <MainSection title="Education">
+          <MainSection title="Education" themeColor={themeColor}>
             <div className="space-y-3">
               {education.map((edu, index) => (
                 <div
                   key={index}
                   className="grid grid-cols-[90px_1fr_120px] gap-4 text-xs">
                   <p className="font-black">
-                    {edu.startDate}
-                    {edu.endDate ? ` - ${edu.endDate}` : ""}
+                    {formatDateRange(edu.startDate, edu.endDate)}
                   </p>
 
                   <p className="font-semibold">
@@ -191,20 +242,32 @@ export default function MinimalResumeLayout({
             </div>
           </MainSection>
         )}
-
-        {accomplishments.length > 0 && (
-          <MainSection title="Awards">
+        {certifications.length > 0 && (
+          <MainSection title="Certifications" themeColor={themeColor}>
             <div className="space-y-3 text-xs leading-5">
+              {certifications.slice(0, 4).map((cert, index) => (
+                <div key={index}>
+                  <p className="font-black">{cert.name}</p>
+                  <p>{cert.issuer}</p>
+                </div>
+              ))}
+            </div>
+          </MainSection>
+        )}
+
+        {/* {accomplishments.length > 0 && (
+          <MainSection title="Achievements" themeColor={themeColor}>
+            <div className="space-y-3 text-xs leading-5 ">
               {accomplishments.map((item, index) => (
                 <div key={index}>
-                  <p className="font-black">{item.title}</p>
+                  <p className="font-black ">{item.title}</p>
                   {item.impact && <p>{item.impact}</p>}
                   {item.description && <p>{item.description}</p>}
                 </div>
               ))}
             </div>
           </MainSection>
-        )}
+        )} */}
       </main>
     </div>
   );
@@ -218,11 +281,19 @@ function SidebarSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="mb-10">
-      <h2 className="mb-5 text-sm font-black uppercase tracking-wide">
-        {title}
-      </h2>
-      {children}
+    <section className="mb-8 last:mb-0">
+      <div className="mb-4">
+        <h2 className="text-lg font-black uppercase tracking-[0.18em] text-white">
+          {title}
+        </h2>
+
+        <div className="mt-2 flex items-center gap-3">
+          <div className="h-[2px] w-12 rounded-full bg-white" />
+          <div className="h-px flex-1 bg-white/25" />
+        </div>
+      </div>
+
+      <div className="space-y-2">{children}</div>
     </section>
   );
 }
@@ -230,13 +301,27 @@ function SidebarSection({
 function MainSection({
   title,
   children,
+  themeColor,
 }: {
   title: string;
   children: React.ReactNode;
+  themeColor: string;
 }) {
   return (
-    <section className="mb-9">
-      <h2 className="mb-4 text-xl font-normal uppercase">{title}</h2>
+    <section className="mb-8 last:mb-0">
+      <div className="mb-4 flex items-center gap-4">
+        <h2
+          className="whitespace-nowrap text-xl font-normal uppercase"
+          style={{ color: themeColor }}>
+          {title}
+        </h2>
+
+        <div
+          className="h-px flex-1"
+          style={{ backgroundColor: `${themeColor}40` }}
+        />
+      </div>
+
       {children}
     </section>
   );
@@ -268,21 +353,40 @@ function BulletText({ text }: { text?: string }) {
   );
 }
 
-function RatingSkill({ name, rating }: { name?: string; rating: number }) {
+function RatingSkill({
+  name,
+  rating,
+  themeColor,
+}: {
+  name?: string;
+  rating: number;
+  themeColor: string;
+}) {
   if (!name) return null;
 
   return (
     <div className="grid grid-cols-[1fr_90px] items-center gap-4 text-xs">
       <p className="font-semibold">{name}</p>
-      <p className="tracking-[0.15em] text-slate-400">
+
+      <p className="tracking-[0.15em]" style={{ color: themeColor }}>
         {"★".repeat(rating)}
-        {"☆".repeat(5 - rating)}
+        <span className="text-slate-300">{"☆".repeat(5 - rating)}</span>
       </p>
     </div>
   );
 }
 
-function getRating(index: number) {
-  const ratings = [4, 5, 3, 4, 5, 3];
-  return ratings[index % ratings.length];
+function getTechSkillName(skill: string | { name?: string }) {
+  return typeof skill === "string" ? skill : skill.name || "";
+}
+
+function getTechSkillRating(skill: string | { rating?: number }) {
+  return typeof skill === "string" ? 3 : skill.rating || 3;
+}
+function formatDateRange(startDate?: string, endDate?: string) {
+  if (!startDate && !endDate) return "";
+
+  if (startDate && endDate) return `${startDate} - ${endDate}`;
+
+  return startDate || endDate || "";
 }

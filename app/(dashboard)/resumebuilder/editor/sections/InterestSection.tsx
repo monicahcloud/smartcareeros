@@ -1,6 +1,8 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
+
 import { Textarea } from "@/components/ui/textarea";
 import { ResumeFormState } from "../[id]/types";
 
@@ -13,15 +15,19 @@ export default function InterestSection({
   form,
   setForm,
 }: InterestSectionProps) {
+  const [interestText, setInterestText] = useState(
+    (form.interests || []).join(", "),
+  );
+
   function updateInterests(value: string) {
-    const interests = value
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean);
+    setInterestText(value);
 
     setForm((prev) => ({
       ...prev,
-      interests,
+      interests: value
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean),
     }));
   }
 
@@ -61,7 +67,7 @@ export default function InterestSection({
         <Textarea
           placeholder="e.g. Chess, Cooking, Graphic Design, Hiking, Volunteering..."
           className="min-h-[150px] resize-none rounded-xl border-slate-200 shadow-sm"
-          value={(form.interests || []).join(", ")}
+          value={interestText}
           onChange={(e) => updateInterests(e.target.value)}
         />
 

@@ -7,6 +7,8 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { getCurrentDbUser } from "@/lib/getCurrentUser";
 import { auth } from "@clerk/nextjs/server";
+import { randomUUID } from "crypto";
+import { put } from "@vercel/blob";
 
 export async function deleteResume(resumeId: string) {
   const dbUser = await getCurrentDbUser();
@@ -60,14 +62,14 @@ export async function saveResume(values: any) {
   } = values;
 
   const allowedResumeTypes = [
-    "chronological",
-    "functional",
-    "combination",
-    "federal",
+    "CORPORATE",
+    "FEDERAL",
+    "UPLOADED",
+    "MANUAL",
   ] as const;
 
   const safeResumeType = allowedResumeTypes.includes(
-    resumeValues.resumeType as any,
+    resumeValues.resumeType as (typeof allowedResumeTypes)[number],
   )
     ? resumeValues.resumeType
     : "CORPORATE";
@@ -85,20 +87,50 @@ export async function saveResume(values: any) {
     throw new Error("Resume not found");
   }
 
+  const existingPhotoUrl =
+    existingResume?.photoUrl && !existingResume.photoUrl.startsWith("data:")
+      ? existingResume.photoUrl
+      : null;
+
+  let savedPhotoUrl: string | null =
+    resumeValues.photoUrl && !resumeValues.photoUrl.startsWith("data:")
+      ? resumeValues.photoUrl
+      : existingPhotoUrl;
+
+  if (photo instanceof File && photo.size > 0) {
+    const fileExtension = photo.name.split(".").pop() || "jpg";
+
+    const blob = await put(
+      `resume-photos/${dbUser.id}/${randomUUID()}.${fileExtension}`,
+      photo,
+      {
+        access: "public",
+      },
+    );
+
+    savedPhotoUrl = blob.url;
+  }
+
+  if (!resumeValues.photoUrl && !photo) {
+    savedPhotoUrl = null;
+  }
+
   const data = {
     ...resumeValues,
 
     resumeType: safeResumeType,
-
     themeId: themeId || undefined,
-    userId: dbUser.id,
+    photoUrl: savedPhotoUrl,
 
     techSkills: {
       deleteMany: {},
       create:
         techSkills?.map((skill: any) =>
           typeof skill === "string"
-            ? { name: skill, rating: 3 }
+            ? {
+                name: skill,
+                rating: 3,
+              }
             : {
                 name: skill.name || "",
                 rating: skill.rating || 3,
@@ -137,7 +169,9 @@ export async function saveResume(values: any) {
           endDate: edu.endDate ? new Date(edu.endDate) : undefined,
         })) || [],
     },
+
     interest: interests ?? [],
+
     certifications: {
       deleteMany: {},
       create:
@@ -164,6 +198,19 @@ export async function saveResume(values: any) {
           url: project.url || "",
         })) || [],
     },
+
+    accomplishments: {
+      deleteMany: {},
+      create:
+        accomplishments?.map((item: any) => ({
+          title: item.title || "",
+          organization: item.organization || "",
+          date: item.date ? new Date(item.date) : undefined,
+          description: item.description || "",
+          impact: item.impact || "",
+        })) || [],
+    },
+
     updatedAt: new Date(),
   };
 
@@ -178,7 +225,14 @@ export async function saveResume(values: any) {
   }
 
   const createdResume = await prisma.resume.create({
-    data,
+    data: {
+      ...data,
+      user: {
+        connect: {
+          id: dbUser.id,
+        },
+      },
+    },
   });
 
   revalidatePath("/resumes");

@@ -112,10 +112,11 @@ model Resume {
 
   skills   String[]
   interest String[]
-jobDescriptionId String?
-jobDescriptionText String? @db.Text
-targetRole String?
-targetCompany String?
+  accomplishments Accomplishment[]
+  jobDescriptionId String?
+  jobDescriptionText String? @db.Text
+  targetRole String?
+  targetCompany String?
   uploadedFileUrl String?
   isUploaded      Boolean @default(false)
 
@@ -570,4 +571,18 @@ enum JobStatus {
   REJECTED
   WITHDRAWN
   
+}
+model Accomplishment {
+  id             String   @id @default(cuid())
+  title          String
+  organization   String?
+  date           DateTime?
+  description    String?
+  impact         String?
+
+  resumeId       String
+  resume         Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }

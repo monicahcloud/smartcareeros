@@ -31,10 +31,14 @@ export default function GenerateSummaryButton({
         jobDescriptionText: resumeData.jobDescriptionText,
         targetRole: resumeData.targetRole,
         targetCompany: resumeData.targetCompany,
-        techSkills: resumeData.techSkills.map((skill) => ({
-          name: skill,
-          rating: 3,
-        })),
+        techSkills: resumeData.techSkills.map((skill) =>
+          typeof skill === "string"
+            ? { name: skill, rating: 3 }
+            : {
+                name: skill.name || "",
+                rating: skill.rating || 3,
+              },
+        ),
         workExperiences: resumeData.workExperience,
       });
 

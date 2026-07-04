@@ -14,7 +14,6 @@ import {
 
 import prisma from "@/lib/prisma";
 import { getCurrentDbUser } from "@/lib/getCurrentUser";
-import DeleteResumeButton from "@/app/components/resumes/DeleteResumeButton";
 import ResumeCard from "./ResumeCard";
 
 export const metadata: Metadata = {

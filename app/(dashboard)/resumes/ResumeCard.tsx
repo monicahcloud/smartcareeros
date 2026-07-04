@@ -38,7 +38,7 @@ export default function ResumeCard({ resume }: { resume: any }) {
 
     website: resume.website || "",
     linkedin: resume.linkedin || "",
-    github: resume.github || resume.gitHub || "",
+    gitHub: resume.gitHub || "",
 
     summary: resume.summary || "",
     resumeTitle: resume.resumeTitle || "",

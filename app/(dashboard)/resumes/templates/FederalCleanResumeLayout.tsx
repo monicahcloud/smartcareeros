@@ -11,6 +11,7 @@ export default function FederalCleanResumeLayout({
   data = {},
 }: FederalCleanResumeLayoutProps) {
   const fullName = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim();
+  const themeColor = data.themeColor || "#1d4ed8";
 
   const skills = data.skills ?? [];
   const techSkills = data.techSkills ?? [];
@@ -22,69 +23,66 @@ export default function FederalCleanResumeLayout({
 
   return (
     <div className="mx-auto min-h-[1056px] w-[850px] bg-white px-12 py-10 font-sans text-[13px] leading-snug text-slate-900 shadow-sm print:shadow-none">
-      <header>
+      <header className="border-b-4 pb-4" style={{ borderColor: themeColor }}>
         <h1 className="text-4xl font-black uppercase tracking-wide">
           {fullName || "Your Name"}
         </h1>
 
         {data.jobTitle && (
-          <p className="mt-1 text-xl font-black text-blue-600">
+          <p
+            className="mt-1 text-xl font-black uppercase tracking-wide"
+            style={{ color: themeColor }}>
             {data.jobTitle}
           </p>
         )}
 
         <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs font-semibold text-slate-700">
-          {data.email && <span>{data.email}</span>}
-          {data.phone && <span>{data.phone}</span>}
-          {data.address && <span>{data.address}</span>}
-          {data.linkedin && <span>{data.linkedin}</span>}
-          {data.github && <span>{data.github}</span>}
-          {data.website && <span>{data.website}</span>}
+          {[
+            data.email,
+            data.phone,
+            data.address,
+            data.linkedin,
+            data.gitHub,
+            data.website,
+          ]
+            .filter(Boolean)
+            .map((item, index) => (
+              <span key={`${item}-${index}`}>{item}</span>
+            ))}
         </div>
       </header>
 
-      <Section title="Eligibility Summary">
-        <div className="space-y-0.5 text-sm text-slate-800">
-          <p>
-            <strong>Citizenship:</strong> U.S. Citizen
-          </p>
-          <p>
-            <strong>Veteran&apos;s Preference:</strong> N/A
-          </p>
-          <p>
-            <strong>Federal Employment Status:</strong> Not a current federal
-            employee
-          </p>
-          <p>
-            <strong>Highest GS Level Held:</strong> N/A
-          </p>
-          <p>
-            <strong>Security Clearance:</strong>{" "}
-            {getFirstValue(workExperience, "clearance") || "N/A"}
-          </p>
-          <p>
-            <strong>Specialized Experience Eligibility:</strong>{" "}
-            {data.summary ||
-              "Meets specialized experience requirements based on relevant professional experience, leadership, technical knowledge, and measurable accomplishments."}
-          </p>
-        </div>
+      <Section title="Eligibility Summary" themeColor={themeColor}>
+        <InfoGrid
+          items={[
+            ["Citizenship", "U.S. Citizen"],
+            ["Veteran's Preference", "N/A"],
+            ["Federal Employment Status", "Not a current federal employee"],
+            ["Highest GS Level Held", "N/A"],
+            [
+              "Security Clearance",
+              getFirstValue(workExperience, "clearance") || "N/A",
+            ],
+            [
+              "Specialized Experience Eligibility",
+              data.summary ||
+                "Meets specialized experience requirements based on relevant professional experience, technical knowledge, leadership, and measurable accomplishments.",
+            ],
+          ]}
+        />
       </Section>
 
       {data.summary && (
-        <Section title="Summary">
+        <Section title="Professional Summary" themeColor={themeColor}>
           <p className="text-sm leading-5 text-slate-800">{data.summary}</p>
         </Section>
       )}
 
       {(skills.length > 0 || techSkills.length > 0) && (
-        <Section title="Core Qualifications">
+        <Section title="Core Qualifications" themeColor={themeColor}>
           <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-sm text-slate-800">
-            {skills.map((skill, index) => (
-              <p key={`skill-${index}`}>• {skill}</p>
-            ))}
-
-            {techSkills.map((skill, index) => (
-              <p key={`tech-${index}`}>
+            {[...skills, ...techSkills].map((skill, index) => (
+              <p key={`${String(skill)}-${index}`}>
                 • {typeof skill === "string" ? skill : skill.name}
               </p>
             ))}
@@ -93,61 +91,39 @@ export default function FederalCleanResumeLayout({
       )}
 
       {workExperience.length > 0 && (
-        <Section title="Experience">
-          <div className="space-y-6">
+        <Section title="Professional Experience" themeColor={themeColor}>
+          <div className="space-y-7">
             {workExperience.map((job, index) => (
               <div key={index}>
-                <h3 className="text-lg font-bold text-slate-950">
+                <h3 className="text-lg font-black text-slate-950">
                   {job.position || "Position Title"}
                 </h3>
 
-                <p className="mt-1 font-bold text-blue-600">
+                <p className="mt-1 font-bold" style={{ color: themeColor }}>
                   {job.company || "Organization"}
-                </p>
-
-                <p className="mt-1 text-xs text-slate-700">
-                  {job.startDate || "Start"} - {job.endDate || "Present"}
                   {job.location ? ` | ${job.location}` : ""}
                 </p>
 
-                <p className="mt-1 text-xs text-slate-800">
-                  {job.hours || job.hoursPerWeek ? (
-                    <>
-                      <strong>Hours/week:</strong>{" "}
-                      {job.hours || job.hoursPerWeek}
-                    </>
-                  ) : null}
-                  {job.grade || job.status ? (
-                    <>
-                      {" "}
-                      | <strong>Grade/Series:</strong> {job.grade || job.status}
-                    </>
-                  ) : null}
-                  {job.clearance ? (
-                    <>
-                      {" "}
-                      | <strong>Clearance:</strong> {job.clearance}
-                    </>
-                  ) : null}
-                  {job.employmentType ? (
-                    <>
-                      {" "}
-                      | <strong>Employment Type:</strong> {job.employmentType}
-                    </>
-                  ) : null}
+                <p className="mt-1 text-xs font-semibold text-slate-700">
+                  {formatDateRange(job.startDate, job.endDate)}
                 </p>
 
-                {(job.supervisor ||
-                  job.supervisorPhone ||
-                  job.mayContactSupervisor) && (
-                  <p className="mt-1 text-xs text-slate-800">
-                    <strong>Supervisor:</strong> {job.supervisor || "N/A"}
-                    {job.supervisorPhone ? ` | ${job.supervisorPhone}` : ""}
-                    {job.mayContactSupervisor
-                      ? ` | May contact: ${job.mayContactSupervisor}`
-                      : ""}
-                  </p>
-                )}
+                <InfoLine
+                  items={[
+                    ["Hours/week", job.hours || job.hoursPerWeek],
+                    ["Grade/Series", job.grade || job.status],
+                    ["Clearance", job.clearance],
+                    ["Employment Type", job.employmentType],
+                  ]}
+                />
+
+                <InfoLine
+                  items={[
+                    ["Supervisor", job.supervisor],
+                    ["Supervisor Phone", job.supervisorPhone],
+                    ["May Contact", job.mayContactSupervisor],
+                  ]}
+                />
 
                 <BulletText
                   text={
@@ -161,17 +137,19 @@ export default function FederalCleanResumeLayout({
       )}
 
       {education.length > 0 && (
-        <Section title="Education">
+        <Section title="Education" themeColor={themeColor}>
           <div className="space-y-3">
             {education.map((edu, index) => (
               <div key={index}>
                 <h3 className="font-bold text-slate-950">{edu.degree}</h3>
                 <p className="text-sm text-slate-700">
-                  {edu.school}
-                  {edu.location ? ` | ${edu.location}` : ""}
-                  {edu.startDate || edu.endDate
-                    ? ` | ${edu.startDate || ""} - ${edu.endDate || ""}`
-                    : ""}
+                  {[
+                    edu.school,
+                    edu.location,
+                    formatDateRange(edu.startDate, edu.endDate),
+                  ]
+                    .filter(Boolean)
+                    .join(" | ")}
                 </p>
               </div>
             ))}
@@ -180,7 +158,7 @@ export default function FederalCleanResumeLayout({
       )}
 
       {certifications.length > 0 && (
-        <Section title="Certifications">
+        <Section title="Certifications" themeColor={themeColor}>
           <div className="space-y-3">
             {certifications.map((cert, index) => (
               <div key={index}>
@@ -200,7 +178,7 @@ export default function FederalCleanResumeLayout({
       )}
 
       {projects.length > 0 && (
-        <Section title="Relevant Projects">
+        <Section title="Relevant Projects" themeColor={themeColor}>
           <div className="space-y-3">
             {projects.map((project, index) => (
               <div key={index}>
@@ -223,7 +201,7 @@ export default function FederalCleanResumeLayout({
       )}
 
       {accomplishments.length > 0 && (
-        <Section title="Awards & Accomplishments">
+        <Section title="Awards & Accomplishments" themeColor={themeColor}>
           <div className="space-y-3">
             {accomplishments.map((item, index) => (
               <div key={index}>
@@ -249,17 +227,54 @@ export default function FederalCleanResumeLayout({
 function Section({
   title,
   children,
+  themeColor,
 }: {
   title: string;
   children: React.ReactNode;
+  themeColor: string;
 }) {
   return (
     <section className="mt-7">
-      <h2 className="mb-3 border-b-[3px] border-black pb-1 text-xl font-black uppercase tracking-tight">
+      <h2
+        className="mb-3 border-b-[3px] pb-1 text-xl font-black uppercase tracking-tight"
+        style={{ borderColor: themeColor }}>
         {title}
       </h2>
       {children}
     </section>
+  );
+}
+
+function InfoGrid({ items }: { items: [string, string | undefined][] }) {
+  return (
+    <div className="space-y-1 text-sm text-slate-800">
+      {items.map(([label, value], index) => (
+        <p key={`${label}-${index}`}>
+          <strong>{label}:</strong> {value || "N/A"}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+function InfoLine({
+  items,
+}: {
+  items: [string, string | number | undefined][];
+}) {
+  const validItems = items.filter(([, value]) => value);
+
+  if (validItems.length === 0) return null;
+
+  return (
+    <p className="mt-1 text-xs text-slate-800">
+      {validItems.map(([label, value], index) => (
+        <span key={`${label}-${index}`}>
+          {index > 0 && " | "}
+          <strong>{label}:</strong> {value}
+        </span>
+      ))}
+    </p>
   );
 }
 
@@ -269,8 +284,9 @@ function BulletText({ text }: { text?: string }) {
   const bullets = text
     .split(/\n|•/)
     .map((item) => item.trim())
-    .filter(Boolean)
-    .slice(0, 5);
+    .filter(Boolean);
+
+  if (bullets.length === 0) return null;
 
   return (
     <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-5 text-slate-800">
@@ -279,6 +295,12 @@ function BulletText({ text }: { text?: string }) {
       ))}
     </ul>
   );
+}
+
+function formatDateRange(startDate?: string, endDate?: string) {
+  if (!startDate && !endDate) return "";
+
+  return `${startDate || "Start"} - ${endDate || "Present"}`;
 }
 
 function getFirstValue(items: any[], key: string) {
