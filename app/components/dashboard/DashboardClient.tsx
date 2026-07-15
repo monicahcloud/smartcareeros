@@ -125,7 +125,6 @@ export default function DashboardLayoutClient({
 
             <div className="ml-auto flex items-center gap-4">
               <UserButton
-                afterSignOutUrl="/"
                 appearance={{
                   elements: {
                     avatarBox: "h-9 w-9",

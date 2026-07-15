@@ -26,7 +26,7 @@ function normalizeExternalUrl(url?: string | null) {
 export default async function SharedResumePage({ params }: PageProps) {
   const { token } = await params;
 
-  const resume = await prisma.resume.findUnique({
+  const resume = await prisma.resume.findFirst({
     where: {
       shareToken: token,
     },
@@ -34,9 +34,11 @@ export default async function SharedResumePage({ params }: PageProps) {
       workExperience: true,
       education: true,
       techSkills: true,
+      certifications: true,
+      projects: true,
+      accomplishments: true,
     },
   });
-
   if (!resume) return notFound();
 
   const fullName =

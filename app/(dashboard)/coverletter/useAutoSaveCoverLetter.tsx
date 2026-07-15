@@ -1,107 +1,95 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 import useDebounce from "@/app/hooks/useDebounce";
 import { fileReplacer } from "@/lib/utils";
-import { saveResume } from "@/app/(dashboard)/resumes/actions";
-import { ResumeFormState } from "../resumebuilder/editor/[id]/types";
+import type { CoverLetterValues } from "@/lib/validation";
+import { saveCoverLetter } from "../coverletterbuilder/editor/actions";
 
-function normalizeForSave(data: ResumeFormState) {
-  return {
-    ...data,
-    resumeTitle: data.resumeTitle || "Untitled Resume",
-    resumeType: data.resumeType || "chronological",
-    description: data.description || "",
-
-    skills: data.skills ?? [],
-    techSkills: data.techSkills ?? [],
-    workExperience: data.workExperience ?? [],
-    education: data.education ?? [],
-    certifications: data.certifications ?? [],
-    projects: data.projects ?? [],
-    accomplishments: data.accomplishments ?? [],
-    interests: data.interests ?? [],
-
-    photo:
-      data.photo instanceof File
-        ? `${data.photo.name}-${data.photo.size}-${data.photo.type}`
-        : data.photo || undefined,
-    photoUrl: data.photoUrl || undefined,
-  };
+function snapshot(data: CoverLetterValues): string {
+  return JSON.stringify(data, fileReplacer);
 }
 
-function snapshot(data: ResumeFormState) {
-  return JSON.stringify(normalizeForSave(data), fileReplacer);
-}
+export default function useAutoSaveCoverLetter(
+  coverLetterData: CoverLetterValues,
+) {
+  const debouncedData = useDebounce(coverLetterData, 1500);
 
-export default function useAutoSaveResume(resumeData: ResumeFormState) {
-  const searchParams = useSearchParams();
-  const debounced = useDebounce(resumeData, 1500);
-
-  const resumeIdRef = useRef(resumeData.id);
+  const coverLetterIdRef = useRef(coverLetterData.id);
   const isSavingRef = useRef(false);
-  const pendingSaveRef = useRef(false);
+  const queuedDataRef = useRef<CoverLetterValues | null>(null);
 
-  const [lastSavedSnapshot, setLastSavedSnapshot] = useState(
-    snapshot(resumeData),
+  const [lastSavedSnapshot, setLastSavedSnapshot] = useState(() =>
+    snapshot(coverLetterData),
   );
+
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
 
   useEffect(() => {
-    const currentSnapshot = snapshot(debounced);
+    let cancelled = false;
 
-    if (currentSnapshot === lastSavedSnapshot) return;
+    async function persist(data: CoverLetterValues) {
+      if (isSavingRef.current) {
+        queuedDataRef.current = data;
+        return;
+      }
 
-    if (isSavingRef.current) {
-      pendingSaveRef.current = true;
-      return;
-    }
+      const currentSnapshot = snapshot(data);
 
-    async function save() {
+      if (currentSnapshot === lastSavedSnapshot) {
+        return;
+      }
+
       isSavingRef.current = true;
-      pendingSaveRef.current = false;
       setStatus("saving");
 
       try {
-        const dataToSave = normalizeForSave(debounced);
+        const saved = await saveCoverLetter({
+          ...data,
+          id: coverLetterIdRef.current,
+        });
 
-        const saved = await saveResume({
-          ...dataToSave,
-          id: resumeIdRef.current,
-        } as any);
-
-        resumeIdRef.current = saved.id;
-        setLastSavedSnapshot(currentSnapshot);
-
-        if (searchParams.get("resumeId") !== saved.id) {
-          const params = new URLSearchParams(searchParams.toString());
-          params.set("resumeId", saved.id);
-
-          window.history.replaceState(null, "", `?${params.toString()}`);
+        if (cancelled) {
+          return;
         }
 
+        coverLetterIdRef.current = saved.id;
+        setLastSavedSnapshot(currentSnapshot);
         setStatus("idle");
       } catch (error) {
-        console.error(error);
+        if (cancelled) {
+          return;
+        }
+
+        console.error("Cover-letter autosave failed:", error);
         setStatus("error");
-        toast.error("Could not save resume changes");
+
+        toast.error("Could not save cover letter changes");
       } finally {
         isSavingRef.current = false;
 
-        if (pendingSaveRef.current) {
-          pendingSaveRef.current = false;
+        const queuedData = queuedDataRef.current;
+        queuedDataRef.current = null;
+
+        if (queuedData && !cancelled) {
+          void persist(queuedData);
         }
       }
     }
 
-    save();
-  }, [debounced, searchParams, lastSavedSnapshot]);
+    void persist(debouncedData);
 
-  const currentSnapshot = useMemo(() => snapshot(resumeData), [resumeData]);
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedData, lastSavedSnapshot]);
+
+  const currentSnapshot = useMemo(
+    () => snapshot(coverLetterData),
+    [coverLetterData],
+  );
 
   return {
     isSaving: status === "saving",

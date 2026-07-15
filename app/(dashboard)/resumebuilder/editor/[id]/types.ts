@@ -5,7 +5,23 @@ export type WorkExperienceItem = {
   startDate: string;
   endDate: string;
   description: string;
+
+  duties?: string;
+  responsibilities?: string;
+  accomplishments?: string;
+  status?: string;
+  grade?: string;
+  clearance?: string;
+  hours?: string;
+  hoursPerWeek?: string;
+  employmentType?: string;
+  supervisor?: string;
+  supervisorPhone?: string;
+  mayContactSupervisor?: string;
+  salary?: string;
+  time?: string;
 };
+
 export type TechSkillItem = {
   name: string;
   rating: number;
@@ -56,9 +72,9 @@ export type ResumeFormState = {
   targetRole?: string;
   targetCompany?: string;
 
-  themeId?: string;
-  themeColor?: string;
-  borderStyle?: string;
+  themeId: string;
+  themeColor: string;
+  borderStyle: string;
 
   firstName: string;
   lastName: string;
@@ -82,5 +98,5 @@ export type ResumeFormState = {
 
   photo?: File | string | null;
   photoUrl?: string;
-  showPhoto?: boolean;
+  showPhoto: boolean;
 };

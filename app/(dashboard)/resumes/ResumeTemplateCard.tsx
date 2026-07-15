@@ -30,8 +30,16 @@ const MOCK_DATA: ResumeData = {
     "Problem Solving",
     "Project Management",
   ],
-
-  techSkills: ["Excel", "SQL", "Power BI", "Tableau", "Python"],
+  techSkills: [
+    {
+      name: "Excel",
+      rating: 3,
+    },
+    {
+      name: "SQL",
+      rating: 4,
+    },
+  ],
 
   workExperience: [
     {

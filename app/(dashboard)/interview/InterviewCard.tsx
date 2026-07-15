@@ -25,7 +25,7 @@ interface InterviewCardProps {
   type: string;
   techstack: string[];
   clerkId?: string;
-  createdAt?: string;
+  createdAt?: Date | string;
   industry?: string | null;
   finalized?: boolean;
   isCompletedView?: boolean;

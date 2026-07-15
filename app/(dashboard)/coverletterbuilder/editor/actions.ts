@@ -5,9 +5,11 @@ import { auth } from "@clerk/nextjs/server";
 // import { canUseAITools } from "@/lib/permissions";
 // import { getUserSubscriptionLevel } from "@/lib/subscription";
 import prisma from "@/lib/prisma";
+
 import { del, put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 import { coverLetterSchema, CoverLetterValues } from "@/lib/validation";
+import { Prisma } from "@prisma/client";
 
 export async function generateCoverLetter({
   jobTitle,
@@ -82,11 +84,17 @@ Rules:
 
   const completion = await openai.chat.completions.create({
     model: "gpt-5",
+    reasoning_effort: "low",
     messages: [
-      { role: "system", content: systemMessage },
-      { role: "user", content: userMessage },
+      {
+        role: "system",
+        content: systemMessage,
+      },
+      {
+        role: "user",
+        content: userMessage,
+      },
     ],
-    temperature: 0.7,
   });
 
   const aiResponse = completion.choices[0].message.content;
@@ -96,20 +104,25 @@ Rules:
 }
 
 export async function deleteCoverLetter(id: string) {
-  const { userId } = await auth();
-  if (!userId) {
+  const { userId: clerkId } = await auth();
+
+  if (!clerkId) {
     throw new Error("User not authenticated");
   }
 
-  const coverLetter = await prisma.coverLetter.findUnique({
+  const coverLetter = await prisma.coverLetter.findFirst({
     where: {
       id,
-      userId,
+      clerkId,
+    },
+    select: {
+      id: true,
+      userPhotoUrl: true,
     },
   });
 
   if (!coverLetter) {
-    throw new Error("CoverLetter not found");
+    throw new Error("Cover letter not found");
   }
 
   if (coverLetter.userPhotoUrl) {
@@ -118,7 +131,7 @@ export async function deleteCoverLetter(id: string) {
 
   await prisma.coverLetter.delete({
     where: {
-      id,
+      id: coverLetter.id,
     },
   });
 
@@ -139,17 +152,6 @@ export async function getcoverLetterById(id: string) {
 }
 
 export async function saveCoverLetter(values: CoverLetterValues) {
-  const { id } = values;
-
-  const cleanValues = {
-    ...values,
-    userPhotoUrl: values.userPhotoUrl || undefined,
-    signatureUrl: values.signatureUrl || undefined,
-  };
-
-  const { userPhoto, ...coverLetterValues } =
-    coverLetterSchema.parse(cleanValues);
-
   const { userId: clerkId } = await auth();
 
   if (!clerkId) {
@@ -157,13 +159,30 @@ export async function saveCoverLetter(values: CoverLetterValues) {
   }
 
   const dbUser = await prisma.user.findUnique({
-    where: { clerkId },
-    select: { id: true, clerkId: true },
+    where: {
+      clerkId,
+    },
+    select: {
+      id: true,
+      clerkId: true,
+    },
   });
 
   if (!dbUser) {
     throw new Error("User not found");
   }
+
+  // Keep id separately because coverLetterSchema does not include it
+  const id = values.id;
+
+  const cleanValues = {
+    ...values,
+    userPhotoUrl: values.userPhotoUrl || undefined,
+    signatureUrl: values.signatureUrl || undefined,
+  };
+
+  const { userPhoto, content, ...coverLetterValues } =
+    coverLetterSchema.parse(cleanValues);
 
   const existingCoverLetter = id
     ? await prisma.coverLetter.findFirst({
@@ -171,6 +190,10 @@ export async function saveCoverLetter(values: CoverLetterValues) {
           id,
           userId: dbUser.id,
           clerkId,
+        },
+        select: {
+          id: true,
+          userPhotoUrl: true,
         },
       })
     : null;
@@ -182,7 +205,11 @@ export async function saveCoverLetter(values: CoverLetterValues) {
   let userPhotoUrl: string | null | undefined =
     values.userPhotoUrl ?? undefined;
 
-  if (userPhoto instanceof File && process.env.BLOB_READ_WRITE_TOKEN) {
+  if (
+    userPhoto instanceof File &&
+    userPhoto.size > 0 &&
+    process.env.BLOB_READ_WRITE_TOKEN
+  ) {
     if (existingCoverLetter?.userPhotoUrl) {
       await del(existingCoverLetter.userPhotoUrl);
     }
@@ -198,30 +225,34 @@ export async function saveCoverLetter(values: CoverLetterValues) {
     userPhotoUrl = blob.url;
   }
 
-  if (id) {
-    const updated = await prisma.coverLetter.update({
-      where: { id },
+  const normalizedContent =
+    content === null
+      ? Prisma.JsonNull
+      : content === undefined
+        ? undefined
+        : (content as Prisma.InputJsonValue);
+
+  if (existingCoverLetter) {
+    return prisma.coverLetter.update({
+      where: {
+        id: existingCoverLetter.id,
+      },
       data: {
         ...coverLetterValues,
+        content: normalizedContent,
         clerkId,
         userPhotoUrl,
-        updatedAt: new Date(),
       },
     });
-
-    // revalidatePath("/coverletter");
-    return updated;
   }
 
-  const created = await prisma.coverLetter.create({
+  return prisma.coverLetter.create({
     data: {
       ...coverLetterValues,
+      content: normalizedContent,
       userId: dbUser.id,
       clerkId,
       userPhotoUrl,
     },
   });
-
-  // revalidatePath("/coverletter");
-  return created;
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { Job } from "@prisma/client";
 import {
   Bookmark,
   BriefcaseBusiness,

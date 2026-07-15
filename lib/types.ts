@@ -15,7 +15,14 @@ export const resumeDataInclude = {
 } satisfies Prisma.ResumeInclude;
 
 export type ResumeServerData = Prisma.ResumeGetPayload<{
-  include: typeof resumeDataInclude;
+  include: {
+    workExperience: true;
+    education: true;
+    techSkills: true;
+    certifications: true;
+    projects: true;
+    accomplishments: true;
+  };
 }>;
 
 export interface CoverLetterFormProps {

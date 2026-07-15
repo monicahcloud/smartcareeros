@@ -123,7 +123,7 @@ export default function ResumeCard({ resume }: { resume: any }) {
 
         {resume.shareToken && (
           <Link
-            href={`/resumes/share/${resume.shareToken}`}
+            href={`/resume/share/${resume.shareToken}`}
             className="border border-slate-200 px-4 py-3 text-center text-xs font-black uppercase tracking-[0.16em] text-slate-500 transition hover:border-red-600 hover:text-red-600">
             Share
           </Link>

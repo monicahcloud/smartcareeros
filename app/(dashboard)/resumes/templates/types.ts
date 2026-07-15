@@ -17,6 +17,7 @@ export type ResumeData = {
   themeId?: string;
   themeColor?: string;
   borderStyle?: string;
+  showPhoto?: boolean;
   photo?: File;
   photoUrl?: string;
   skills?: string[];

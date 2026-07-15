@@ -6,7 +6,7 @@ import puppeteer from "puppeteer";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(
+export default async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {

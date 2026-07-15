@@ -51,6 +51,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import ColorPicker from "@/app/components/coverletter/ColorPicker";
+import { getSteps } from "../steps";
+import Footer from "../sections/Footer";
 
 type ResumeWithRelations = Resume & {
   techSkills: TechSkill[];
@@ -68,70 +70,6 @@ interface ResumeEditorProps {
   resumes: Partial<Resume>[];
   jobDescription?: JobDescription | null;
 }
-
-const allResumeSteps = [
-  {
-    key: "general",
-    title: "General",
-    component: BasicInfoSection,
-  },
-  {
-    key: "personal",
-    title: "Personal Info",
-    component: PersonalInfoSection,
-  },
-
-  {
-    key: "experience",
-    title: "Experience",
-    component: WorkExperienceSection,
-  },
-  {
-    key: "education",
-    title: "Education",
-    component: EducationSection,
-  },
-  {
-    key: "certifications",
-    title: "Certifications",
-    component: CertificationsSection,
-  },
-  {
-    key: "projects",
-    title: "Projects",
-    component: ProjectsSection,
-  },
-  {
-    key: "skills",
-    title: "Skills",
-    component: SkillsSection,
-  },
-  {
-    key: "technical",
-    title: "Technical Skills",
-    component: TechnicalSkillsSection,
-  },
-  {
-    key: "accomplishments",
-    title: "Accomplishments",
-    component: AccomplishmentsSection,
-  },
-  {
-    key: "interests",
-    title: "Interests",
-    component: InterestSection,
-  },
-  {
-    key: "summary",
-    title: "Summary",
-    component: SummarySection,
-  },
-  // {
-  //   key: "review",
-  //   title: "Review",
-  //   component: null,
-  // },
-] as const;
 
 export default function ResumeEditor({
   initialThemeId,
@@ -235,15 +173,16 @@ export default function ResumeEditor({
     themeColor: resumeToEdit?.themeColor || "#2563eb",
     borderStyle: resumeToEdit?.borderStyle || "squircle",
   });
+  const allResumeSteps = getSteps(resumeData.resumeType);
   const { isSaving, hasUnsavedChanges } = useAutoSaveResume(resumeData);
   const currentStep = searchParams.get("step") || allResumeSteps[0].key;
+
   const currentStepData = allResumeSteps.find(
     (step) => step.key === currentStep,
   );
 
-  const isLastStep = currentStep === "summary";
   const CurrentStepComponent = currentStepData?.component;
-
+  const isLastStep = currentStep === "summary";
   const handleStepChange = (step: string) => {
     const params = new URLSearchParams(searchParams.toString());
 
@@ -439,14 +378,14 @@ export default function ResumeEditor({
       </div>
 
       {/* FOOTER */}
-      <ResumeEditorFooter
+      <Footer
         currentStep={currentStep}
         setCurrentStep={handleStepChange}
-        showMobilePreview={showMobilePreview}
-        setShowMobilePreview={setShowMobilePreview}
+        showSmResumePreview={showMobilePreview}
+        setShowSmResumePreview={setShowMobilePreview}
         isSaving={isSaving}
-        hasUnsavedChanges={hasUnsavedChanges}
-        isError={false}
+        resumeType={resumeData.resumeType}
+        resume={resumeToEdit ?? undefined}
       />
     </div>
   );

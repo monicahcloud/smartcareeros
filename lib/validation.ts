@@ -104,7 +104,7 @@ export const techSkillSchema = z.object({
               .transform(Number), // accepts "1" to "5" as strings and transforms to number
             z.number().min(1).max(5), // accepts numbers 1–5
           ])
-          .default("1")
+          .default(1)
           .transform((val) => (typeof val === "string" ? parseInt(val) : val)),
       }),
     )

@@ -189,16 +189,14 @@ export async function getInterviewsByClerkId(
 ): Promise<Interview[]> {
   const user = await getDbUserByClerkId(clerkId);
 
-  const interviews = await prisma.interview.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
+  return prisma.interview.findMany({
+    where: {
+      userId: user.id,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
-
-  return interviews.map((interview) => ({
-    ...interview,
-    createdAt: interview.createdAt.toISOString(),
-    updatedAt: interview.updatedAt.toISOString(),
-  }));
 }
 
 export async function getLatestInterviews(
@@ -208,7 +206,7 @@ export async function getLatestInterviews(
 
   const user = await getDbUserByClerkId(clerkId);
 
-  const interviews = await prisma.interview.findMany({
+  return prisma.interview.findMany({
     where: {
       userId: user.id,
     },
@@ -217,26 +215,14 @@ export async function getLatestInterviews(
     },
     take: limit,
   });
-
-  return interviews.map((interview) => ({
-    ...interview,
-    createdAt: interview.createdAt.toISOString(),
-    updatedAt: interview.updatedAt.toISOString(),
-  }));
 }
 
 export async function getInterviewById(id: string): Promise<Interview | null> {
-  const interview = await prisma.interview.findUnique({
-    where: { id },
+  return prisma.interview.findUnique({
+    where: {
+      id,
+    },
   });
-
-  if (!interview) return null;
-
-  return {
-    ...interview,
-    createdAt: interview.createdAt.toISOString(),
-    updatedAt: interview.updatedAt.toISOString(),
-  };
 }
 
 const techIconBaseURL = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons";

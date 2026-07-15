@@ -2,34 +2,59 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
+  Download,
   Edit3,
+  ImageIcon,
   Printer,
   Share2,
-  ImageIcon,
-  Download,
   Trash2,
 } from "lucide-react";
-import { ResumeServerData } from "@/lib/types";
-import { mapToResumeValues } from "@/lib/utils";
 import { toast } from "sonner";
-import { generateResumePdf } from "../../pdf-actions";
+
+import type { ResumeServerData } from "@/lib/types";
+import { mapToResumeValues } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+
 import ResumePreview from "@/app/(dashboard)/resumebuilder/editor/sections/ResumePreview";
 import { RESUME_THEME_REGISTRY } from "../../templates/templateRegistry";
-import { Switch } from "@/components/ui/switch";
 import {
   createResumeShareLink,
   deleteResume,
   updateResumeBranding,
 } from "../../actions";
-import { Resume } from "@prisma/client";
-import { useRouter } from "next/navigation";
 
-export default function ResumePreviewView({ resume }: { resume: Resume }) {
+type ResumePreviewState = Omit<
+  ResumeServerData,
+  "themeColor" | "borderStyle" | "shareToken"
+> & {
+  themeColor: string;
+  borderStyle: string;
+  shareToken: string;
+};
+
+type ResumeBrandingUpdate = {
+  themeId?: string;
+  themeColor?: string;
+  showPhoto?: boolean;
+};
+export default function ResumePreviewView({
+  resume,
+}: {
+  resume: ResumeServerData;
+}) {
   const router = useRouter();
-  const [data, setData] = useState(resume);
+
+  const [data, setData] = useState<ResumePreviewState>(() => ({
+    ...resume,
+    themeColor: resume.themeColor ?? "#dc2626",
+    borderStyle: resume.borderStyle ?? "squircle",
+    shareToken: resume.shareToken ?? "",
+  }));
+
   const [shareUrl, setShareUrl] = useState<string | null>(
     resume.shareToken
       ? `${typeof window !== "undefined" ? window.location.origin : ""}/resume/share/${resume.shareToken}`
@@ -197,21 +222,31 @@ export default function ResumePreviewView({ resume }: { resume: Resume }) {
     }
   };
 
-  const persistChanges = async (updates: Partial<Resume>) => {
-    const nextData = {
+  const persistChanges = async (updates: ResumeBrandingUpdate) => {
+    const previousData = data;
+
+    const nextData: ResumePreviewState = {
       ...data,
       ...updates,
     };
 
     setData(nextData);
 
-    await updateResumeBranding(
-      data.id,
-      nextData.themeId ?? "classic-left",
-      nextData.themeColor ?? "#dc2626",
-      nextData.showPhoto ?? true,
-    );
+    try {
+      await updateResumeBranding(
+        data.id,
+        nextData.themeId ?? "classic-left",
+        nextData.themeColor,
+        nextData.showPhoto ?? true,
+      );
+    } catch (error) {
+      setData(previousData);
+
+      console.error("Could not update resume branding:", error);
+      toast.error("Could not save branding changes");
+    }
   };
+
   const previewData = useMemo(() => {
     const values = mapToResumeValues(data);
 

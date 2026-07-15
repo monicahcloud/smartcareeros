@@ -3,10 +3,9 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { getSteps } from "../steps";
 import { CheckCircle, FileUserIcon, PenLineIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ResumeServerData } from "@/lib/types";
+import { getSteps } from "../steps";
 
 interface FooterProps {
   currentStep: string;
@@ -15,7 +14,9 @@ interface FooterProps {
   setShowSmResumePreview: (show: boolean) => void;
   isSaving: boolean;
   resumeType?: string;
-  resume?: ResumeServerData;
+  resume?: {
+    id: string;
+  };
 }
 
 function Footer({
@@ -102,7 +103,7 @@ function Footer({
           <p
             className={cn(
               "text-muted-foreground opacity-0",
-              isSaving && "opacity-100"
+              isSaving && "opacity-100",
             )}>
             Saving...
           </p>
