@@ -111,7 +111,8 @@ export default function FederalCleanResumeLayout({
                 <InfoLine
                   items={[
                     ["Hours/week", job.hours || job.hoursPerWeek],
-                    ["Grade/Series", job.grade || job.status],
+                    ["Grade", job.grade || job.status],
+                    ["Series", job.grade || job.status],
                     ["Clearance", job.clearance],
                     ["Employment Type", job.employmentType],
                   ]}

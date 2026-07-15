@@ -29,6 +29,18 @@ export type ResumeData = {
     startDate?: string;
     endDate?: string;
     description?: string;
+    duties?: string;
+    responsibilities?: string;
+    accomplishments?: string;
+    status?: string;
+    grade?: string;
+    clearance?: string;
+    hours?: string;
+    hoursPerWeek?: string;
+    employmentType?: string;
+    supervisor?: string;
+    supervisorPhone?: string;
+    mayContactSupervisor?: string;
   }[];
 
   education?: {

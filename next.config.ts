@@ -2,13 +2,16 @@
 const nextConfig = {
   output: "standalone",
 
+  serverExternalPackages: ["pdf-parse", "@napi-rs/canvas"],
+
   typescript: {
     ignoreBuildErrors: true,
   },
+
   images: {
     remotePatterns: [
       {
-        protocol: "https", // Clerk images use HTTPS
+        protocol: "https",
         hostname: "img.clerk.com",
       },
       {

@@ -181,8 +181,20 @@ export default function ResumeEditor({
           : "",
         endDate: exp.endDate ? exp.endDate.toISOString().slice(0, 10) : "",
         description: exp.description || "",
-      })) || [],
 
+        duties: exp.duties || "",
+        responsibilities: exp.responsibilities || "",
+        accomplishments: exp.accomplishments || "",
+        status: exp.status || "",
+        grade: exp.grade || "",
+        clearance: exp.clearance || "",
+        hours: exp.hours || "",
+        hoursPerWeek: exp.hours || "",
+        employmentType: exp.employmentType || "",
+        supervisor: exp.supervisor || "",
+        supervisorPhone: exp.supervisorPhone || "",
+        mayContactSupervisor: exp.mayContactSupervisor || "",
+      })) || [],
     education:
       resumeToEdit?.education?.map((edu) => ({
         school: edu.school || "",

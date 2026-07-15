@@ -109,7 +109,7 @@ ${techSkills?.map((s: any) => s.name).join(", ")}
 `;
 
   const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "gpt-5",
     messages: [
       { role: "system", content: systemMessage },
       { role: "user", content: userMessage },
@@ -130,7 +130,7 @@ export async function generateSkills(
     generateSkillsSchema.parse(input);
 
   const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "gpt-5",
     messages: [
       {
         role: "system",
@@ -233,7 +233,7 @@ ${jobDescriptionText || "No job description provided."}
 `;
 
   const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "gpt-5",
     messages: [
       { role: "system", content: systemMessage },
       { role: "user", content: userMessage },
@@ -272,7 +272,7 @@ export async function parseResumeWithAI(
   isFederal: boolean = false,
 ) {
   const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "gpt-5",
     messages: [
       {
         role: "system",
@@ -479,7 +479,7 @@ export async function analyzeContent(
   if (!userId) throw new Error("Unauthorized");
 
   const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "gpt-5",
     messages: [
       {
         role: "system",

@@ -52,6 +52,11 @@ export const workExperienceSchema = z.object({
         status: optionalString,
         grade: optionalString,
         hours: optionalString,
+        employmentType: optionalString,
+        hoursPerWeek: optionalString,
+        supervisor: optionalString,
+        supervisorPhone: optionalString,
+        mayContactSupervisor: optionalString,
       }),
     )
     .optional(),

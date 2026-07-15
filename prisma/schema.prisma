@@ -119,6 +119,7 @@ model Resume {
   targetCompany String?
   uploadedFileUrl String?
   isUploaded      Boolean @default(false)
+  uploadedDocument UploadedDocument?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -161,6 +162,8 @@ model WorkExperience {
   supervisor      String?
   supervisorPhone String?
   salary          String?
+  mayContactSupervisor String?
+  employmentType      String?
 
   resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
 
@@ -365,16 +368,26 @@ model UploadedDocument {
   clerkId String
 
   documentType UploadedDocumentType
+
   fileName     String?
   fileUrl      String?
+  filePathname String?
   fileMimeType String?
   fileSize     Int?
 
-  rawText     String?
-  parsedData  Json?
-  parser      String?
+  rawText    String? @db.Text
+  parsedData Json?
+  parser     String?
+
   parseStatus ParseStatus @default(PENDING)
   parseError  String?
+
+  progress    Int     @default(0)
+  currentStep String?
+  isFederal   Boolean @default(false)
+
+  resumeId String? @unique
+  resume   Resume? @relation(fields: [resumeId], references: [id], onDelete: SetNull)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -384,6 +397,7 @@ model UploadedDocument {
   @@index([userId])
   @@index([clerkId])
   @@index([documentType])
+  @@index([parseStatus])
 }
 
 model Job {
@@ -401,9 +415,9 @@ model Job {
   postedAt    DateTime?
   dateApplied DateTime?
   source String?
-followUpDate DateTime?
-notes String?
-lastActivityAt DateTime?
+  followUpDate DateTime?
+  notes String?
+  lastActivityAt DateTime?
 
   description  String?
   requirements String[]

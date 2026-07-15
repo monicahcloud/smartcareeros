@@ -82,6 +82,11 @@ function WorkExperienceForm({
           responsibilities: exp?.responsibilities ?? "",
           grade: exp?.grade ?? "",
           hours: exp?.hours ?? "",
+          hoursPerWeek: exp?.hoursPerWeek ?? "",
+          employmentType: exp?.employmentType ?? "",
+          supervisor: exp?.supervisor ?? "",
+          supervisorPhone: exp?.supervisorPhone ?? "",
+          mayContactSupervisor: exp?.mayContactSupervisor ?? "",
         })) ?? [];
 
       setResumeData((prev) => ({
@@ -168,6 +173,10 @@ function WorkExperienceForm({
                     responsibilities: "",
                     grade: "",
                     hours: "",
+                    employmentType: "",
+                    supervisor: "",
+                    supervisorPhone: "",
+                    mayContactSupervisor: "",
                   })
                 }>
                 <PlusCircle className="mr-2 size-4" />
@@ -209,7 +218,10 @@ function WorkExperienceItem({
     isDragging,
   } = useSortable({ id });
 
-  const isFederal = category === "federal";
+  const isFederalTemplate =
+    category.toLowerCase() === "federal" ||
+    category.toLowerCase() === "government" ||
+    resumeData.themeId === "federal-clean";
 
   return (
     <div
@@ -271,7 +283,7 @@ function WorkExperienceItem({
       </div>
 
       {/* FEDERAL FIELDS: Now triggers solely on the theme category */}
-      {isFederal && (
+      {isFederalTemplate && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 p-4 bg-blue-50/50 rounded-2xl border border-blue-100/50">
           <FormField
             control={form.control}
@@ -378,7 +390,7 @@ function WorkExperienceItem({
       </div>
 
       {/* AI CONTENT SECTIONS */}
-      {!isFederal ? (
+      {!isFederalTemplate ? (
         <FormField
           control={form.control}
           name={`workExperiences.${index}.description`}

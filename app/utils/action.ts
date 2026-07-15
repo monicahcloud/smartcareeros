@@ -20,7 +20,7 @@ export async function createFeedback(params: CreateFeedbackParams) {
       .join("");
 
     const { object } = await generateObject({
-      model: openai("gpt-4o-mini"),
+      model: openai("gpt-5"),
       schema: feedbackSchema,
       prompt: `
 You are an AI interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories. Be thorough and detailed in your analysis. Do not be lenient with the candidate. If there are mistakes or areas for improvement, point them out.
